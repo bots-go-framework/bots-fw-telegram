@@ -1,4 +1,6 @@
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
+github.com/dal-go/dalgo v0.2.3 h1:n5B7kPf6YZn0gu1SP79USFMDB0BmuxhWLgI690lO7Ks=
+github.com/dal-go/dalgo v0.2.3/go.mod h1:Fv3s/hxtByMVY7PSOi6SJ/5B981kNCuKGBa5O0xHCnM=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/golang/protobuf v1.5.0/go.mod h1:FsONVRAS9T7sI+LIUmWTfcYkHO4aIWwzhcaSAoJOfIk=
@@ -23,6 +25,8 @@ github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdh
 github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
 github.com/strongo/app v0.0.1 h1:fwYFKd9g0aygHT6X17yGXSZ+ETY++87a2P4lCuW5V4I=
 github.com/strongo/app v0.0.1/go.mod h1:H9omqnFecxlU6LPVBqq9C0/Wt0OfD7x8axWGr7E2v7Q=
+github.com/strongo/app v0.0.2 h1:BBM+U9v4pfIeLmHiC3hAeJewjbBOqBqiOmbT9K3dQas=
+github.com/strongo/app v0.0.2/go.mod h1:CVpVW5I9Hat8LNcN42Bvlzv8+mZRsNQ2ZQHLH1mz8Qw=
 github.com/strongo/bots-api-telegram v0.0.3 h1:yuTxWv2/CePNrnJ7A5yS5tmhoc8UEBIXXPCNt7kuF2A=
 github.com/strongo/bots-api-telegram v0.0.3/go.mod h1:GmSYIEu6/X1DzwNeY+aih907rDTeBgARtab7nTENekA=
 github.com/strongo/bots-framework v0.9.7 h1:WHUUcV+eaW5Cow9WMM30mDqCLb/mTyE4TUCMXCkm2JY=
