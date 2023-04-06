@@ -6,13 +6,12 @@ require (
 	github.com/bots-go-framework/bots-api-telegram v0.1.1
 	github.com/bots-go-framework/bots-fw v0.9.10
 	github.com/bots-go-framework/bots-fw-dalgo v0.0.5
-	github.com/bots-go-framework/bots-host-gae v0.0.3
+	github.com/bots-go-framework/bots-host-gae v0.0.5
 	github.com/dal-go/dalgo v0.2.3
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/strongo/app v0.0.2
 	github.com/strongo/log v0.0.1
-	github.com/strongo/nds v0.0.0-20180424162513-fa96c62eb788
 	google.golang.org/appengine v1.6.7
 )
 
@@ -37,9 +36,9 @@ require (
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.6.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/api v0.115.0 // indirect
+	google.golang.org/api v0.116.0 // indirect
 	google.golang.org/appengine/v2 v2.0.2 // indirect
 	google.golang.org/genproto v0.0.0-20230403163135-c38d8f061ccd // indirect
 	google.golang.org/grpc v1.54.0 // indirect

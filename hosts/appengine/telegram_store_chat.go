@@ -6,9 +6,6 @@ import (
 	"github.com/bots-go-framework/bots-fw-dalgo/dalgo4botsfw"
 	telegram "github.com/bots-go-framework/bots-fw-telegram"
 	"github.com/bots-go-framework/bots-fw/botsfw"
-	"github.com/strongo/nds"
-	"google.golang.org/appengine/datastore"
-	"strconv"
 	"time"
 	//"reflect"
 )
@@ -43,26 +40,27 @@ func NewGaeTelegramChatStore(newTelegramChatData func() botsfw.BotChat) botsfw.B
 
 // MarkTelegramChatAsForbidden marks tg chat as forbidden
 func MarkTelegramChatAsForbidden(c context.Context, botID string, tgChatID int64, dtForbidden time.Time) error {
-	return nds.RunInTransaction(c, func(c context.Context) (err error) {
-		key := datastore.NewKey(c, telegram.ChatKind, botsfw.NewChatID(botID, strconv.FormatInt(tgChatID, 10)), 0, nil)
-		var chat telegram.TgChatEntityBase
-		if err = nds.Get(c, key, &chat); err != nil {
-			return
-		}
-		var changed bool
-		if chat.DtForbidden.IsZero() {
-			chat.DtForbidden = dtForbidden
-			changed = true
-		}
-
-		if chat.DtForbiddenLast.IsZero() || chat.DtForbiddenLast.Before(dtForbidden) {
-			chat.DtForbiddenLast = dtForbidden
-			changed = true
-		}
-
-		if changed {
-			_, err = nds.Put(c, key, &chat)
-		}
-		return
-	}, nil)
+	//return nds.RunInTransaction(c, func(c context.Context) (err error) {
+	//	key := datastore.NewKey(c, telegram.ChatKind, botsfw.NewChatID(botID, strconv.FormatInt(tgChatID, 10)), 0, nil)
+	//	var chat telegram.TgChatEntityBase
+	//	if err = nds.Get(c, key, &chat); err != nil {
+	//		return
+	//	}
+	//	var changed bool
+	//	if chat.DtForbidden.IsZero() {
+	//		chat.DtForbidden = dtForbidden
+	//		changed = true
+	//	}
+	//
+	//	if chat.DtForbiddenLast.IsZero() || chat.DtForbiddenLast.Before(dtForbidden) {
+	//		chat.DtForbiddenLast = dtForbidden
+	//		changed = true
+	//	}
+	//
+	//	if changed {
+	//		_, err = nds.Put(c, key, &chat)
+	//	}
+	//	return
+	//}, nil)
+	return nil
 }
