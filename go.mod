@@ -13,6 +13,7 @@ require (
 	github.com/strongo/app v0.0.2
 	github.com/strongo/log v0.0.1
 	google.golang.org/appengine v1.6.7
+	google.golang.org/appengine/v2 v2.0.2
 )
 
 require (
@@ -39,7 +40,6 @@ require (
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.116.0 // indirect
-	google.golang.org/appengine/v2 v2.0.2 // indirect
 	google.golang.org/genproto v0.0.0-20230403163135-c38d8f061ccd // indirect
 	google.golang.org/grpc v1.54.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
