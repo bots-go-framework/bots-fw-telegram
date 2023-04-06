@@ -10,7 +10,7 @@ require (
 	github.com/strongo/bots-framework v0.9.7
 	github.com/strongo/bots-fw-dalgo v0.0.4
 	github.com/strongo/bots-host-gae v0.0.2
-	github.com/strongo/dalgo v0.1.0
+	github.com/strongo/dalgo v0.2.3
 	github.com/strongo/log v0.0.1
 	github.com/strongo/nds v0.0.0-20180424162513-fa96c62eb788
 	google.golang.org/appengine v1.6.7
