@@ -6,7 +6,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/strongo/app v0.0.1
-	github.com/strongo/bots-api-telegram v0.0.3
+	github.com/strongo/bots-api-telegram v0.1.1
 	github.com/strongo/bots-framework v0.9.7
 	github.com/strongo/bots-fw-dalgo v0.0.4
 	github.com/strongo/bots-host-gae v0.0.2
