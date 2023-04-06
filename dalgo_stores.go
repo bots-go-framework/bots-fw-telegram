@@ -40,8 +40,6 @@ func newDalgoBotUserStore(db dalgo4botsfw.DbProvider) botsfw.BotUserStore {
 			UserName:  apiUser.GetUserName(),
 		}
 		return &store.TgBotUserData{BotUserEntity: botUserEntity}, nil
-
-		return newUserData(), nil
 	}
 
 	return dalgo4botsfw.NewBotUserStore(store.BotUserCollection, db, newUserData, createBotUser)
