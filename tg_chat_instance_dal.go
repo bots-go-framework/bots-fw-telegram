@@ -2,8 +2,8 @@ package telegram
 
 import (
 	"context"
-	"github.com/strongo/dalgo/dal"
-	"github.com/strongo/dalgo/record"
+	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/dalgo/record"
 )
 
 type tgChatInstanceDalgo struct {

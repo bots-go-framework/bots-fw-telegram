@@ -3,10 +3,9 @@ package gaehost
 import (
 	//"fmt"
 	"context"
-	"github.com/strongo/bots-framework/botsfw"
-	"github.com/strongo/bots-fw-dalgo/dalgo4botsfw"
-	telegram "github.com/strongo/bots-fw-telegram"
-	gae "github.com/strongo/bots-host-gae"
+	"github.com/bots-go-framework/bots-fw-dalgo/dalgo4botsfw"
+	telegram "github.com/bots-go-framework/bots-fw-telegram"
+	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/strongo/nds"
 	"google.golang.org/appengine/datastore"
 	"strconv"
@@ -16,12 +15,12 @@ import (
 
 // GaeTelegramChatStore DAL to telegram chat entity
 type GaeTelegramChatStore struct {
-	gae.GaeBotChatStore
+	//gae.GaeBotChatStore
 }
 
 //var _ botsfw.BotChatStore = (*GaeTelegramChatStore)(nil) // Check for interface implementation at compile time
 
-// §NewGaeTelegramChatStore creates DAL to Telegram chat entity
+// NewGaeTelegramChatStore creates DAL to Telegram chat entity
 func NewGaeTelegramChatStore(newTelegramChatData func() botsfw.BotChat) botsfw.BotChatStore {
 	{ // Validate newTelegramChatData
 		//tgChatData := newTelegramChatData()

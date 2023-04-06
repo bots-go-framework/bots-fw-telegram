@@ -1,8 +1,8 @@
 package telegram
 
 import (
+	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/strongo/app/user"
-	"github.com/strongo/bots-framework/botsfw"
 	"google.golang.org/appengine/datastore"
 	"strconv"
 )

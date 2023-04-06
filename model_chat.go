@@ -2,9 +2,9 @@ package telegram
 
 import (
 	"fmt"
+	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/dal-go/dalgo/record"
 	"github.com/strongo/app/user"
-	"github.com/strongo/bots-framework/botsfw"
-	"github.com/strongo/dalgo/record"
 	"google.golang.org/appengine/datastore"
 	"strconv"
 	"time"

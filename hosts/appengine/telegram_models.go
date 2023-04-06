@@ -1,7 +1,7 @@
 package gaehost
 
 import (
-	telegram "github.com/strongo/bots-fw-telegram"
+	telegram "github.com/bots-go-framework/bots-fw-telegram"
 	"google.golang.org/appengine/datastore"
 )
 

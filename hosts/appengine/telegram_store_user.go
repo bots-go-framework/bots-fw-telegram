@@ -2,11 +2,11 @@ package gaehost
 
 import (
 	"context"
+	"github.com/bots-go-framework/bots-fw-dalgo/dalgo4botsfw"
+	telegram "github.com/bots-go-framework/bots-fw-telegram"
+	"github.com/bots-go-framework/bots-fw/botsfw"
+	gae "github.com/bots-go-framework/bots-host-gae"
 	"github.com/strongo/app/user"
-	"github.com/strongo/bots-framework/botsfw"
-	"github.com/strongo/bots-fw-dalgo/dalgo4botsfw"
-	telegram "github.com/strongo/bots-fw-telegram"
-	gae "github.com/strongo/bots-host-gae"
 	"time"
 )
 

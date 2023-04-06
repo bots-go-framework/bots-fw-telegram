@@ -1,8 +1,8 @@
 package telegram
 
 import (
-	"github.com/strongo/bots-api-telegram"
-	"github.com/strongo/bots-framework/botsfw"
+	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
+	"github.com/bots-go-framework/bots-fw/botsfw"
 )
 
 type tgWebhookVoiceMessage struct {

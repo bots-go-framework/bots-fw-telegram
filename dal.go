@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"context"
-	"github.com/strongo/dalgo/dal"
+	"github.com/dal-go/dalgo/dal"
 )
 
 // TgChatInstanceDal is DAL for telegram chat instance Data

@@ -1,8 +1,8 @@
 package telegram
 
 import (
-	"github.com/strongo/dalgo/dal"
-	"github.com/strongo/dalgo/record"
+	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/dalgo/record"
 	"google.golang.org/appengine/datastore" // TODO: remove references to datastore
 )
 

@@ -3,9 +3,9 @@ package telegram
 import (
 	//"errors"
 	"fmt"
-	"github.com/strongo/bots-api-telegram"
-	"github.com/strongo/bots-framework/botsfw"
-	"github.com/strongo/dalgo/dal"
+	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
+	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/dal-go/dalgo/dal"
 	//"github.com/strongo/log"
 	"context"
 	"github.com/strongo/log"

@@ -1,8 +1,8 @@
 package telegram
 
 import (
+	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/strongo/app"
-	"github.com/strongo/bots-framework/botsfw"
 )
 
 // NewTelegramBot creates definition of new telegram bot

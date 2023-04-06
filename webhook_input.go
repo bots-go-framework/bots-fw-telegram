@@ -2,9 +2,9 @@ package telegram
 
 import (
 	"fmt"
+	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
+	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/pquerna/ffjson/ffjson"
-	"github.com/strongo/bots-api-telegram"
-	"github.com/strongo/bots-framework/botsfw"
 	"time"
 )
 

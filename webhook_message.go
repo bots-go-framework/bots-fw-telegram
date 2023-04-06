@@ -1,7 +1,7 @@
 package telegram
 
 import (
-	"github.com/strongo/bots-api-telegram"
+	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"strconv"
 )
 

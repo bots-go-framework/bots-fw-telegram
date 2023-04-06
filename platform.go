@@ -1,6 +1,6 @@
 package telegram
 
-import "github.com/strongo/bots-framework/botsfw"
+import "github.com/bots-go-framework/bots-fw/botsfw"
 
 // Platform describes Telegram platform
 type Platform struct {

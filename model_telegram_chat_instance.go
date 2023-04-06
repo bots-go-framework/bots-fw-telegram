@@ -1,8 +1,8 @@
 package telegram
 
 import (
-	"github.com/strongo/dalgo/dal"
-	"github.com/strongo/dalgo/record"
+	"github.com/dal-go/dalgo/dal"
+	"github.com/dal-go/dalgo/record"
 )
 
 // ChatInstanceKind is kind name of TgChatInstance Data
