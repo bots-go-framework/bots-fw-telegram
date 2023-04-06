@@ -1,8 +1,9 @@
 package telegram
 
 import (
+	"context"
 	"github.com/bots-go-framework/bots-fw-dalgo/dalgo4botsfw"
-	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/dal-go/dalgo/dal"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -12,18 +13,26 @@ func TestNewDalgoStores(t *testing.T) {
 		db dalgo4botsfw.DbProvider
 	}
 	tests := []struct {
-		name  string
-		args  args
-		want  botsfw.BotChatStore
-		want1 botsfw.BotUserStore
+		name string
+		args args
 	}{
-		// TODO: Add test cases.
+		{name: "empty", args: args{db: nil}},
+		{name: "should_pass", args: args{db: func(c context.Context) (dal.Database, error) {
+			return nil, nil
+		}}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := NewDalgoStores(tt.args.db)
-			assert.Equalf(t, tt.want, got, "NewDalgoStores(%v)", tt.args.db)
-			assert.Equalf(t, tt.want1, got1, "NewDalgoStores(%v)", tt.args.db)
+			if tt.args.db == nil {
+				defer func() {
+					if r := recover(); r == nil {
+						t.Errorf("The code did not panic")
+					}
+				}()
+			}
+			chatStore, botUserStore := NewDalgoStores(tt.args.db)
+			assert.NotNil(t, chatStore, "chatStore")
+			assert.NotNil(t, botUserStore, "botUserStore")
 		})
 	}
 }

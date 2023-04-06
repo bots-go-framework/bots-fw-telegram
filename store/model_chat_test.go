@@ -1,10 +1,9 @@
-package telegram
+package store
 
 import (
-	"google.golang.org/appengine/datastore"
 	"testing"
 )
 
 func TestTelegramChat(t *testing.T) {
-	var _ datastore.PropertyLoadSaver = (*TgChatEntityBase)(nil)
+	//var _ datastore.PropertyLoadSaver = (*TgChatData)(nil)
 }

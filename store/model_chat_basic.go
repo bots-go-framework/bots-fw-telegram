@@ -1,21 +1,20 @@
-package telegram
+package store
 
 import (
 	"github.com/dal-go/dalgo/dal"
 	"github.com/dal-go/dalgo/record"
-	"google.golang.org/appengine/datastore" // TODO: remove references to datastore
 )
 
 type Chat struct {
 	record.WithID[string]
-	//TgChatBase
+	//TgChatRecord
 	*ChatEntity
 }
 
 //var _ dal.EntityHolder = (*Chat)(nil)
 
 func NewChat(id string) Chat {
-	key := dal.NewKeyWithID(ChatKind, id)
+	key := dal.NewKeyWithID(TgChatCollection, id)
 	dto := new(ChatEntity)
 	return Chat{
 		WithID: record.WithID[string]{
@@ -27,7 +26,7 @@ func NewChat(id string) Chat {
 }
 
 func (Chat) Kind() string {
-	return ChatKind
+	return TgChatCollection
 }
 
 //func (tgChat Chat) Entity() interface{} {
@@ -48,24 +47,24 @@ func (Chat) Kind() string {
 
 type ChatEntity struct {
 	UserGroupID string `datastore:",index,omitempty"` // Do index
-	TgChatEntityBase
+	TgChatData
 }
 
-func (entity *ChatEntity) Load(ps []datastore.Property) error {
-	return datastore.LoadStruct(entity, ps)
-}
-
-func (entity *ChatEntity) Save() (properties []datastore.Property, err error) {
-	if properties, err = datastore.SaveStruct(entity); err != nil {
-		return properties, err
-	}
-	if properties, err = entity.TgChatEntityBase.CleanProperties(properties); err != nil {
-		return
-	}
-	//if properties, err = gaedb.CleanProperties(properties, map[string]gaedb.IsOkToRemove{
-	//	"TgChatInstanceID": gaedb.IsEmptyString,
-	//}); err != nil {
-	//	return
-	//}
-	return
-}
+//func (entity *ChatEntity) Load(ps []datastore.Property) error {
+//	return datastore.LoadStruct(entity, ps)
+//}
+//
+//func (entity *ChatEntity) Save() (properties []datastore.Property, err error) {
+//	if properties, err = datastore.SaveStruct(entity); err != nil {
+//		return properties, err
+//	}
+//	if properties, err = entity.TgChatData.CleanProperties(properties); err != nil {
+//		return
+//	}
+//	//if properties, err = gaedb.CleanProperties(properties, map[string]gaedb.IsOkToRemove{
+//	//	"TgChatInstanceID": gaedb.IsEmptyString,
+//	//}); err != nil {
+//	//	return
+//	//}
+//	return
+//}

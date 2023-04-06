@@ -4,6 +4,7 @@ import (
 	//"errors"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
+	"github.com/bots-go-framework/bots-fw-telegram/store"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/dal-go/dalgo/dal"
 	//"github.com/strongo/log"
@@ -52,7 +53,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 		if chatID == 0 {
 			return
 		}
-		tgChatEntity := twhc.ChatEntity().(TgChatEntity)
+		tgChatEntity := twhc.ChatEntity().(store.TgChatEntity)
 		if tgChatEntity.GetTgChatInstanceID() != chatInstanceID {
 			tgChatEntity.SetTgChatInstanceID(chatInstanceID)
 			//if err = twhc.SaveBotChat(c, twhc.GetBotCode(), twhc.MustBotChatID(), tgChatEntity.(botsfw.BotChat)); err != nil {
@@ -60,7 +61,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 			//}
 		}
 
-		var chatInstance ChatInstance
+		var chatInstance store.ChatInstance
 		preferredLanguage := tgChatEntity.GetPreferredLanguage()
 		if DAL.DB == nil {
 			panic("telegram.DAL.DB is nil")
@@ -229,14 +230,14 @@ func (twhc *tgWebhookContext) GetAppUser() (botsfw.BotAppUser, error) {
 
 func (twhc *tgWebhookContext) IsNewerThen(chatEntity botsfw.BotChat) bool {
 	return true
-	//if telegramChat, ok := whc.ChatEntity().(*TgChatEntityBase); ok && telegramChat != nil {
+	//if telegramChat, ok := whc.ChatEntity().(*TgChatData); ok && telegramChat != nil {
 	//	return whc.Input().whi.update.UpdateID > telegramChat.LastProcessedUpdateID
 	//}
 	//return false
 }
 
 func (twhc *tgWebhookContext) NewChatEntity() botsfw.BotChat {
-	return new(TgChatEntityBase)
+	return new(store.TgChatData)
 }
 
 //func (twhc *tgWebhookContext) getTelegramSenderID() int {
@@ -271,11 +272,11 @@ func (twhc *tgWebhookContext) NewTgMessage(text string) tgbotapi.MessageConfig {
 
 func (twhc *tgWebhookContext) UpdateLastProcessed(chatEntity botsfw.BotChat) error {
 	return nil
-	//if telegramChat, ok := chatEntity.(*TgChatEntityBase); ok {
+	//if telegramChat, ok := chatEntity.(*TgChatData); ok {
 	//	telegramChat.LastProcessedUpdateID = tc.whi.update.UpdateID
 	//	return nil
 	//}
-	//return fmt.Errorf("Expected *TgChatEntityBase, got: %T", chatEntity)
+	//return fmt.Errorf("Expected *TgChatData, got: %T", chatEntity)
 }
 
 func (twhc *tgWebhookContext) getLocalAndChatIDByChatInstance(c context.Context) (locale, chatID string, err error) {

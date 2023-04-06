@@ -1,4 +1,4 @@
-package telegram
+package store
 
 import (
 	"github.com/dal-go/dalgo/dal"

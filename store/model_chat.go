@@ -1,18 +1,13 @@
-package telegram
+package store
 
 import (
 	"fmt"
 	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/dal-go/dalgo/dal"
 	"github.com/dal-go/dalgo/record"
 	"github.com/strongo/app/user"
-	"google.golang.org/appengine/datastore"
 	"strconv"
 	"time"
-)
-
-const (
-	// ChatKind is kind name of Telegram chat Data
-	ChatKind = "TgChat"
 )
 
 // TgChatEntity is Telegram chat Data interface
@@ -22,46 +17,47 @@ type TgChatEntity interface {
 	GetPreferredLanguage() string
 }
 
-// TgChatBase holds base properties of Telegram chat Data
-type TgChatBase struct {
+// TgChatRecord holds base properties of Telegram chat Data
+type TgChatRecord struct { // TODO: Do we need this struct at all?
 	record.WithID[string]
-	//db.StringID
+	//Data *TgChatData
 }
 
 // SetID sets ID
-func (tgChat *TgChatBase) SetID(tgBotID string, tgChatID int64) {
-	tgChat.ID = tgBotID + ":" + strconv.FormatInt(tgChatID, 10) // TODO: Should we migrated to format "id@bot"?
+func (v *TgChatRecord) SetID(tgBotID string, tgChatID int64) {
+	v.ID = tgBotID + ":" + strconv.FormatInt(tgChatID, 10) // TODO: Should we migrated to format "id@bot"?
+	v.Key = dal.NewKeyWithID(TgChatCollection, v.ID)
 }
 
-// TgChatEntityBase holds base properties of Telegram chat Data
-type TgChatEntityBase struct {
+// TgChatData holds base properties of Telegram chat Data
+type TgChatData struct {
 	botsfw.BotChatEntity
-	TelegramUserID        int64   `datastore:",noindex,omitempty"`
-	TelegramUserIDs       []int64 `datastore:",noindex"` // For groups
-	LastProcessedUpdateID int     `datastore:",noindex,omitempty"`
-	TgChatInstanceID      string  `datastore:",noindex,omitempty"` // Do index
+	TelegramUserID        int64   `datastore:",noindex,omitempty" firestore:",noindex,omitempty"`
+	TelegramUserIDs       []int64 `datastore:",noindex" firestore:",noindex"` // For groups
+	LastProcessedUpdateID int     `datastore:",noindex,omitempty" firestore:",noindex,omitempty"`
+	TgChatInstanceID      string  // Do index
 }
 
 // SetTgChatInstanceID is what it is
-func (entity *TgChatEntityBase) SetTgChatInstanceID(v string) {
-	entity.TgChatInstanceID = v
+func (data *TgChatData) SetTgChatInstanceID(v string) {
+	data.TgChatInstanceID = v
 }
 
 // GetTgChatInstanceID is what it is
-func (entity *TgChatEntityBase) GetTgChatInstanceID() string {
-	return entity.TgChatInstanceID
+func (data *TgChatData) GetTgChatInstanceID() string {
+	return data.TgChatInstanceID
 }
 
 // GetPreferredLanguage returns preferred language for the chat
-func (entity *TgChatEntityBase) GetPreferredLanguage() string {
-	return entity.PreferredLanguage
+func (data *TgChatData) GetPreferredLanguage() string {
+	return data.PreferredLanguage
 }
 
-var _ botsfw.BotChat = (*TgChatEntityBase)(nil)
+var _ botsfw.BotChat = (*TgChatData)(nil)
 
 // NewTelegramChatEntity create new telegram chat Data
-func NewTelegramChatEntity() *TgChatEntityBase {
-	return &TgChatEntityBase{
+func NewTelegramChatEntity() *TgChatData {
+	return &TgChatData{
 		BotChatEntity: botsfw.BotChatEntity{
 			BotEntity: botsfw.BotEntity{OwnedByUserWithIntID: user.NewOwnedByUserWithIntID(0, time.Now())},
 		},
@@ -69,81 +65,81 @@ func NewTelegramChatEntity() *TgChatEntityBase {
 }
 
 // SetAppUserIntID sets app user int ID
-func (entity *TgChatEntityBase) SetAppUserIntID(id int64) {
-	if entity.IsGroup && id != 0 {
-		panic("TgChatEntityBase.IsGroup && id != 0")
+func (data *TgChatData) SetAppUserIntID(id int64) {
+	if data.IsGroup && id != 0 {
+		panic("TgChatData.IsGroup && id != 0")
 	}
-	entity.AppUserIntID = id
+	data.AppUserIntID = id
 }
 
 // SetBotUserID sets bot user int ID
-func (entity *TgChatEntityBase) SetBotUserID(id interface{}) {
+func (data *TgChatData) SetBotUserID(id interface{}) {
 	switch id := id.(type) {
 	case string:
 		var err error
-		entity.TelegramUserID, err = strconv.ParseInt(id, 10, 64)
+		data.TelegramUserID, err = strconv.ParseInt(id, 10, 64)
 		if err != nil {
 			panic(err.Error())
 		}
 	case int:
-		entity.TelegramUserID = int64(id)
+		data.TelegramUserID = int64(id)
 	case int64:
-		entity.TelegramUserID = id
+		data.TelegramUserID = id
 	default:
 		panic(fmt.Sprintf("Expected string, got: %T=%v", id, id))
 	}
 }
 
 // Load loads Data from datastore
-func (entity *TgChatEntityBase) Load(ps []datastore.Property) error {
-	return datastore.LoadStruct(entity, ps)
-}
-
-// Save saves Data to datastore
-func (entity *TgChatEntityBase) Save() (properties []datastore.Property, err error) {
-	if properties, err = datastore.SaveStruct(entity); err != nil {
-		return
-	}
-	if properties, err = entity.CleanProperties(properties); err != nil {
-		return
-	}
-	return
-}
-
-// CleanProperties cleans properties
-func (entity *TgChatEntityBase) CleanProperties(properties []datastore.Property) ([]datastore.Property, error) {
-	if entity.IsGroup && entity.AppUserIntID != 0 {
-		for _, userID := range entity.AppUserIntIDs {
-			if userID == entity.AppUserIntID {
-				goto found
-			}
-		}
-		entity.AppUserIntIDs = append(entity.AppUserIntIDs, entity.AppUserIntID)
-		entity.AppUserIntID = 0
-	found:
-	}
-
-	for i, userID := range entity.AppUserIntIDs {
-		if userID == 0 {
-			panic(fmt.Sprintf("*TgChatEntityBase.AppUserIntIDs[%d] == 0", i))
-		}
-	}
-
-	var err error
-	//if properties, err = gaedb.CleanProperties(properties, map[string]gaedb.IsOkToRemove{
-	//	"AppUserIntID":          gaedb.IsZeroInt,
-	//	"AccessGranted":         gaedb.IsFalse,
-	//	"AwaitingReplyTo":       gaedb.IsEmptyString,
-	//	"DtForbidden":           gaedb.IsZeroTime,
-	//	"DtForbiddenLast":       gaedb.IsZeroTime,
-	//	"GaClientID":            gaedb.IsEmptyByteArray,
-	//	"TelegramUserID":        gaedb.IsZeroInt,
-	//	"LastProcessedUpdateID": gaedb.IsZeroInt,
-	//	"PreferredLanguage":     gaedb.IsEmptyString,
-	//	"Title":                 gaedb.IsEmptyString, // TODO: Is it obsolete?
-	//	"Type":                  gaedb.IsEmptyString, // TODO: Is it obsolete?
-	//}); err != nil {
-	//	return properties, err
-	//}
-	return properties, err
-}
+//func (data *TgChatData) Load(ps []datastore.Property) error {
+//	return datastore.LoadStruct(data, ps)
+//}
+//
+//// Save saves Data to datastore
+//func (data *TgChatData) Save() (properties []datastore.Property, err error) {
+//	if properties, err = datastore.SaveStruct(data); err != nil {
+//		return
+//	}
+//	if properties, err = data.CleanProperties(properties); err != nil {
+//		return
+//	}
+//	return
+//}
+//
+//// CleanProperties cleans properties
+//func (data *TgChatData) CleanProperties(properties []datastore.Property) ([]datastore.Property, error) {
+//	if data.IsGroup && data.AppUserIntID != 0 {
+//		for _, userID := range data.AppUserIntIDs {
+//			if userID == data.AppUserIntID {
+//				goto found
+//			}
+//		}
+//		data.AppUserIntIDs = append(data.AppUserIntIDs, data.AppUserIntID)
+//		data.AppUserIntID = 0
+//	found:
+//	}
+//
+//	for i, userID := range data.AppUserIntIDs {
+//		if userID == 0 {
+//			panic(fmt.Sprintf("*TgChatData.AppUserIntIDs[%d] == 0", i))
+//		}
+//	}
+//
+//	var err error
+//	//if properties, err = gaedb.CleanProperties(properties, map[string]gaedb.IsOkToRemove{
+//	//	"AppUserIntID":          gaedb.IsZeroInt,
+//	//	"AccessGranted":         gaedb.IsFalse,
+//	//	"AwaitingReplyTo":       gaedb.IsEmptyString,
+//	//	"DtForbidden":           gaedb.IsZeroTime,
+//	//	"DtForbiddenLast":       gaedb.IsZeroTime,
+//	//	"GaClientID":            gaedb.IsEmptyByteArray,
+//	//	"TelegramUserID":        gaedb.IsZeroInt,
+//	//	"LastProcessedUpdateID": gaedb.IsZeroInt,
+//	//	"PreferredLanguage":     gaedb.IsEmptyString,
+//	//	"Title":                 gaedb.IsEmptyString, // TODO: Is it obsolete?
+//	//	"Type":                  gaedb.IsEmptyString, // TODO: Is it obsolete?
+//	//}); err != nil {
+//	//	return properties, err
+//	//}
+//	return properties, err
+//}

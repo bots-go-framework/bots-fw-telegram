@@ -1,34 +1,28 @@
-package telegram
+package store
 
 import (
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/strongo/app/user"
-	"google.golang.org/appengine/datastore"
 	"strconv"
 )
 
-const (
-	// TgUserKind is kind name for Telegram user Data
-	TgUserKind = "TgUser"
-)
-
-// TgUserEntity is Telegram user DB Data (without ID)
-type TgUserEntity struct {
+// TgBotUserData is Telegram user DB Data (without ID)
+type TgBotUserData struct {
 	botsfw.BotUserEntity
 	//TgChatID int64
 }
 
-func (entity *TgUserEntity) GetAppUserStrID() string {
+func (entity *TgBotUserData) GetAppUserStrID() string {
 	return strconv.FormatInt(entity.BotUserEntity.GetAppUserIntID(), 10)
 }
 
-var _ botsfw.BotUser = (*TgUserEntity)(nil)
-var _ user.AccountEntity = (*TgUserEntity)(nil)
+var _ botsfw.BotUser = (*TgBotUserData)(nil)
+var _ user.AccountEntity = (*TgBotUserData)(nil)
 
 // TgUser is Telegram user DB record (with ID)
 type TgUser struct {
 	ID int64
-	TgUserEntity
+	TgBotUserData
 }
 
 // GetEmail returns empty string
@@ -37,7 +31,7 @@ func (TgUser) GetEmail() string {
 }
 
 // Name returns full display name cmbined from (first+last, nick) name
-func (entity *TgUserEntity) Name() string {
+func (entity *TgBotUserData) Name() string {
 	if entity.FirstName == "" && entity.LastName == "" {
 		return "@" + entity.UserName
 	}
@@ -54,7 +48,7 @@ func (entity *TgUserEntity) Name() string {
 }
 
 // GetNames return user names
-func (entity *TgUserEntity) GetNames() user.Names {
+func (entity *TgBotUserData) GetNames() user.Names {
 	return user.Names{
 		FirstName: entity.FirstName,
 		LastName:  entity.LastName,
@@ -63,29 +57,29 @@ func (entity *TgUserEntity) GetNames() user.Names {
 }
 
 // IsEmailConfirmed returns false
-func (entity *TgUserEntity) IsEmailConfirmed() bool {
+func (entity *TgBotUserData) IsEmailConfirmed() bool {
 	return false
 }
 
-// Load is for datastore
-func (entity *TgUserEntity) Load(ps []datastore.Property) error {
-	return datastore.LoadStruct(entity, ps)
-}
-
-// Save is for datastore
-func (entity *TgUserEntity) Save() (properties []datastore.Property, err error) {
-	if properties, err = datastore.SaveStruct(entity); err != nil {
-		return properties, err
-	}
-
-	//if properties, err = gaedb.CleanProperties(properties, map[string]gaedb.IsOkToRemove{
-	//	"AccessGranted": gaedb.IsFalse,
-	//	"FirstName":     gaedb.IsEmptyString,
-	//	"LastName":      gaedb.IsEmptyString,
-	//	"UserName":      gaedb.IsEmptyString,
-	//}); err != nil {
-	//	return
-	//}
-
-	return
-}
+//// Load is for datastore
+//func (entity *TgBotUserData) Load(ps []datastore.Property) error {
+//	return datastore.LoadStruct(entity, ps)
+//}
+//
+//// Save is for datastore
+//func (entity *TgBotUserData) Save() (properties []datastore.Property, err error) {
+//	if properties, err = datastore.SaveStruct(entity); err != nil {
+//		return properties, err
+//	}
+//
+//	//if properties, err = gaedb.CleanProperties(properties, map[string]gaedb.IsOkToRemove{
+//	//	"AccessGranted": gaedb.IsFalse,
+//	//	"FirstName":     gaedb.IsEmptyString,
+//	//	"LastName":      gaedb.IsEmptyString,
+//	//	"UserName":      gaedb.IsEmptyString,
+//	//}); err != nil {
+//	//	return
+//	//}
+//
+//	return
+//}
