@@ -19,9 +19,9 @@ func NewChat(id string, data TgChatData) Chat {
 		panic("data is nil")
 	}
 	key := dal.NewKeyWithID(TgChatCollection, id)
-	if data == nil {
-		data = new(TgChatBase)
-	}
+	//if data == nil {
+	//	data = new(TgChatBase)
+	//}
 	return Chat{
 		WithID: record.NewWithID(id, key, data),
 		Data:   data,
