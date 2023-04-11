@@ -17,7 +17,7 @@ func (entity *TgBotUserData) GetAppUserStrID() string {
 }
 
 var _ botsfw.BotUser = (*TgBotUserData)(nil)
-var _ user.AccountEntity = (*TgBotUserData)(nil)
+var _ user.AccountData = (*TgBotUserData)(nil)
 
 // TgUser is Telegram user DB record (with ID)
 type TgUser struct {
