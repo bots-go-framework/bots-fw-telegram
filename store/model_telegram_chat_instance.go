@@ -5,7 +5,7 @@ import (
 	"github.com/dal-go/dalgo/record"
 )
 
-// ChatInstanceKind is kind name of TgChatInstance Data
+// ChatInstanceKind is kind name of TgChatInstance TgChatData
 const ChatInstanceKind = "TgChatInstance"
 
 // ChatInstanceEntityBase is base struct
@@ -21,7 +21,6 @@ func NewTgChatInstanceKey(id string) *dal.Key {
 // ChatInstance is base struct
 type ChatInstance struct {
 	record.WithID[string]
-	dal.Record
 	Data ChatInstanceEntity
 }
 
@@ -56,7 +55,7 @@ func (record *ChatInstance) SetEntity(entity interface{}) {
 //	record.ID = id
 //}
 
-// ChatInstanceEntity describes chat instance Data interface
+// ChatInstanceEntity describes chat instance TgChatData interface
 type ChatInstanceEntity interface {
 	GetTgChatID() int64
 	GetPreferredLanguage() string

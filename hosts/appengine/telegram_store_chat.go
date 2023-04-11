@@ -21,9 +21,9 @@ package gaehost
 //func NewGaeTelegramChatStore(newTelegramChatData func() botsfw.BotChat) botsfw.BotChatStore {
 //	{ // Validate newTelegramChatData
 //		//tgChatData := newTelegramChatData()
-//		//if _, ok := tgChatData.(*telegram.TgChatData); !ok {
+//		//if _, ok := tgChatData.(*telegram.TgChatBase); !ok {
 //		//	v := reflect.ValueOf(tgChatData)
-//		//	if v.Type() != reflect.TypeOf(telegram.TgChatData{}) {
+//		//	if v.Type() != reflect.TypeOf(telegram.TgChatBase{}) {
 //		//		panic(fmt.Sprintf("Expected *telegram.TelegramChat but received %T", entity))
 //		//	}
 //		//}
@@ -42,7 +42,7 @@ package gaehost
 //func MarkTelegramChatAsForbidden(c context.Context, botID string, tgChatID int64, dtForbidden time.Time) error {
 //	//return nds.RunInTransaction(c, func(c context.Context) (err error) {
 //	//	key := datastore.NewKey(c, telegram.TgChatCollection, botsfw.NewChatID(botID, strconv.FormatInt(tgChatID, 10)), 0, nil)
-//	//	var chat telegram.TgChatData
+//	//	var chat telegram.TgChatBase
 //	//	if err = nds.Get(c, key, &chat); err != nil {
 //	//		return
 //	//	}

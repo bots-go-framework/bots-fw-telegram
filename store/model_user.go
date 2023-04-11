@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-// TgBotUserData is Telegram user DB Data (without ID)
+// TgBotUserData is Telegram user DB TgChatData (without ID)
 type TgBotUserData struct {
 	botsfw.BotUserEntity
 	//TgChatID int64

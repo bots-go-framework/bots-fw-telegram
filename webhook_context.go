@@ -230,14 +230,14 @@ func (twhc *tgWebhookContext) GetAppUser() (botsfw.BotAppUser, error) {
 
 func (twhc *tgWebhookContext) IsNewerThen(chatEntity botsfw.BotChat) bool {
 	return true
-	//if telegramChat, ok := whc.ChatEntity().(*TgChatData); ok && telegramChat != nil {
+	//if telegramChat, ok := whc.Data().(*TgChatBase); ok && telegramChat != nil {
 	//	return whc.Input().whi.update.UpdateID > telegramChat.LastProcessedUpdateID
 	//}
 	//return false
 }
 
 func (twhc *tgWebhookContext) NewChatEntity() botsfw.BotChat {
-	return new(store.TgChatData)
+	return new(store.TgChatBase)
 }
 
 //func (twhc *tgWebhookContext) getTelegramSenderID() int {
@@ -272,11 +272,11 @@ func (twhc *tgWebhookContext) NewTgMessage(text string) tgbotapi.MessageConfig {
 
 func (twhc *tgWebhookContext) UpdateLastProcessed(chatEntity botsfw.BotChat) error {
 	return nil
-	//if telegramChat, ok := chatEntity.(*TgChatData); ok {
+	//if telegramChat, ok := chatEntity.(*TgChatBase); ok {
 	//	telegramChat.LastProcessedUpdateID = tc.whi.update.UpdateID
 	//	return nil
 	//}
-	//return fmt.Errorf("Expected *TgChatData, got: %T", chatEntity)
+	//return fmt.Errorf("Expected *TgChatBase, got: %T", chatEntity)
 }
 
 func (twhc *tgWebhookContext) getLocalAndChatIDByChatInstance(c context.Context) (locale, chatID string, err error) {

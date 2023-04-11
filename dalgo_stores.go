@@ -15,7 +15,7 @@ func NewDalgoStores(db dalgo4botsfw.DbProvider) (botsfw.BotChatStore, botsfw.Bot
 
 func newDalgoBotChatStore(db dalgo4botsfw.DbProvider) botsfw.BotChatStore {
 	newChatData := func() botsfw.BotChat {
-		return new(store.TgChatData)
+		return new(store.TgChatBase)
 	}
 	return dalgo4botsfw.NewBotChatStore(store.TgChatCollection, db, newChatData)
 }

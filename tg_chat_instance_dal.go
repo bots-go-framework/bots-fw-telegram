@@ -43,8 +43,7 @@ func (tgChatInstanceDalgo) NewTelegramChatInstance(chatInstanceID string, chatID
 		PreferredLanguage: preferredLanguage,
 	}
 	return store.ChatInstance{
-		WithID: record.WithID[string]{ID: chatInstanceID},
-		Record: dal.NewRecordWithData(key, chatInstance),
+		WithID: record.NewWithID(chatInstanceID, key, chatInstance),
 		Data:   chatInstance,
 	}
 }

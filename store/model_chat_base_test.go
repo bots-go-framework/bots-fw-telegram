@@ -5,5 +5,5 @@ import (
 )
 
 func TestTelegramChat(t *testing.T) {
-	//var _ datastore.PropertyLoadSaver = (*TgChatData)(nil)
+	//var _ datastore.PropertyLoadSaver = (*TgChatBase)(nil)
 }
