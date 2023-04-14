@@ -14,7 +14,7 @@ require (
 	github.com/strongo/log v0.0.1
 )
 
-replace github.com/bots-go-framework/bots-fw => ../bots-fw
+//replace github.com/bots-go-framework/bots-fw => ../bots-fw
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
