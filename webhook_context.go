@@ -252,9 +252,9 @@ func (twhc *tgWebhookContext) NewTgMessage(text string) tgbotapi.MessageConfig {
 	//inputMessage := tc.InputMessage()
 	//if inputMessage != nil {
 	//ctx := tc.Context()
-	//Data := inputMessage.Chat()
+	//Data := inputMessage.TgChat()
 	//chatID := Data.GetID()
-	//log.Infof(ctx, "NewTgMessage(): tc.update.Message.Chat.ID: %v", chatID)
+	//log.Infof(ctx, "NewTgMessage(): tc.update.Message.TgChat.ID: %v", chatID)
 	botChatID, err := twhc.BotChatID()
 	if err != nil {
 		panic(err)

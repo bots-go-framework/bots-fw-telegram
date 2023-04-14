@@ -4,15 +4,17 @@ go 1.20
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.1.1
-	github.com/bots-go-framework/bots-fw v0.9.10
+	github.com/bots-go-framework/bots-fw v0.9.11
 	github.com/bots-go-framework/bots-fw-dalgo v0.0.5
-	github.com/dal-go/dalgo v0.2.5
+	github.com/dal-go/dalgo v0.2.6
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/stretchr/testify v1.8.2
 	github.com/strongo/app v0.0.5
 	github.com/strongo/log v0.0.1
 )
+
+replace github.com/bots-go-framework/bots-fw => ../bots-fw
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect

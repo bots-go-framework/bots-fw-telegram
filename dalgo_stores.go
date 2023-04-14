@@ -30,16 +30,16 @@ func newDalgoBotUserStore(db dalgo4botsfw.DbProvider) botsfw.BotUserStore {
 		if apiUser == nil {
 			return &store.TgBotUserData{}, nil
 		}
-		botEntity := botsfw.BotEntity{
-			OwnedByUserWithIntID: user.NewOwnedByUserWithIntID(0, time.Now()),
-		}
-		botUserEntity := botsfw.BotUserEntity{
-			BotEntity: botEntity,
-			FirstName: apiUser.GetFirstName(),
-			LastName:  apiUser.GetLastName(),
-			UserName:  apiUser.GetUserName(),
-		}
-		return &store.TgBotUserData{BotUserEntity: botUserEntity}, nil
+		return &store.TgBotUserData{
+			BotUserData: botsfw.BotUserData{
+				BotEntity: botsfw.BotEntity{
+					OwnedByUserWithIntID: user.NewOwnedByUserWithIntID(0, time.Now()),
+				},
+				FirstName: apiUser.GetFirstName(),
+				LastName:  apiUser.GetLastName(),
+				UserName:  apiUser.GetUserName(),
+			},
+		}, nil
 	}
 
 	return dalgo4botsfw.NewBotUserStore(store.BotUserCollection, db, newUserData, createBotUser)

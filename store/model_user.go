@@ -2,18 +2,19 @@ package store
 
 import (
 	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/dal-go/dalgo/record"
 	"github.com/strongo/app/user"
 	"strconv"
 )
 
 // TgBotUserData is Telegram user DB TgChatData (without ID)
 type TgBotUserData struct {
-	botsfw.BotUserEntity
+	botsfw.BotUserData
 	//TgChatID int64
 }
 
 func (entity *TgBotUserData) GetAppUserStrID() string {
-	return strconv.FormatInt(entity.BotUserEntity.GetAppUserIntID(), 10)
+	return strconv.FormatInt(entity.BotUserData.GetAppUserIntID(), 10)
 }
 
 var _ botsfw.BotUser = (*TgBotUserData)(nil)
@@ -21,8 +22,8 @@ var _ user.AccountData = (*TgBotUserData)(nil)
 
 // TgUser is Telegram user DB record (with ID)
 type TgUser struct {
-	ID int64
-	TgBotUserData
+	record.WithID[int64]
+	Data *TgBotUserData
 }
 
 // GetEmail returns empty string

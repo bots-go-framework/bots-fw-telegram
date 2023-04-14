@@ -5,16 +5,14 @@ import (
 	"github.com/dal-go/dalgo/record"
 )
 
-// Chat is a Telegram chat record with a strongly typed ID
+// TgChat is a Telegram chat record with a strongly typed ID
 // It can be used on its own or as a base for a record with fields specific to a bot
-type Chat struct {
+type TgChat struct {
 	record.WithID[string]
 	Data TgChatData
 }
 
-//var _ dal.EntityHolder = (*Chat)(nil)
-
-func NewChat(id string, data TgChatData) Chat {
+func NewTgChat(id string, data TgChatData) TgChat {
 	if data == nil {
 		panic("data is nil")
 	}
@@ -22,7 +20,7 @@ func NewChat(id string, data TgChatData) Chat {
 	//if data == nil {
 	//	data = new(TgChatBase)
 	//}
-	return Chat{
+	return TgChat{
 		WithID: record.NewWithID(id, key, data),
 		Data:   data,
 	}
@@ -32,22 +30,3 @@ func NewChat(id string, data TgChatData) Chat {
 type TgChatData interface {
 	BaseChatData() *TgChatBase
 }
-
-//func (entity *Data) Load(ps []datastore.Property) error {
-//	return datastore.LoadStruct(entity, ps)
-//}
-//
-//func (entity *Data) Save() (properties []datastore.Property, err error) {
-//	if properties, err = datastore.SaveStruct(entity); err != nil {
-//		return properties, err
-//	}
-//	if properties, err = entity.TgChatBase.CleanProperties(properties); err != nil {
-//		return
-//	}
-//	//if properties, err = gaedb.CleanProperties(properties, map[string]gaedb.IsOkToRemove{
-//	//	"TgChatInstanceID": gaedb.IsEmptyString,
-//	//}); err != nil {
-//	//	return
-//	//}
-//	return
-//}

@@ -33,7 +33,7 @@ var _ TgChatData = (*TgChatBase)(nil)
 
 // TgChatBase holds base properties of Telegram chat TgChatData
 type TgChatBase struct {
-	botsfw.BotChatEntity
+	botsfw.BotChatData
 	UserGroupID           string  `datastore:",index,omitempty" firestore:",omitempty" dalgo:",index,omitempty"` // Do index
 	TelegramUserID        int64   `datastore:",noindex,omitempty" firestore:",noindex,omitempty"`
 	TelegramUserIDs       []int64 `datastore:",noindex" firestore:",noindex"` // For groups
@@ -65,7 +65,7 @@ var _ botsfw.BotChat = (*TgChatBase)(nil)
 // NewTelegramChatEntity create new telegram chat TgChatData
 func NewTelegramChatEntity() *TgChatBase {
 	return &TgChatBase{
-		BotChatEntity: botsfw.BotChatEntity{
+		BotChatData: botsfw.BotChatData{
 			BotEntity: botsfw.BotEntity{OwnedByUserWithIntID: user.NewOwnedByUserWithIntID(0, time.Now())},
 		},
 	}
