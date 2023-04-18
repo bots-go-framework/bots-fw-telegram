@@ -63,18 +63,22 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 
 		var chatInstance store.ChatInstance
 		preferredLanguage := tgChatEntity.GetPreferredLanguage()
-		if DAL.DB == nil {
-			panic("telegram.DAL.DB is nil")
+		if getDatabase == nil {
+			panic("telegram.getDatabase is nil")
 		}
-		if err = DAL.DB.RunReadwriteTransaction(c, func(c context.Context, tx dal.ReadwriteTransaction) (err error) {
+		var db dal.Database
+		if db, err = getDatabase(c); err != nil {
+			return
+		}
+		if err = db.RunReadwriteTransaction(c, func(c context.Context, tx dal.ReadwriteTransaction) (err error) {
 			log.Debugf(c, "CreateOrUpdateTgChatInstance() => checking tg chat instance within tx")
 			changed := false
-			if chatInstance, err = DAL.TgChatInstance.GetTelegramChatInstanceByID(c, tx, chatInstanceID); err != nil {
+			if chatInstance, err = tgChatInstanceDal.GetTelegramChatInstanceByID(c, tx, chatInstanceID); err != nil {
 				if !dal.IsNotFound(err) {
 					return
 				}
 				log.Debugf(c, "CreateOrUpdateTgChatInstance() => new tg chat instance")
-				chatInstance = DAL.TgChatInstance.NewTelegramChatInstance(chatInstanceID, chatID, preferredLanguage)
+				chatInstance = tgChatInstanceDal.NewTelegramChatInstance(chatInstanceID, chatID, preferredLanguage)
 				changed = true
 			} else { // Update if needed
 				log.Debugf(c, "CreateOrUpdateTgChatInstance() => existing tg chat instance")
@@ -87,7 +91,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 			}
 			if changed {
 				log.Debugf(c, "Saving tg chat instance...")
-				if err = DAL.TgChatInstance.SaveTelegramChatInstance(c, chatInstance); err != nil {
+				if err = tgChatInstanceDal.SaveTelegramChatInstance(c, chatInstance); err != nil {
 					return
 				}
 			}
@@ -151,7 +155,7 @@ func newTelegramWebhookContext(
 			var isGroupChat bool
 			err := twhc.RunReadwriteTransaction(c, func(ctx context.Context, tx dal.ReadwriteTransaction) error {
 
-				if chatInstance, err := DAL.TgChatInstance.GetTelegramChatInstanceByID(c, tx, callbackQuery.ChatInstance); err != nil {
+				if chatInstance, err := tgChatInstanceDal.GetTelegramChatInstanceByID(c, tx, callbackQuery.ChatInstance); err != nil {
 					return err
 				} else if chatInstance.Data != nil {
 					isGroupChat = chatInstance.Data.GetTgChatID() < 0
@@ -184,7 +188,7 @@ func newTelegramWebhookContext(
 	return twhc
 }
 
-func (twhc *tgWebhookContext) Close(c context.Context) error {
+func (twhc *tgWebhookContext) Close(context.Context) error {
 	return nil
 }
 
@@ -212,7 +216,7 @@ func (twhc *tgWebhookContext) Responder() botsfw.WebhookResponder {
 //	return int64(tc.user.ID)
 //}
 
-func (twhc *tgWebhookContext) Init(w http.ResponseWriter, r *http.Request) error {
+func (twhc *tgWebhookContext) Init(http.ResponseWriter, *http.Request) error {
 	return nil
 }
 
@@ -228,7 +232,7 @@ func (twhc *tgWebhookContext) GetAppUser() (botsfw.BotAppUser, error) {
 	return appUser, err
 }
 
-func (twhc *tgWebhookContext) IsNewerThen(chatEntity botsfw.BotChat) bool {
+func (twhc *tgWebhookContext) IsNewerThen( /*chatEntity*/ botsfw.BotChat) bool {
 	return true
 	//if telegramChat, ok := whc.Data().(*TgChatBase); ok && telegramChat != nil {
 	//	return whc.Input().whi.update.UpdateID > telegramChat.LastProcessedUpdateID
@@ -270,7 +274,7 @@ func (twhc *tgWebhookContext) NewTgMessage(text string) tgbotapi.MessageConfig {
 	return tgbotapi.NewMessage(botChatIntID, text)
 }
 
-func (twhc *tgWebhookContext) UpdateLastProcessed(chatEntity botsfw.BotChat) error {
+func (twhc *tgWebhookContext) UpdateLastProcessed( /*chatEntity*/ botsfw.BotChat) error {
 	return nil
 	//if telegramChat, ok := chatEntity.(*TgChatBase); ok {
 	//	telegramChat.LastProcessedUpdateID = tc.whi.update.UpdateID
@@ -286,7 +290,7 @@ func (twhc *tgWebhookContext) getLocalAndChatIDByChatInstance(c context.Context)
 			if cbq.Message != nil && cbq.Message.Chat != nil && cbq.Message.Chat.ID != 0 {
 				log.Errorf(c, "getLocalAndChatIDByChatInstance() => should not be here")
 			} else {
-				if chatInstance, err := DAL.TgChatInstance.GetTelegramChatInstanceByID(c, nil, cbq.ChatInstance); err != nil {
+				if chatInstance, err := tgChatInstanceDal.GetTelegramChatInstanceByID(c, nil, cbq.ChatInstance); err != nil {
 					if !dal.IsNotFound(err) {
 						return "", "", err
 					}

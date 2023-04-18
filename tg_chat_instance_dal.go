@@ -49,5 +49,5 @@ func (tgChatInstanceDalgo) NewTelegramChatInstance(chatInstanceID string, chatID
 }
 
 func init() {
-	DAL.TgChatInstance = tgChatInstanceDalgo{}
+	tgChatInstanceDal = tgChatInstanceDalgo{}
 }
