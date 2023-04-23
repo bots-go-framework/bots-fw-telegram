@@ -6,9 +6,7 @@ import (
 )
 
 // InlineBotMessage is wrapper for Telegram bot message
-type InlineBotMessage struct {
-	*tgbotapi.InlineConfig
-}
+type InlineBotMessage tgbotapi.InlineConfig
 
 // BotMessageType returns BotMessageTypeInlineResults
 func (InlineBotMessage) BotMessageType() botsfw.BotMessageType {

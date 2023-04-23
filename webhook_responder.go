@@ -62,7 +62,7 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 		log.Debugf(c, "m.BotMessage != nil")
 		switch m.BotMessage.BotMessageType() {
 		case botsfw.BotMessageTypeInlineResults:
-			chattable = m.BotMessage.(InlineBotMessage).InlineConfig
+			chattable = tgbotapi.InlineConfig(m.BotMessage.(InlineBotMessage))
 		case botsfw.BotMessageTypeCallbackAnswer:
 			callbackAnswer := tgbotapi.AnswerCallbackQueryConfig(m.BotMessage.(CallbackAnswer))
 			if callbackAnswer.CallbackQueryID == "" && tgUpdate.CallbackQuery != nil {
