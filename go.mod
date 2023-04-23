@@ -11,7 +11,7 @@ require (
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/stretchr/testify v1.8.2
 	github.com/strongo/app v0.0.6
-	github.com/strongo/log v0.0.1
+	github.com/strongo/log v0.0.2
 )
 
 //replace github.com/bots-go-framework/bots-fw => ../bots-fw
