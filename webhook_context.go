@@ -252,7 +252,7 @@ func (twhc *tgWebhookContext) NewChatEntity() botsfw.BotChat {
 //	panic("int expected")
 //}
 
-func (twhc *tgWebhookContext) NewTgMessage(text string) tgbotapi.MessageConfig {
+func (twhc *tgWebhookContext) NewTgMessage(text string) *tgbotapi.MessageConfig {
 	//inputMessage := tc.InputMessage()
 	//if inputMessage != nil {
 	//ctx := tc.Context()

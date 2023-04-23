@@ -118,7 +118,7 @@ func (h tgWebhookHandler) SetWebhook(c context.Context, w http.ResponseWriter, r
 		"chosen_inline_result",
 		"callback_query",
 	}
-	if response, err := bot.SetWebhook(webhookConfig); err != nil {
+	if response, err := bot.SetWebhook(*webhookConfig); err != nil {
 		log.Errorf(c, "%v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err := w.Write([]byte(err.Error())); err != nil {
