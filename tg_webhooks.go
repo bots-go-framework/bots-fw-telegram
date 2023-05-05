@@ -12,7 +12,6 @@ import (
 	//"github.com/kylelemons/go-gypsy/yaml"
 	//"bytes"
 	"bytes"
-	"github.com/julienschmidt/httprouter"
 	"github.com/pquerna/ffjson/ffjson"
 	"strings"
 	"time"
@@ -52,7 +51,7 @@ func (h tgWebhookHandler) HandleUnmatched(whc botsfw.WebhookContext) (m botsfw.M
 	return
 }
 
-func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host botsfw.BotHost, router *httprouter.Router, pathPrefix string) {
+func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host botsfw.BotHost, router botsfw.HttpRouter, pathPrefix string) {
 	if router == nil {
 		panic("router == nil")
 	}
@@ -60,11 +59,11 @@ func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host
 
 	pathPrefix = strings.TrimSuffix(pathPrefix, "/")
 	//router.POST(pathPrefix+"/telegram/webhook", h.HandleWebhookRequest) // TODO: Remove obsolete
-	router.POST(pathPrefix+"/tg/hook", h.HandleWebhookRequest)
-	router.GET(pathPrefix+"/tg/set-webhook", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	router.Handle("POST", pathPrefix+"/tg/hook", h.HandleWebhookRequest)
+	router.Handle("GET", pathPrefix+"/tg/set-webhook", func(w http.ResponseWriter, r *http.Request) {
 		h.SetWebhook(h.Context(r), w, r)
 	})
-	router.GET(pathPrefix+"/tg/test", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	router.Handle("GET", pathPrefix+"/tg/test", func(w http.ResponseWriter, r *http.Request) {
 		log.Debugf(h.Context(r), "Test request")
 		if _, err := w.Write([]byte("Test response")); err != nil {
 			log.Errorf(r.Context(), "Failed to write test response: %v", err)
@@ -72,7 +71,7 @@ func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host
 	})
 }
 
-func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
