@@ -2,6 +2,8 @@ github.com/bots-go-framework/bots-api-telegram v0.2.0 h1:E8mybJ1lN+vxlf+2q7I8XzL
 github.com/bots-go-framework/bots-api-telegram v0.2.0/go.mod h1:i3cekCblDUOaqwv9qo9yUPMcvfXlHwTL6kOrjqiOavE=
 github.com/bots-go-framework/bots-api-telegram v0.2.1 h1:GCi3aDoJCkJk6DK8CsjkuytuR1/zzR/lyPWDEqu9U0A=
 github.com/bots-go-framework/bots-api-telegram v0.2.1/go.mod h1:i3cekCblDUOaqwv9qo9yUPMcvfXlHwTL6kOrjqiOavE=
+github.com/bots-go-framework/bots-api-telegram v0.2.2 h1:m//voAgBzqR4eRTgAqVkH2rQ6tdsuei6Hoxp7qXEXDs=
+github.com/bots-go-framework/bots-api-telegram v0.2.2/go.mod h1:i3cekCblDUOaqwv9qo9yUPMcvfXlHwTL6kOrjqiOavE=
 github.com/bots-go-framework/bots-fw v0.9.12 h1:1DS+KuBeSkfDvxIuXptb3lobL6JRjpufDj7ppQyGxqs=
 github.com/bots-go-framework/bots-fw v0.9.12/go.mod h1:ztSulaclOOCAChPPkzZmeywYLnDQ2RTfOpmvH0FhCy0=
 github.com/bots-go-framework/bots-fw v0.10.0 h1:aJBOrkqK/7dwhXnVVVbXd12YqYCZWavdOzmurC7Gk0o=
