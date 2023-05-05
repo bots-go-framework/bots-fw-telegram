@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.2.2
-	github.com/bots-go-framework/bots-fw v0.12.0
+	github.com/bots-go-framework/bots-fw v0.13.0
 	github.com/bots-go-framework/bots-fw-dalgo v0.0.5
 	github.com/dal-go/dalgo v0.2.26
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
