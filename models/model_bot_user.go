@@ -1,20 +1,15 @@
-package store
+package models
 
 import (
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/dal-go/dalgo/record"
 	"github.com/strongo/app/user"
-	"strconv"
 )
 
 // TgBotUserData is Telegram user DB TgChatData (without ID)
 type TgBotUserData struct {
 	botsfw.BotUserData
 	//TgChatID int64
-}
-
-func (entity *TgBotUserData) GetAppUserStrID() string {
-	return strconv.FormatInt(entity.BotUserData.GetAppUserIntID(), 10)
 }
 
 var _ botsfw.BotUser = (*TgBotUserData)(nil)

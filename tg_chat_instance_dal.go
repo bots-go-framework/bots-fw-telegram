@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"context"
-	"github.com/bots-go-framework/bots-fw-telegram/store"
+	"github.com/bots-go-framework/bots-fw-telegram/models"
 	"github.com/dal-go/dalgo/dal"
 	"github.com/dal-go/dalgo/record"
 )
@@ -13,7 +13,7 @@ type tgChatInstanceDalgo struct {
 
 var _ TgChatInstanceDal = (*tgChatInstanceDalgo)(nil)
 
-func (tgChatInstanceDal tgChatInstanceDalgo) GetTelegramChatInstanceByID(c context.Context, tx dal.ReadTransaction, id string) (tgChatInstance store.ChatInstance, err error) {
+func (tgChatInstanceDal tgChatInstanceDalgo) GetTelegramChatInstanceByID(c context.Context, tx dal.ReadTransaction, id string) (tgChatInstance models.ChatInstance, err error) {
 	tgChatInstance = tgChatInstanceDal.NewTelegramChatInstance(id, 0, "")
 
 	var session dal.ReadSession
@@ -29,20 +29,20 @@ func (tgChatInstanceDal tgChatInstanceDalgo) GetTelegramChatInstanceByID(c conte
 	return
 }
 
-func (tgChatInstanceDal tgChatInstanceDalgo) SaveTelegramChatInstance(c context.Context, tgChatInstance store.ChatInstance) (err error) {
+func (tgChatInstanceDal tgChatInstanceDalgo) SaveTelegramChatInstance(c context.Context, tgChatInstance models.ChatInstance) (err error) {
 	err = tgChatInstanceDal.db.RunReadwriteTransaction(c, func(ctx context.Context, tx dal.ReadwriteTransaction) error {
 		return tx.Set(ctx, tgChatInstance.Record)
 	})
 	return
 }
 
-func (tgChatInstanceDalgo) NewTelegramChatInstance(chatInstanceID string, chatID int64, preferredLanguage string) (tgChatInstance store.ChatInstance) {
-	key := dal.NewKeyWithID(store.ChatInstanceKind, chatInstanceID)
-	var chatInstance store.ChatInstanceEntity = &store.ChatInstanceEntityBase{
+func (tgChatInstanceDalgo) NewTelegramChatInstance(chatInstanceID string, chatID int64, preferredLanguage string) (tgChatInstance models.ChatInstance) {
+	key := dal.NewKeyWithID(models.ChatInstanceKind, chatInstanceID)
+	var chatInstance models.ChatInstanceEntity = &models.ChatInstanceEntityBase{
 		TgChatID:          chatID,
 		PreferredLanguage: preferredLanguage,
 	}
-	return store.ChatInstance{
+	return models.ChatInstance{
 		WithID: record.NewWithID(chatInstanceID, key, chatInstance),
 		Data:   chatInstance,
 	}

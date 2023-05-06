@@ -4,7 +4,7 @@ import (
 	//"errors"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw-telegram/store"
+	"github.com/bots-go-framework/bots-fw-telegram/models"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/dal-go/dalgo/dal"
 	//"github.com/strongo/log"
@@ -53,7 +53,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 		if chatID == 0 {
 			return
 		}
-		tgChatEntity := twhc.ChatEntity().(store.TgChatEntity)
+		tgChatEntity := twhc.ChatEntity().(models.TgChatEntity)
 		if tgChatEntity.GetTgChatInstanceID() != chatInstanceID {
 			tgChatEntity.SetTgChatInstanceID(chatInstanceID)
 			//if err = twhc.SaveBotChat(c, twhc.GetBotCode(), twhc.MustBotChatID(), tgChatEntity.(botsfw.BotChat)); err != nil {
@@ -61,7 +61,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 			//}
 		}
 
-		var chatInstance store.ChatInstance
+		var chatInstance models.ChatInstance
 		preferredLanguage := tgChatEntity.GetPreferredLanguage()
 		if getDatabase == nil {
 			panic("telegram.getDatabase is nil")
@@ -226,7 +226,7 @@ func (twhc *tgWebhookContext) BotAPI() *tgbotapi.BotAPI {
 }
 
 func (twhc *tgWebhookContext) GetAppUser() (botsfw.BotAppUser, error) {
-	appUserID := twhc.AppUserIntID()
+	appUserID := twhc.AppUserID()
 	appUser := twhc.BotAppContext().NewBotAppUserEntity()
 	err := twhc.BotAppUserStore.GetAppUserByID(twhc.Context(), appUserID, appUser)
 	return appUser, err
@@ -241,7 +241,7 @@ func (twhc *tgWebhookContext) IsNewerThen( /*chatEntity*/ botsfw.BotChat) bool {
 }
 
 func (twhc *tgWebhookContext) NewChatEntity() botsfw.BotChat {
-	return new(store.TgChatBase)
+	return new(models.TgChatBase)
 }
 
 //func (twhc *tgWebhookContext) getTelegramSenderID() int {

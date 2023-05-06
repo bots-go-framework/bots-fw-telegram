@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"context"
-	"github.com/bots-go-framework/bots-fw-dalgo/dalgo4botsfw"
+	"github.com/bots-go-framework/dalgo4botsfw"
 	"github.com/dal-go/dalgo/dal"
 	"github.com/stretchr/testify/assert"
 	"testing"

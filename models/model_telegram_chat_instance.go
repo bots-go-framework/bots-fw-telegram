@@ -1,4 +1,4 @@
-package store
+package models
 
 import (
 	"github.com/dal-go/dalgo/dal"
@@ -6,7 +6,7 @@ import (
 )
 
 // ChatInstanceKind is kind name of TgChatInstance TgChatData
-const ChatInstanceKind = "TgChatInstance"
+const ChatInstanceKind = "TgChatInstance" // TODO: Rename to BotTgChat?
 
 // ChatInstanceEntityBase is base struct
 type ChatInstanceEntityBase struct {

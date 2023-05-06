@@ -1,7 +1,7 @@
 package gaehost
 
 //import (
-//	telegram "github.com/bots-go-framework/bots-fw-telegram/store"
+//	telegram "github.com/bots-go-framework/bots-fw-telegram/models"
 //	"google.golang.org/appengine/datastore"
 //)
 //

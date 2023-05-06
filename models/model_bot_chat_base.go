@@ -1,4 +1,4 @@
-package store
+package models
 
 import (
 	"fmt"
@@ -66,17 +66,17 @@ var _ botsfw.BotChat = (*TgChatBase)(nil)
 func NewTelegramChatEntity() *TgChatBase {
 	return &TgChatBase{
 		BotChatData: botsfw.BotChatData{
-			BotEntity: botsfw.BotEntity{OwnedByUserWithIntID: user.NewOwnedByUserWithIntID(0, time.Now())},
+			BotEntity: botsfw.BotEntity{OwnedByUserWithID: user.NewOwnedByUserWithIntID(0, time.Now())},
 		},
 	}
 }
 
-// SetAppUserIntID sets app user int ID
-func (data *TgChatBase) SetAppUserIntID(id int64) {
-	if data.IsGroup && id != 0 {
-		panic("TgChatBase.IsGroup && id != 0")
+// SetAppUserID sets app user int ID
+func (data *TgChatBase) SetAppUserID(appUserID string) {
+	if data.IsGroup && appUserID != "" {
+		panic("TgChatBase.IsGroup && id is not an empty string")
 	}
-	data.AppUserIntID = id
+	data.AppUserID = appUserID
 }
 
 // SetBotUserID sets bot user int ID
