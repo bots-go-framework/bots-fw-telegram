@@ -1,14 +1,15 @@
 package telegram
 
 import (
+	"context"
+	"github.com/bots-go-framework/bots-fw-models/botsfwmodels"
+
 	//"errors"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	botsfwtgmodels "github.com/bots-go-framework/bots-fw-telegram-models"
+	"github.com/bots-go-framework/bots-fw-telegram-models/botsfwtgmodels"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/dal-go/dalgo/dal"
-	//"github.com/strongo/log"
-	"context"
 	"github.com/strongo/log"
 	"net/http"
 	"strconv"
@@ -53,7 +54,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 		if chatID == 0 {
 			return
 		}
-		tgChatEntity := twhc.ChatEntity().(botsfwtgmodels.TgChatEntity)
+		tgChatEntity := twhc.ChatEntity().(botsfwtgmodels.TgChatData)
 		if tgChatEntity.GetTgChatInstanceID() != chatInstanceID {
 			tgChatEntity.SetTgChatInstanceID(chatInstanceID)
 			//if err = twhc.SaveBotChat(c, twhc.GetBotCode(), twhc.MustBotChatID(), tgChatEntity.(botsfw.BotChat)); err != nil {
@@ -61,7 +62,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 			//}
 		}
 
-		var chatInstance botsfwtgmodels.ChatInstance
+		var chatInstance botsfwtgmodels.TgChatInstanceData
 		preferredLanguage := tgChatEntity.GetPreferredLanguage()
 		if getDatabase == nil {
 			panic("telegram.getDatabase is nil")
@@ -82,10 +83,10 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 				changed = true
 			} else { // Update if needed
 				log.Debugf(c, "CreateOrUpdateTgChatInstance() => existing tg chat instance")
-				if tgChatInstanceId := chatInstance.Data.GetTgChatID(); tgChatInstanceId != chatID {
+				if tgChatInstanceId := chatInstance.GetTgChatID(); tgChatInstanceId != chatID {
 					err = fmt.Errorf("chatInstance.GetTgChatID():%d != chatID:%d", tgChatInstanceId, chatID)
-				} else if prefLang := chatInstance.Data.GetPreferredLanguage(); prefLang != preferredLanguage {
-					chatInstance.Data.SetPreferredLanguage(preferredLanguage)
+				} else if prefLang := chatInstance.GetPreferredLanguage(); prefLang != preferredLanguage {
+					chatInstance.SetPreferredLanguage(preferredLanguage)
 					changed = true
 				}
 			}
@@ -157,8 +158,8 @@ func newTelegramWebhookContext(
 
 				if chatInstance, err := tgChatInstanceDal.GetTelegramChatInstanceByID(c, tx, callbackQuery.ChatInstance); err != nil {
 					return err
-				} else if chatInstance.Data != nil {
-					isGroupChat = chatInstance.Data.GetTgChatID() < 0
+				} else if chatInstance != nil {
+					isGroupChat = chatInstance.GetTgChatID() < 0
 				}
 				return nil
 			})
@@ -232,7 +233,7 @@ func (twhc *tgWebhookContext) GetAppUser() (botsfw.BotAppUser, error) {
 	return appUser, err
 }
 
-func (twhc *tgWebhookContext) IsNewerThen( /*chatEntity*/ botsfw.BotChat) bool {
+func (twhc *tgWebhookContext) IsNewerThen( /*chatEntity*/ botsfwmodels.BotChat) bool {
 	return true
 	//if telegramChat, ok := whc.Data().(*TgChatBase); ok && telegramChat != nil {
 	//	return whc.Input().whi.update.UpdateID > telegramChat.LastProcessedUpdateID
@@ -240,7 +241,7 @@ func (twhc *tgWebhookContext) IsNewerThen( /*chatEntity*/ botsfw.BotChat) bool {
 	//return false
 }
 
-func (twhc *tgWebhookContext) NewChatEntity() botsfw.BotChat {
+func (twhc *tgWebhookContext) NewChatEntity() botsfwmodels.BotChat {
 	return new(botsfwtgmodels.TgChatBase)
 }
 
@@ -274,7 +275,7 @@ func (twhc *tgWebhookContext) NewTgMessage(text string) *tgbotapi.MessageConfig 
 	return tgbotapi.NewMessage(botChatIntID, text)
 }
 
-func (twhc *tgWebhookContext) UpdateLastProcessed( /*chatEntity*/ botsfw.BotChat) error {
+func (twhc *tgWebhookContext) UpdateLastProcessed( /*chatEntity*/ botsfwmodels.BotChat) error {
 	return nil
 	//if telegramChat, ok := chatEntity.(*TgChatBase); ok {
 	//	telegramChat.LastProcessedUpdateID = tc.whi.update.UpdateID
@@ -294,9 +295,9 @@ func (twhc *tgWebhookContext) getLocalAndChatIDByChatInstance(c context.Context)
 					if !dal.IsNotFound(err) {
 						return "", "", err
 					}
-				} else if tgChatID := chatInstance.Data.GetTgChatID(); tgChatID != 0 {
+				} else if tgChatID := chatInstance.GetTgChatID(); tgChatID != 0 {
 					twhc.chatID = strconv.FormatInt(tgChatID, 10)
-					twhc.locale = chatInstance.Data.GetPreferredLanguage()
+					twhc.locale = chatInstance.GetPreferredLanguage()
 					twhc.isInGroup = tgChatID < 0
 				}
 			}
@@ -305,7 +306,7 @@ func (twhc *tgWebhookContext) getLocalAndChatIDByChatInstance(c context.Context)
 	return twhc.locale, twhc.chatID, nil
 }
 
-func (twhc *tgWebhookContext) ChatEntity() botsfw.BotChat {
+func (twhc *tgWebhookContext) ChatEntity() botsfwmodels.BotChat {
 	if _, err := twhc.BotChatID(); err != nil {
 		log.Errorf(twhc.Context(), fmt.Errorf("whc.BotChatID(): %w", err).Error())
 		return nil
