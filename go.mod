@@ -13,7 +13,7 @@ go 1.20
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.2.2
 	github.com/bots-go-framework/bots-fw v0.14.0
-	github.com/bots-go-framework/dalgo4botsfw v0.0.6
+	github.com/bots-go-framework/bots-fw-telegram-models v0.0.1
 	github.com/dal-go/dalgo v0.2.26
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/stretchr/testify v1.8.2

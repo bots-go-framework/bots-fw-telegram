@@ -4,7 +4,7 @@ package gaehost
 //	//"fmt"
 //	"context"
 //	"github.com/bots-go-framework/bots-fw-dalgo/dalgo4botsfw"
-//	telegram "github.com/bots-go-framework/bots-fw-telegram/models"
+//	telegram "github.com/bots-go-framework/bots-fw-telegram/botsfwtgmodels"
 //	"github.com/bots-go-framework/bots-fw/botsfw"
 //	"time"
 //	//"reflect"
