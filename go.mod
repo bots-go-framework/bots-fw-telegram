@@ -10,6 +10,8 @@ go 1.20
 //
 //replace github.com/strongo/i18n => ../../strongo/i18n
 
+replace github.com/bots-go-framework/dalgo4botsfw-telegram => ../dalgo4botsfw-telegram
+
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.2.2
 	github.com/bots-go-framework/bots-fw v0.14.0
