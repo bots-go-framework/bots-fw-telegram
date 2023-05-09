@@ -5,40 +5,40 @@ import (
 	"github.com/bots-go-framework/bots-fw/botsfw"
 )
 
-type tgSender struct {
+var _ botsfw.WebhookSender = (*tgWebhookSender)(nil)
+
+type tgWebhookSender struct {
 	tgUser *tgbotapi.User
 }
 
-func (tgSender) IsBotUser() bool { // TODO: Can we get rid of it here?
+func (tgWebhookSender) IsBotUser() bool { // TODO: Can we get rid of it here?
 	return false
 }
 
-var _ botsfw.WebhookSender = (*tgSender)(nil)
-
-func (s tgSender) GetID() interface{} {
+func (s tgWebhookSender) GetID() interface{} {
 	return s.tgUser.ID
 }
 
-func (s tgSender) GetFirstName() string {
+func (s tgWebhookSender) GetFirstName() string {
 	return s.tgUser.FirstName
 }
 
-func (s tgSender) GetLastName() string {
+func (s tgWebhookSender) GetLastName() string {
 	return s.tgUser.LastName
 }
 
-func (s tgSender) GetUserName() string {
+func (s tgWebhookSender) GetUserName() string {
 	return s.tgUser.UserName
 }
 
-func (tgSender) Platform() string {
+func (tgWebhookSender) Platform() string {
 	return PlatformID
 }
 
-func (tgSender) GetAvatar() string {
+func (tgWebhookSender) GetAvatar() string {
 	return ""
 }
 
-func (s tgSender) GetLanguage() string {
+func (s tgWebhookSender) GetLanguage() string {
 	return s.tgUser.LanguageCode
 }

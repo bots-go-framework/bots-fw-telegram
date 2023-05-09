@@ -30,7 +30,7 @@ func (iq TgWebhookInlineQuery) GetQuery() string {
 
 // GetFrom returns recipient
 func (iq TgWebhookInlineQuery) GetFrom() botsfw.WebhookSender {
-	return tgSender{tgUser: iq.update.InlineQuery.From}
+	return tgWebhookSender{tgUser: iq.update.InlineQuery.From}
 }
 
 // GetOffset returns offset

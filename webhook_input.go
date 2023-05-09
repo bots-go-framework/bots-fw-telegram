@@ -114,18 +114,18 @@ func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botsfw
 func (whi tgWebhookInput) GetSender() botsfw.WebhookSender {
 	switch {
 	case whi.update.Message != nil:
-		return tgSender{tgUser: whi.update.Message.From}
+		return tgWebhookSender{tgUser: whi.update.Message.From}
 	case whi.update.EditedMessage != nil:
-		return tgSender{tgUser: whi.update.EditedMessage.From}
+		return tgWebhookSender{tgUser: whi.update.EditedMessage.From}
 	case whi.update.CallbackQuery != nil:
-		return tgSender{tgUser: whi.update.CallbackQuery.From}
+		return tgWebhookSender{tgUser: whi.update.CallbackQuery.From}
 	case whi.update.InlineQuery != nil:
-		return tgSender{tgUser: whi.update.InlineQuery.From}
+		return tgWebhookSender{tgUser: whi.update.InlineQuery.From}
 	case whi.update.ChosenInlineResult != nil:
-		return tgSender{tgUser: whi.update.ChosenInlineResult.From}
+		return tgWebhookSender{tgUser: whi.update.ChosenInlineResult.From}
 	//case whi.update.ChannelPost != nil:
 	//	chat := whi.update.ChannelPost.Chat
-	//	return tgSender{  // TODO: Seems to be dirty hack.
+	//	return tgWebhookSender{  // TODO: Seems to be dirty hack.
 	//		tgUser: &tgbotapi.User{
 	//			ID: int(chat.ID),
 	//			Name: chat.Name,

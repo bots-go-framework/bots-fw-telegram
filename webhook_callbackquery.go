@@ -57,7 +57,7 @@ func (twhcbq TgWebhookCallbackQuery) TelegramCallbackMessage() *tgbotapi.Message
 
 // GetFrom returns sender
 func (twhcbq TgWebhookCallbackQuery) GetFrom() botsfw.WebhookSender {
-	return tgSender{tgUser: twhcbq.update.CallbackQuery.From}
+	return tgWebhookSender{tgUser: twhcbq.update.CallbackQuery.From}
 }
 
 // GetData returns callback query data

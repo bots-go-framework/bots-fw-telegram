@@ -32,7 +32,7 @@ func (q tgWebhookChosenInlineResult) GetInlineMessageID() string {
 }
 
 func (q tgWebhookChosenInlineResult) GetFrom() botsfw.WebhookSender {
-	return tgSender{tgUser: q.update.ChosenInlineResult.From}
+	return tgWebhookSender{tgUser: q.update.ChosenInlineResult.From}
 }
 
 func (q tgWebhookChosenInlineResult) BotChatID() (string, error) {

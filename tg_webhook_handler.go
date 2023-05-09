@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
+	"github.com/bots-go-framework/bots-fw-store/botsfwdal"
+	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/strongo/log"
 	"io"
@@ -17,28 +19,33 @@ import (
 	"time"
 )
 
+var _ botsfw.WebhookHandler = (*tgWebhookHandler)(nil)
+
+type tgWebhookHandler struct {
+	botsfw.WebhookHandlerBase
+	botsBy botsfw.SettingsProvider
+}
+
 // NewTelegramWebhookHandler creates new Telegram webhooks handler
-//
-//goland:noinspection GoUnusedExportedFunction
-func NewTelegramWebhookHandler(botsBy botsfw.SettingsProvider, translatorProvider botsfw.TranslatorProvider) botsfw.WebhookHandler {
+func NewTelegramWebhookHandler(
+	dataAccess botsfwdal.DataAccess,
+	botsBy botsfw.SettingsProvider,
+	recordsMaker botsfwmodels.BotRecordsMaker,
+	translatorProvider botsfw.TranslatorProvider,
+) botsfw.WebhookHandler {
 	if translatorProvider == nil {
 		panic("translatorProvider == nil")
 	}
 	return tgWebhookHandler{
 		botsBy: botsBy,
-		BaseHandler: botsfw.BaseHandler{
+		WebhookHandlerBase: botsfw.WebhookHandlerBase{
+			DataAccess:         dataAccess,
 			BotPlatform:        Platform{},
+			RecordsMaker:       recordsMaker,
 			TranslatorProvider: translatorProvider,
 		},
 	}
 }
-
-type tgWebhookHandler struct {
-	botsfw.BaseHandler
-	botsBy botsfw.SettingsProvider
-}
-
-var _ botsfw.WebhookHandler = (*tgWebhookHandler)(nil)
 
 func (h tgWebhookHandler) HandleUnmatched(whc botsfw.WebhookContext) (m botsfw.MessageFromBot) {
 	switch whc.InputType() {
@@ -55,7 +62,7 @@ func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host
 	if router == nil {
 		panic("router == nil")
 	}
-	h.BaseHandler.Register(driver, host)
+	h.WebhookHandlerBase.Register(driver, host)
 
 	pathPrefix = strings.TrimSuffix(pathPrefix, "/")
 	//router.POST(pathPrefix+"/telegram/webhook", h.HandleWebhookRequest) // TODO: Remove obsolete
@@ -213,7 +220,7 @@ func (h tgWebhookHandler) CreateWebhookContext(
 	appContext botsfw.BotAppContext,
 	r *http.Request, botContext botsfw.BotContext,
 	webhookInput botsfw.WebhookInput,
-	botCoreStores botsfw.BotCoreStores,
+	botCoreStores botsfwdal.DataAccess,
 	gaMeasurement botsfw.GaQueuer,
 ) botsfw.WebhookContext {
 	return newTelegramWebhookContext(
@@ -227,6 +234,6 @@ func (h tgWebhookHandler) GetResponder(w http.ResponseWriter, whc botsfw.Webhook
 	panic(fmt.Sprintf("Expected tgWebhookContext, got: %T", whc))
 }
 
-func (h tgWebhookHandler) CreateBotCoreStores(appContext botsfw.BotAppContext, r *http.Request) botsfw.BotCoreStores {
-	return h.BotHost.GetBotCoreStores(PlatformID, appContext, r)
+func (h tgWebhookHandler) CreateBotCoreStores(appContext botsfw.BotAppContext, r *http.Request) botsfwdal.DataAccess {
+	return h.WebhookHandlerBase.DataAccess
 }

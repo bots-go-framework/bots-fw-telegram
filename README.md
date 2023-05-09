@@ -1,5 +1,17 @@
 # bots-fw-telegram
+
 Telegram module for Strongo bots framework
+
+## Structure & key concepts
+
+The [`tgWebhookHandler`](tg_webhook_handler.go) struct is implementing `botsfw.WebhookHandler` interface
+and is an entry point for all incoming requests from Telegram. To create it you need to call
+[`NewTgWebhookHandler()`](tg_webhook_handler.go) function.
+
+### Registering records maker
+
+```go
+```
 
 ## Setting up dev environment for Telegram bots development
 
@@ -11,7 +23,8 @@ To expose local server to the Internet we use [ngrok](https://ngrok.com/).
 ngrok http 4300
 ```
 
-Make sure that you have started local GAE server & Firestore emulators - follow instructions from [README.md](README.md).
+Make sure that you have started local GAE server & Firestore emulators - follow instructions
+from [README.md](README.md).
 
 After `ngrok` started you will see something like:
 

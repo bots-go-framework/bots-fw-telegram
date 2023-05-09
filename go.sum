@@ -1,11 +1,15 @@
 github.com/bots-go-framework/bots-api-telegram v0.2.2 h1:m//voAgBzqR4eRTgAqVkH2rQ6tdsuei6Hoxp7qXEXDs=
 github.com/bots-go-framework/bots-api-telegram v0.2.2/go.mod h1:i3cekCblDUOaqwv9qo9yUPMcvfXlHwTL6kOrjqiOavE=
-github.com/bots-go-framework/bots-fw v0.15.0 h1:lKTeKZGUz+iUuR4DXqc0ihQCAoGv+DH75Nroh7txt4U=
-github.com/bots-go-framework/bots-fw v0.15.0/go.mod h1:k3UhDHxI2reKFlXhVTOiyxktIhabdIjwcM9buacENgE=
+github.com/bots-go-framework/bots-fw v0.16.0 h1:XCKwpG3JPi4bb43G+AYqyOec5b8C6QfNBhuf0C93JVE=
+github.com/bots-go-framework/bots-fw v0.16.0/go.mod h1:nVCd6tV/+9wLnmewcFeXXEx6u82ZxXN1ltVzfla5Axo=
 github.com/bots-go-framework/bots-fw-models v0.0.2 h1:q/3LxzoDqYWYG4SlSC1yG1vbn+UPdIS9zvbi5OIn1Bw=
 github.com/bots-go-framework/bots-fw-models v0.0.2/go.mod h1:WVRrEFrKnkjSe9M/QzfEZBhMCzt9LQtJKdFE2fo345s=
+github.com/bots-go-framework/bots-fw-store v0.0.4 h1:oLj6j2TQjG8WWQaz/OxFMAWRojRzX/q1Wv0pr+UhFhg=
+github.com/bots-go-framework/bots-fw-store v0.0.4/go.mod h1:afElYDog6nZQ6f8kJxq9rhmjBFvZQCuAIOecnQFNqaU=
 github.com/bots-go-framework/bots-fw-telegram-models v0.0.2 h1:ZCbqju4QFGo3cyC1eN0ToBFqQ8KvjMUBQF2L43iau+w=
 github.com/bots-go-framework/bots-fw-telegram-models v0.0.2/go.mod h1:/HrISt+cw6vMOMofsBJTKpFoeoFQWhmXRCDOkqRO0ag=
+github.com/bots-go-framework/bots-fw-telegram-models v0.0.3 h1:xxkp21CF0Fan32/1UzSZ3YNptdBY6K4/iAHDzuyBDxA=
+github.com/bots-go-framework/bots-fw-telegram-models v0.0.3/go.mod h1:NtrYRkLwTmCB4ZT77ocuY8NHRG5v3IASXx9h4aW/mkM=
 github.com/bots-go-framework/bots-go-core v0.0.1 h1:Br7j+Ir3R6U8x1mnFZFq1G1K0bupJhLvdF8TIqI/7i8=
 github.com/bots-go-framework/bots-go-core v0.0.1/go.mod h1:txRZn1MlcJEiCUra3bQtpkt9IM2EFGaeUvqS1VLyl30=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=

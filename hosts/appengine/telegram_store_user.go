@@ -11,7 +11,7 @@ package gaehost
 //func newGaeTelegramUserStore(gaeAppUserStore gae.GaeAppUserStore) botsfw.BotUserStore {
 //	newBotUserEntity := func(_ context.Context, botID string, apiUser botsfw.WebhookActor) (botsfw.BotUser, error) {
 //		if apiUser == nil {
-//			return &telegram.TgBotUserData{}, nil
+//			return &telegram.TgBotUserBaseData{}, nil
 //		}
 //		botEntity := botsfw.BotEntity{
 //			OwnedByUserWithIntID: user.NewOwnedByUserWithIntID(0, time.Now()),
@@ -22,7 +22,7 @@ package gaehost
 //			LastName:  apiUser.GetLastName(),
 //			UserName:  apiUser.GetUserName(),
 //		}
-//		return &telegram.TgBotUserData{BotUserEntity: botUserEntity}, nil
+//		return &telegram.TgBotUserBaseData{BotUserEntity: botUserEntity}, nil
 //	}
 //	//botUserKey := func(c context.Context, botUserId interface{}) *datastore.Key {
 //	//	if intID, ok := botUserId.(int); ok {
@@ -34,13 +34,13 @@ package gaehost
 //	//	panic(fmt.Sprintf("Expected botUserId as int, got: %T", botUserId))
 //	//}
 //	//validateBotUserEntityType := func(entity botsfw.BotUser) {
-//	//	if _, ok := entity.(*telegram.TgBotUserData); !ok {
+//	//	if _, ok := entity.(*telegram.TgBotUserBaseData); !ok {
 //	//		panic(fmt.Sprintf("Expected *telegram.TgUser but received %T", entity))
 //	//	}
 //	//}
 //
 //	newBotUser := func() botsfw.BotUser {
-//		return new(telegram.TgBotUserData)
+//		return new(telegram.TgBotUserBaseData)
 //	}
 //	return dalgo4botsfw.NewBotUserStore(telegram.BotUserCollection, nil, newBotUser, newBotUserEntity)
 //	//return gaeTelegramUserStore{

@@ -4,6 +4,11 @@ go 1.20
 
 //replace github.com/bots-go-framework/bots-fw => ../bots-fw
 //
+//replace github.com/bots-go-framework/bots-fw-store => ../bots-fw-store
+//
+//replace github.com/bots-go-framework/bots-fw-telegram-models => ../bots-fw-telegram-models
+
+//
 //replace github.com/bots-go-framework/dalgo4botsfw => ../dalgo4botsfw
 //
 //replace github.com/strongo/app => ../../strongo/app
@@ -14,9 +19,9 @@ go 1.20
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.2.2
-	github.com/bots-go-framework/bots-fw v0.15.0
-	github.com/bots-go-framework/bots-fw-models v0.0.2
-	github.com/bots-go-framework/bots-fw-telegram-models v0.0.2
+	github.com/bots-go-framework/bots-fw v0.16.0
+	github.com/bots-go-framework/bots-fw-store v0.0.4
+	github.com/bots-go-framework/bots-fw-telegram-models v0.0.3
 	github.com/dal-go/dalgo v0.2.26
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/stretchr/testify v1.8.2
@@ -26,6 +31,7 @@ require (
 )
 
 require (
+	github.com/bots-go-framework/bots-fw-models v0.0.2 // indirect
 	github.com/bots-go-framework/bots-go-core v0.0.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
