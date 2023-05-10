@@ -22,12 +22,12 @@ require (
 	github.com/bots-go-framework/bots-fw v0.16.0
 	github.com/bots-go-framework/bots-fw-store v0.0.4
 	github.com/bots-go-framework/bots-fw-telegram-models v0.0.3
-	github.com/dal-go/dalgo v0.2.26
+	github.com/dal-go/dalgo v0.2.28
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/stretchr/testify v1.8.2
 	github.com/strongo/app v0.4.0
 	github.com/strongo/i18n v0.0.4
-	github.com/strongo/log v0.2.3
+	github.com/strongo/log v0.3.0
 )
 
 require (

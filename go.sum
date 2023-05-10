@@ -15,6 +15,8 @@ github.com/bots-go-framework/bots-go-core v0.0.1/go.mod h1:txRZn1MlcJEiCUra3bQtp
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/dal-go/dalgo v0.2.26 h1:pJOOwjHIxQDvIGDTDbRiAswpn7rwWDnRFqtjsnI/nS4=
 github.com/dal-go/dalgo v0.2.26/go.mod h1:b0U+y2xjE5xY+HJ+vAt1DDcJe32N98tbRWDp5tPTwIc=
+github.com/dal-go/dalgo v0.2.28 h1:/FYFQgrUUvE2rIXv1N1mOvCHYqWNQfun1FrETozgYCI=
+github.com/dal-go/dalgo v0.2.28/go.mod h1:b0U+y2xjE5xY+HJ+vAt1DDcJe32N98tbRWDp5tPTwIc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -42,6 +44,8 @@ github.com/strongo/i18n v0.0.4 h1:48DQrrlqTlZBi7uFbyruOVsSfr+X24RmO59FaOXLWGQ=
 github.com/strongo/i18n v0.0.4/go.mod h1:4jBQ4PJ3Uiri2Y+LHJ5/o1nB1H2ToddRW/yZXSOTUjE=
 github.com/strongo/log v0.2.3 h1:Qc3YoNUYvZjCxwHdfl0Ne/XUCQfpxAyYJDucsy5PmCI=
 github.com/strongo/log v0.2.3/go.mod h1:C0OyprbH7WjyhcZXdveDiu5n0vxB8qZ1rQXxtUqx8y4=
+github.com/strongo/log v0.3.0 h1:89rh62SdO9TNTd8/pzhMSdGCmZwFDXHWm5ZtJvp0Wcg=
+github.com/strongo/log v0.3.0/go.mod h1:C0OyprbH7WjyhcZXdveDiu5n0vxB8qZ1rQXxtUqx8y4=
 github.com/strongo/random v0.0.1 h1:OZHJBb/3uEa7OX8L2Dv2pLnSeewRmXMyTACoeto6O8I=
 github.com/strongo/random v0.0.1/go.mod h1:/pSI+SjBNLBkjljNtVdYr6ERddA+LqSa87o0/s+9iuU=
 github.com/technoweenie/multipartstreamer v1.0.1 h1:XRztA5MXiR1TIRHxH2uNxXxaIkKQDeX7m2XsSOlQEnM=
