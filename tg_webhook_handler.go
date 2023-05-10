@@ -11,6 +11,8 @@ import (
 	"github.com/strongo/log"
 	"io"
 	"net/http"
+	"runtime/debug"
+
 	//"github.com/kylelemons/go-gypsy/yaml"
 	//"bytes"
 	"bytes"
@@ -86,7 +88,8 @@ func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Re
 
 	defer func() {
 		if err := recover(); err != nil {
-			log.Criticalf(h.Context(r), "Unhandled panic in Telegram handler: %v", err)
+			stack := string(debug.Stack())
+			log.Criticalf(h.Context(r), "Unhandled panic in Telegram handler: %v\nStack trace: %s", err, stack)
 		}
 	}()
 

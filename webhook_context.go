@@ -140,8 +140,6 @@ func newTelegramWebhookContext(
 	}
 	chat := twhc.tgInput.TgUpdate().Chat()
 
-	botID := twhc.GetBotCode()
-
 	isInGroup := func() bool { // Checks if current chat is a group chat
 		if chat != nil && chat.IsGroup() {
 			return true
@@ -150,6 +148,7 @@ func newTelegramWebhookContext(
 		if callbackQuery := twhc.tgInput.TgUpdate().CallbackQuery; callbackQuery != nil && callbackQuery.ChatInstance != "" {
 			c := botContext.BotHost.Context(r)
 			var isGroupChat bool
+			botID := botContext.BotSettings.Code
 			err := twhc.Store().RunInTransaction(c, botID, func(ctx context.Context) error {
 
 				if chatInstance, err := tgChatInstanceDal.GetTelegramChatInstanceByID(c, callbackQuery.ChatInstance); err != nil {
