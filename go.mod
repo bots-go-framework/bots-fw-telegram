@@ -31,7 +31,6 @@ require (
 )
 
 require (
-	github.com/bots-go-framework/bots-fw-models v0.0.2 // indirect
 	github.com/bots-go-framework/bots-go-core v0.0.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
