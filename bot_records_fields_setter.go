@@ -7,7 +7,7 @@ import (
 )
 
 func NewBotRecordsFieldsSetter(
-	setAppUserFields func(appUser botsfwmodels.BotAppUser, sender botsfw.WebhookSender) error,
+	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botsfw.WebhookSender) error,
 ) botsfw.BotRecordsFieldsSetter {
 	if setAppUserFields == nil {
 		panic("setAppUserFields is nil")
@@ -18,14 +18,14 @@ func NewBotRecordsFieldsSetter(
 }
 
 type botRecordsFieldsSetter struct {
-	setAppUserFields func(appUser botsfwmodels.BotAppUser, sender botsfw.WebhookSender) error
+	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botsfw.WebhookSender) error
 }
 
 func (b botRecordsFieldsSetter) Platform() string {
 	return PlatformID
 }
 
-func (b botRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.BotAppUser, sender botsfw.WebhookSender) error {
+func (b botRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserData, sender botsfw.WebhookSender) error {
 	return b.setAppUserFields(appUser, sender)
 }
 
@@ -40,6 +40,6 @@ func (b botRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.BotUser, b
 	return nil
 }
 
-func (b botRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.BotChat, botID, botUserID, appUserID string, chat botsfw.WebhookChat, isAccessGranted bool) error {
+func (b botRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.ChatData, botID, botUserID, appUserID string, chat botsfw.WebhookChat, isAccessGranted bool) error {
 	return nil
 }

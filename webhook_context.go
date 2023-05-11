@@ -172,7 +172,7 @@ func newTelegramWebhookContext(
 	whcb := botsfw.NewWebhookContextBase(
 		r,
 		appContext,
-		Platform{},
+		Platform,
 		botContext,
 		input.(botsfw.WebhookInput),
 		botCoreStores,
@@ -221,7 +221,7 @@ func (twhc *tgWebhookContext) BotAPI() *tgbotapi.BotAPI {
 	return tgbotapi.NewBotAPIWithClient(botContext.BotSettings.Token, botContext.BotHost.GetHTTPClient(twhc.Context()))
 }
 
-func (twhc *tgWebhookContext) GetAppUser() (botsfwmodels.BotAppUser, error) {
+func (twhc *tgWebhookContext) AppUserData() (botsfwmodels.AppUserData, error) {
 	botID := twhc.GetBotCode()
 	appUserID := twhc.AppUserID()
 	appUser := twhc.BotAppContext().NewBotAppUserEntity()
@@ -229,7 +229,7 @@ func (twhc *tgWebhookContext) GetAppUser() (botsfwmodels.BotAppUser, error) {
 	return appUser, err
 }
 
-func (twhc *tgWebhookContext) IsNewerThen( /*chatEntity*/ botsfwmodels.BotChat) bool {
+func (twhc *tgWebhookContext) IsNewerThen( /*chatEntity*/ data botsfwmodels.ChatData) bool {
 	return true
 	//if telegramChat, ok := whc.Data().(*TgChatBase); ok && telegramChat != nil {
 	//	return whc.Input().whi.update.UpdateID > telegramChat.LastProcessedUpdateID
@@ -267,7 +267,7 @@ func (twhc *tgWebhookContext) NewTgMessage(text string) *tgbotapi.MessageConfig 
 	return tgbotapi.NewMessage(botChatIntID, text)
 }
 
-func (twhc *tgWebhookContext) UpdateLastProcessed( /*chatEntity*/ botsfwmodels.BotChat) error {
+func (twhc *tgWebhookContext) UpdateLastProcessed( /*chatEntity*/ data botsfwmodels.ChatData) error {
 	return nil
 	//if telegramChat, ok := chatEntity.(*TgChatBase); ok {
 	//	telegramChat.LastProcessedUpdateID = tc.whi.update.UpdateID
@@ -298,7 +298,7 @@ func (twhc *tgWebhookContext) getLocalAndChatIDByChatInstance(c context.Context)
 	return twhc.locale, twhc.chatID, nil
 }
 
-func (twhc *tgWebhookContext) ChatEntity() botsfwmodels.BotChat {
+func (twhc *tgWebhookContext) ChatData() botsfwmodels.ChatData {
 	if _, err := twhc.BotChatID(); err != nil {
 		log.Errorf(twhc.Context(), fmt.Errorf("whc.BotChatID(): %w", err).Error())
 		return nil

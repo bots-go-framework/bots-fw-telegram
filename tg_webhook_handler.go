@@ -33,6 +33,7 @@ func NewTelegramWebhookHandler(
 	dataAccess botsfwdal.DataAccess,
 	botsBy botsfw.SettingsProvider,
 	recordsMaker botsfwmodels.BotRecordsMaker,
+	recordsFieldsSetter botsfw.BotRecordsFieldsSetter,
 	translatorProvider botsfw.TranslatorProvider,
 ) botsfw.WebhookHandler {
 	if translatorProvider == nil {
@@ -41,9 +42,10 @@ func NewTelegramWebhookHandler(
 	return tgWebhookHandler{
 		botsBy: botsBy,
 		WebhookHandlerBase: botsfw.WebhookHandlerBase{
-			DataAccess:         dataAccess,
-			BotPlatform:        Platform{},
-			RecordsMaker:       recordsMaker,
+			DataAccess:   dataAccess,
+			BotPlatform:  platform{},
+			RecordsMaker: recordsMaker,
+			//RecordsFieldsSetter: recordsFieldsSetter,
 			TranslatorProvider: translatorProvider,
 		},
 	}
@@ -69,15 +71,17 @@ func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host
 	pathPrefix = strings.TrimSuffix(pathPrefix, "/")
 	//router.POST(pathPrefix+"/telegram/webhook", h.HandleWebhookRequest) // TODO: Remove obsolete
 	router.Handle("POST", pathPrefix+"/tg/hook", h.HandleWebhookRequest)
-	router.Handle("GET", pathPrefix+"/tg/set-webhook", func(w http.ResponseWriter, r *http.Request) {
-		h.SetWebhook(h.Context(r), w, r)
-	})
-	router.Handle("GET", pathPrefix+"/tg/test", func(w http.ResponseWriter, r *http.Request) {
-		log.Debugf(h.Context(r), "Test request")
-		if _, err := w.Write([]byte("Test response")); err != nil {
-			log.Errorf(r.Context(), "Failed to write test response: %v", err)
-		}
-	})
+	router.Handle("GET", pathPrefix+"/tg/set-webhook", h.SetWebhook)
+	router.Handle("GET", pathPrefix+"/tg/test/time-now", httpHandlerTestTimeNow)
+}
+
+func httpHandlerTestTimeNow(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	log.Debugf(ctx, "Test request")
+	now := time.Now().Format(time.RFC3339Nano)
+	if _, err := w.Write([]byte("Test: " + now)); err != nil {
+		log.Errorf(ctx, "Failed to write test response: %v", err)
+	}
 }
 
 func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +100,8 @@ func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Re
 	h.HandleWebhook(w, r, h)
 }
 
-func (h tgWebhookHandler) SetWebhook(c context.Context, w http.ResponseWriter, r *http.Request) {
+func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
+	c := h.Context(r)
 	log.Debugf(c, "tgWebhookHandler.SetWebhook()")
 	ctxWithDeadline, cancel := context.WithTimeout(c, 30*time.Second)
 	defer cancel()

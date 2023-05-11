@@ -2,14 +2,14 @@ module github.com/bots-go-framework/bots-fw-telegram
 
 go 1.20
 
-//replace github.com/bots-go-framework/bots-fw => ../bots-fw
+replace github.com/bots-go-framework/bots-fw => ../bots-fw
 //
-//replace github.com/bots-go-framework/bots-fw-store => ../bots-fw-store
+replace github.com/bots-go-framework/bots-fw-store => ../bots-fw-store
 //
-//replace github.com/bots-go-framework/bots-fw-telegram-models => ../bots-fw-telegram-models
+replace github.com/bots-go-framework/bots-fw-telegram-models => ../bots-fw-telegram-models
 
 //
-//replace github.com/bots-go-framework/dalgo4botsfw => ../dalgo4botsfw
+replace github.com/bots-go-framework/dalgo4botsfw => ../dalgo4botsfw
 //
 //replace github.com/strongo/app => ../../strongo/app
 //
