@@ -3,13 +3,16 @@ module github.com/bots-go-framework/bots-fw-telegram
 go 1.20
 
 replace github.com/bots-go-framework/bots-fw => ../bots-fw
+
 //
 replace github.com/bots-go-framework/bots-fw-store => ../bots-fw-store
+
 //
 replace github.com/bots-go-framework/bots-fw-telegram-models => ../bots-fw-telegram-models
 
 //
 replace github.com/bots-go-framework/dalgo4botsfw => ../dalgo4botsfw
+
 //
 //replace github.com/strongo/app => ../../strongo/app
 //
@@ -38,6 +41,7 @@ require (
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/strongo/gamp v0.0.1 // indirect
 	github.com/strongo/random v0.0.1 // indirect
+	github.com/strongo/validation v0.0.1 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

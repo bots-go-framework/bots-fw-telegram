@@ -5,12 +5,12 @@ import (
 	"github.com/bots-go-framework/bots-fw-telegram-models/botsfwtgmodels"
 )
 
-func BaseTgUserDtoMaker(botID string) (botsfwmodels.BotUser, error) {
+func BaseTgUserDtoMaker(botID string) (botsfwmodels.BotUserData, error) {
 	tgBotUserData := botsfwtgmodels.TgBotUserBaseData{}
 	return &tgBotUserData, nil
 }
 
 func BaseTgChatDtoMaker(botID string) (botChat botsfwmodels.ChatData, err error) {
-	tgChat := botsfwtgmodels.TgChatBase{}
+	tgChat := botsfwtgmodels.TgChatBaseData{}
 	return &tgChat, nil
 }

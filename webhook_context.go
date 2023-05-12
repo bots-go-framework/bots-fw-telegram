@@ -14,6 +14,8 @@ import (
 	"strconv"
 )
 
+var _ botsfw.WebhookContext = (*tgWebhookContext)(nil)
+
 type tgWebhookContext struct {
 	*botsfw.WebhookContextBase
 	tgInput TgWebhookInput
@@ -27,8 +29,6 @@ type tgWebhookContext struct {
 	locale    string
 	chatID    string
 }
-
-var _ botsfw.WebhookContext = (*tgWebhookContext)(nil)
 
 func (twhc *tgWebhookContext) NewEditMessage(text string, format botsfw.MessageFormat) (m botsfw.MessageFromBot, err error) {
 	m.Text = text
@@ -53,16 +53,16 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 		if chatID == 0 {
 			return
 		}
-		tgChatEntity := twhc.ChatEntity().(botsfwtgmodels.TgChatData)
-		if tgChatEntity.GetTgChatInstanceID() != chatInstanceID {
-			tgChatEntity.SetTgChatInstanceID(chatInstanceID)
+		tgChatData := twhc.ChatData().(botsfwtgmodels.TgChatData)
+		if tgChatData.GetTgChatInstanceID() != chatInstanceID {
+			tgChatData.SetTgChatInstanceID(chatInstanceID)
 			//if err = twhc.SaveBotChat(c, twhc.GetBotCode(), twhc.MustBotChatID(), tgChatEntity.(botsfw.BotChat)); err != nil {
 			//	return
 			//}
 		}
 
 		var chatInstance botsfwtgmodels.TgChatInstanceData
-		preferredLanguage := tgChatEntity.GetPreferredLanguage()
+		preferredLanguage := tgChatData.GetPreferredLanguage()
 		botID := twhc.GetBotCode()
 		store := twhc.Store()
 		if err = store.RunInTransaction(c, botID, func(c context.Context) (err error) {
@@ -133,6 +133,7 @@ func newTelegramWebhookContext(
 	r *http.Request, botContext botsfw.BotContext,
 	input TgWebhookInput,
 	botCoreStores botsfwdal.DataAccess,
+	recordsFieldsSetter botsfw.BotRecordsFieldsSetter,
 	gaMeasurement botsfw.GaQueuer,
 ) *tgWebhookContext {
 	twhc := &tgWebhookContext{
@@ -176,6 +177,7 @@ func newTelegramWebhookContext(
 		botContext,
 		input.(botsfw.WebhookInput),
 		botCoreStores,
+		recordsFieldsSetter,
 		gaMeasurement,
 		isInGroup,
 		twhc.getLocalAndChatIDByChatInstance,
@@ -231,7 +233,7 @@ func (twhc *tgWebhookContext) AppUserData() (botsfwmodels.AppUserData, error) {
 
 func (twhc *tgWebhookContext) IsNewerThen( /*chatEntity*/ data botsfwmodels.ChatData) bool {
 	return true
-	//if telegramChat, ok := whc.Data().(*TgChatBase); ok && telegramChat != nil {
+	//if telegramChat, ok := whc.Data().(*TgChatBaseData); ok && telegramChat != nil {
 	//	return whc.Input().whi.update.UpdateID > telegramChat.LastProcessedUpdateID
 	//}
 	//return false
@@ -269,11 +271,11 @@ func (twhc *tgWebhookContext) NewTgMessage(text string) *tgbotapi.MessageConfig 
 
 func (twhc *tgWebhookContext) UpdateLastProcessed( /*chatEntity*/ data botsfwmodels.ChatData) error {
 	return nil
-	//if telegramChat, ok := chatEntity.(*TgChatBase); ok {
+	//if telegramChat, ok := chatEntity.(*TgChatBaseData); ok {
 	//	telegramChat.LastProcessedUpdateID = tc.whi.update.UpdateID
 	//	return nil
 	//}
-	//return fmt.Errorf("Expected *TgChatBase, got: %T", chatEntity)
+	//return fmt.Errorf("Expected *TgChatBaseData, got: %T", chatEntity)
 }
 
 func (twhc *tgWebhookContext) getLocalAndChatIDByChatInstance(c context.Context) (locale, chatID string, err error) {
@@ -298,15 +300,15 @@ func (twhc *tgWebhookContext) getLocalAndChatIDByChatInstance(c context.Context)
 	return twhc.locale, twhc.chatID, nil
 }
 
-func (twhc *tgWebhookContext) ChatData() botsfwmodels.ChatData {
-	if _, err := twhc.BotChatID(); err != nil {
-		log.Errorf(twhc.Context(), fmt.Errorf("whc.BotChatID(): %w", err).Error())
-		return nil
-	}
-	//tgUpdate := twhc.tgInput.TgUpdate()
-	//if tgUpdate.CallbackQuery != nil {
-	//
-	//}
-
-	return twhc.WebhookContextBase.ChatEntity()
-}
+//func (twhc *tgWebhookContext) ChatData() botsfwmodels.ChatData {
+//	if _, err := twhc.BotChatID(); err != nil {
+//		log.Errorf(twhc.Context(), fmt.Errorf("whc.BotChatID(): %w", err).Error())
+//		return nil
+//	}
+//	//tgUpdate := twhc.tgInput.TgUpdate()
+//	//if tgUpdate.CallbackQuery != nil {
+//	//
+//	//}
+//
+//	return twhc.WebhookContextBase.ChatData()
+//}

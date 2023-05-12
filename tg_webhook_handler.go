@@ -32,9 +32,9 @@ type tgWebhookHandler struct {
 func NewTelegramWebhookHandler(
 	dataAccess botsfwdal.DataAccess,
 	botsBy botsfw.SettingsProvider,
-	recordsMaker botsfwmodels.BotRecordsMaker,
-	recordsFieldsSetter botsfw.BotRecordsFieldsSetter,
 	translatorProvider botsfw.TranslatorProvider,
+	recordsMaker botsfwmodels.BotRecordsMaker,
+	setAppUserFields func(botsfwmodels.AppUserData, botsfw.WebhookSender) error,
 ) botsfw.WebhookHandler {
 	if translatorProvider == nil {
 		panic("translatorProvider == nil")
@@ -42,11 +42,13 @@ func NewTelegramWebhookHandler(
 	return tgWebhookHandler{
 		botsBy: botsBy,
 		WebhookHandlerBase: botsfw.WebhookHandlerBase{
-			DataAccess:   dataAccess,
-			BotPlatform:  platform{},
-			RecordsMaker: recordsMaker,
-			//RecordsFieldsSetter: recordsFieldsSetter,
+			DataAccess:         dataAccess,
+			BotPlatform:        platform{},
+			RecordsMaker:       recordsMaker,
 			TranslatorProvider: translatorProvider,
+			RecordsFieldsSetter: tgBotRecordsFieldsSetter{
+				setAppUserFields: setAppUserFields,
+			},
 		},
 	}
 }
@@ -232,7 +234,7 @@ func (h tgWebhookHandler) CreateWebhookContext(
 	gaMeasurement botsfw.GaQueuer,
 ) botsfw.WebhookContext {
 	return newTelegramWebhookContext(
-		appContext, r, botContext, webhookInput.(TgWebhookInput), botCoreStores, gaMeasurement)
+		appContext, r, botContext, webhookInput.(TgWebhookInput), botCoreStores, h.RecordsFieldsSetter, gaMeasurement)
 }
 
 func (h tgWebhookHandler) GetResponder(w http.ResponseWriter, whc botsfw.WebhookContext) botsfw.WebhookResponder {

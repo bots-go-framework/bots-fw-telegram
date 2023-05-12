@@ -12,24 +12,24 @@ func NewBotRecordsFieldsSetter(
 	if setAppUserFields == nil {
 		panic("setAppUserFields is nil")
 	}
-	return botRecordsFieldsSetter{
+	return tgBotRecordsFieldsSetter{
 		setAppUserFields: setAppUserFields,
 	}
 }
 
-type botRecordsFieldsSetter struct {
+type tgBotRecordsFieldsSetter struct {
 	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botsfw.WebhookSender) error
 }
 
-func (b botRecordsFieldsSetter) Platform() string {
+func (b tgBotRecordsFieldsSetter) Platform() string {
 	return PlatformID
 }
 
-func (b botRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserData, sender botsfw.WebhookSender) error {
+func (b tgBotRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserData, sender botsfw.WebhookSender) error {
 	return b.setAppUserFields(appUser, sender)
 }
 
-func (b botRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.BotUser, botID, botUserID, appUserID string, sender botsfw.WebhookSender) error {
+func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.BotUserData, sender botsfw.WebhookSender, botID, botUserID, appUserID string) error {
 	//tgSender := sender.(tgWebhookSender)
 	tgBotUser := botUser.(botsfwtgmodels.TgBotUser)
 	tgBotUserBaseData := tgBotUser.TgBotUserBaseData()
@@ -40,6 +40,6 @@ func (b botRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.BotUser, b
 	return nil
 }
 
-func (b botRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.ChatData, botID, botUserID, appUserID string, chat botsfw.WebhookChat, isAccessGranted bool) error {
+func (b tgBotRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.ChatData, chat botsfw.WebhookChat, botID, botUserID, appUserID string, isAccessGranted bool) error {
 	return nil
 }
