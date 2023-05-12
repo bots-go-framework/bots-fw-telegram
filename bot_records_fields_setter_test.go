@@ -6,5 +6,5 @@ import (
 )
 
 func Test_botRecordsFieldsSetter_Platform(t *testing.T) {
-	assert.Equal(t, PlatformID, botRecordsFieldsSetter{}.Platform())
+	assert.Equal(t, PlatformID, tgBotRecordsFieldsSetter{}.Platform())
 }

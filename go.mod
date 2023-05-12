@@ -2,16 +2,15 @@ module github.com/bots-go-framework/bots-fw-telegram
 
 go 1.20
 
-replace github.com/bots-go-framework/bots-fw => ../bots-fw
+//replace github.com/bots-go-framework/bots-fw => ../bots-fw
 
 //
-replace github.com/bots-go-framework/bots-fw-store => ../bots-fw-store
+//replace github.com/bots-go-framework/bots-fw-store => ../bots-fw-store
 
 //
-replace github.com/bots-go-framework/bots-fw-telegram-models => ../bots-fw-telegram-models
+//replace github.com/bots-go-framework/bots-fw-telegram-models => ../bots-fw-telegram-models
 
-//
-replace github.com/bots-go-framework/dalgo4botsfw => ../dalgo4botsfw
+//replace github.com/bots-go-framework/dalgo4botsfw => ../dalgo4botsfw
 
 //
 //replace github.com/strongo/app => ../../strongo/app
@@ -22,9 +21,9 @@ replace github.com/bots-go-framework/dalgo4botsfw => ../dalgo4botsfw
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.2.2
-	github.com/bots-go-framework/bots-fw v0.16.1
-	github.com/bots-go-framework/bots-fw-store v0.0.4
-	github.com/bots-go-framework/bots-fw-telegram-models v0.0.3
+	github.com/bots-go-framework/bots-fw v0.16.2
+	github.com/bots-go-framework/bots-fw-store v0.0.5
+	github.com/bots-go-framework/bots-fw-telegram-models v0.0.4
 	github.com/dal-go/dalgo v0.2.28
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/stretchr/testify v1.8.2
