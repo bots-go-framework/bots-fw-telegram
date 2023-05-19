@@ -124,7 +124,7 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 	bot.EnableDebug(c)
 	//bot.Debug = true
 
-	webhookURL := fmt.Sprintf("https://%v/bot/tg/hook?id=%v&token=%v", r.Host, botCode, bot.Token)
+	webhookURL := fmt.Sprintf("https://%v/bot/tg/hook?id=%v", r.Host, botCode)
 
 	webhookConfig := tgbotapi.NewWebhook(webhookURL)
 	webhookConfig.AllowedUpdates = []string{
