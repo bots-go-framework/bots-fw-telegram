@@ -6,10 +6,14 @@ github.com/bots-go-framework/bots-fw v0.16.1 h1:vm//ux/EwCYXdrDXDe62qxrLgpdFL325
 github.com/bots-go-framework/bots-fw v0.16.1/go.mod h1:nVCd6tV/+9wLnmewcFeXXEx6u82ZxXN1ltVzfla5Axo=
 github.com/bots-go-framework/bots-fw v0.16.2 h1:LbkVdrmBeYCO4cbX02pElzWwqQ5/wbzQNhMGVvCyUFg=
 github.com/bots-go-framework/bots-fw v0.16.2/go.mod h1:Jl98LTR7lsCQlL1qMEg/zu/aHdmdJ05APhcLC4gWlYY=
+github.com/bots-go-framework/bots-fw v0.16.8 h1:x7/zzWI9DKPtet310DVKOQKhMTpynCCLhqlYJ9PlES8=
+github.com/bots-go-framework/bots-fw v0.16.8/go.mod h1:9q855DIMQRTdaCjQ1E/o3LWztxNMIiZlZuzx99Gmrys=
 github.com/bots-go-framework/bots-fw-store v0.0.4 h1:oLj6j2TQjG8WWQaz/OxFMAWRojRzX/q1Wv0pr+UhFhg=
 github.com/bots-go-framework/bots-fw-store v0.0.4/go.mod h1:afElYDog6nZQ6f8kJxq9rhmjBFvZQCuAIOecnQFNqaU=
 github.com/bots-go-framework/bots-fw-store v0.0.5 h1:2/qKxpMfiWxjgw1XeDhW8iCXQBXorQcEmQF1dtIdyFY=
 github.com/bots-go-framework/bots-fw-store v0.0.5/go.mod h1:XkLKnHugQ98Wr5VIlw2YuRYJNMcqqYDDw/j47plxmBY=
+github.com/bots-go-framework/bots-fw-store v0.0.7 h1:Prq99VAJWtVkgLkwXtvMQIg0dsi3XQWoFmWRqBj4j5k=
+github.com/bots-go-framework/bots-fw-store v0.0.7/go.mod h1:XkLKnHugQ98Wr5VIlw2YuRYJNMcqqYDDw/j47plxmBY=
 github.com/bots-go-framework/bots-fw-telegram-models v0.0.3 h1:xxkp21CF0Fan32/1UzSZ3YNptdBY6K4/iAHDzuyBDxA=
 github.com/bots-go-framework/bots-fw-telegram-models v0.0.3/go.mod h1:NtrYRkLwTmCB4ZT77ocuY8NHRG5v3IASXx9h4aW/mkM=
 github.com/bots-go-framework/bots-fw-telegram-models v0.0.4 h1:QgJRNkm0tt3y2FC+f594Mm/KtpNPexmSiLv08m4bhXo=
@@ -38,6 +42,8 @@ github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
 github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
+github.com/stretchr/testify v1.8.3 h1:RP3t2pwF7cMEbC1dqtB6poj3niw/9gnV4Cjg5oW5gtY=
+github.com/stretchr/testify v1.8.3/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/strongo/app v0.4.0 h1:I3o7zWG1TBHe6Y/4iEwxtBLQnqH0B7xhMu7TPdbqJpI=
 github.com/strongo/app v0.4.0/go.mod h1:rh+WVQYPuxwCkC/s+2OBUYZuJHIoRbJM9uhCQ5juDLw=
 github.com/strongo/gamp v0.0.1 h1:b6vzHUzNvbPOhzPtIja1NqKf8GQqrJWjs2gninQPZac=
