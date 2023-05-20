@@ -23,7 +23,7 @@ require (
 	github.com/bots-go-framework/bots-api-telegram v0.3.0
 	github.com/bots-go-framework/bots-fw v0.16.8
 	github.com/bots-go-framework/bots-fw-store v0.0.7
-	github.com/bots-go-framework/bots-fw-telegram-models v0.0.4
+	github.com/bots-go-framework/bots-fw-telegram-models v0.0.7
 	github.com/dal-go/dalgo v0.2.28
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/stretchr/testify v1.8.3
