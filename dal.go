@@ -13,7 +13,7 @@ type DataStore interface {
 type TgChatInstanceDal interface {
 	GetTelegramChatInstanceByID(c context.Context, id string) (tgChatInstance botsfwtgmodels.TgChatInstanceData, err error)
 	NewTelegramChatInstance(chatInstanceID string, chatID int64, preferredLanguage string) (tgChatInstance botsfwtgmodels.TgChatInstanceData)
-	SaveTelegramChatInstance(c context.Context, tgChatInstance botsfwtgmodels.TgChatInstanceData) (err error)
+	SaveTelegramChatInstance(c context.Context, id string, tgChatInstance botsfwtgmodels.TgChatInstanceData) (err error)
 }
 
 var tgChatInstanceDal TgChatInstanceDal

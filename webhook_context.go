@@ -86,7 +86,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 			}
 			if changed {
 				log.Debugf(c, "Saving tg chat instance...")
-				if err = tgChatInstanceDal.SaveTelegramChatInstance(c, chatInstance); err != nil {
+				if err = tgChatInstanceDal.SaveTelegramChatInstance(c, chatInstanceID, chatInstance); err != nil {
 					return
 				}
 			}
