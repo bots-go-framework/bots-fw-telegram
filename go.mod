@@ -21,12 +21,12 @@ go 1.20
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.3.0
-	github.com/bots-go-framework/bots-fw v0.16.12
+	github.com/bots-go-framework/bots-fw v0.17.1
 	github.com/bots-go-framework/bots-fw-store v0.0.7
 	github.com/bots-go-framework/bots-fw-telegram-models v0.0.11
 	github.com/dal-go/dalgo v0.2.30
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	github.com/strongo/app v0.5.5
 	github.com/strongo/i18n v0.0.4
 	github.com/strongo/log v0.3.0
@@ -40,7 +40,7 @@ require (
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/strongo/gamp v0.0.1 // indirect
 	github.com/strongo/random v0.0.1 // indirect
-	github.com/strongo/validation v0.0.1 // indirect
+	github.com/strongo/validation v0.0.5 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

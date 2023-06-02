@@ -148,15 +148,15 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Request) (botContext *botsfw.BotContext, entriesWithInputs []botsfw.EntryInputs, err error) {
-	//log.Debugf(c, "tgWebhookHandler.GetBotContextAndInputs()")
-	token := r.URL.Query().Get("token")
-	botSettings, ok := h.botsBy(c).ByAPIToken[token]
+	log.Debugf(c, "tgWebhookHandler.GetBotContextAndInputs(): %s", r.URL.RequestURI())
+	botID := r.URL.Query().Get("id")
+	botSettings, ok := h.botsBy(c).ByCode[botID]
 	if !ok {
-		errMess := fmt.Sprintf("Unknown token: [%v]", token)
+		errMess := fmt.Sprintf("Unknown bot ID (username): [%v]", botID)
 		err = botsfw.ErrAuthFailed(errMess)
 		return
 	}
-	botContext = botsfw.NewBotContext(h.BotHost, botSettings)
+	botContext = botsfw.NewBotContext(h.BotHost, *botSettings)
 	var bodyBytes []byte
 	defer func() {
 		if r.Body != nil {
