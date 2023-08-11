@@ -20,6 +20,8 @@ github.com/bots-go-framework/bots-fw v0.17.1 h1:81I6Od2GhiZorh77yYGyaTZitXMcYlU/
 github.com/bots-go-framework/bots-fw v0.17.1/go.mod h1:exVfNsNj6RaKFt0gNWdxqMk3CNddzevinksldCe6kmw=
 github.com/bots-go-framework/bots-fw v0.17.2 h1:/qSAl3+SPxnRAQbycEN5nvdAsC01tqgLRYaVjxHgdag=
 github.com/bots-go-framework/bots-fw v0.17.2/go.mod h1:UXHnomSLrzphczDC/MA/tuX6v+QReBCVCbp8bT8eA/k=
+github.com/bots-go-framework/bots-fw v0.17.3 h1:1COEVdXTasG06CNzpfddTx8Eoprh7uk16yQUn/r/UFk=
+github.com/bots-go-framework/bots-fw v0.17.3/go.mod h1:UXHnomSLrzphczDC/MA/tuX6v+QReBCVCbp8bT8eA/k=
 github.com/bots-go-framework/bots-fw-store v0.0.4 h1:oLj6j2TQjG8WWQaz/OxFMAWRojRzX/q1Wv0pr+UhFhg=
 github.com/bots-go-framework/bots-fw-store v0.0.4/go.mod h1:afElYDog6nZQ6f8kJxq9rhmjBFvZQCuAIOecnQFNqaU=
 github.com/bots-go-framework/bots-fw-store v0.0.5 h1:2/qKxpMfiWxjgw1XeDhW8iCXQBXorQcEmQF1dtIdyFY=
