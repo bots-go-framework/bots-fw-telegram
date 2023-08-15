@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw-store/botsfwdal"
 	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/strongo/log"
@@ -30,7 +29,7 @@ type tgWebhookHandler struct {
 
 // NewTelegramWebhookHandler creates new Telegram webhooks handler
 func NewTelegramWebhookHandler(
-	dataAccess botsfwdal.DataAccess,
+	//dataAccess botsfwdal.DataAccess,
 	botsBy botsfw.SettingsProvider,
 	translatorProvider botsfw.TranslatorProvider,
 	recordsMaker botsfwmodels.BotRecordsMaker,
@@ -42,7 +41,7 @@ func NewTelegramWebhookHandler(
 	return tgWebhookHandler{
 		botsBy: botsBy,
 		WebhookHandlerBase: botsfw.WebhookHandlerBase{
-			DataAccess:         dataAccess,
+			//DataAccess:         dataAccess,
 			BotPlatform:        platform{},
 			RecordsMaker:       recordsMaker,
 			TranslatorProvider: translatorProvider,
@@ -227,14 +226,9 @@ func (h tgWebhookHandler) unmarshalUpdate(_ context.Context, content []byte) (up
 }
 
 func (h tgWebhookHandler) CreateWebhookContext(
-	appContext botsfw.BotAppContext,
-	r *http.Request, botContext botsfw.BotContext,
-	webhookInput botsfw.WebhookInput,
-	botCoreStores botsfwdal.DataAccess,
-	gaMeasurement botsfw.GaQueuer,
-) botsfw.WebhookContext {
-	return newTelegramWebhookContext(
-		appContext, r, botContext, webhookInput.(TgWebhookInput), botCoreStores, h.RecordsFieldsSetter, gaMeasurement)
+	args botsfw.CreateWebhookContextArgs,
+) (botsfw.WebhookContext, error) {
+	return newTelegramWebhookContext(args, args.WebhookInput.(TgWebhookInput), h.RecordsFieldsSetter)
 }
 
 func (h tgWebhookHandler) GetResponder(w http.ResponseWriter, whc botsfw.WebhookContext) botsfw.WebhookResponder {
@@ -244,6 +238,6 @@ func (h tgWebhookHandler) GetResponder(w http.ResponseWriter, whc botsfw.Webhook
 	panic(fmt.Sprintf("Expected tgWebhookContext, got: %T", whc))
 }
 
-func (h tgWebhookHandler) CreateBotCoreStores(appContext botsfw.BotAppContext, r *http.Request) botsfwdal.DataAccess {
-	return h.WebhookHandlerBase.DataAccess
-}
+//func (h tgWebhookHandler) CreateBotCoreStores(appContext botsfw.BotAppContext, r *http.Request) botsfwdal.DataAccess {
+//	return h.WebhookHandlerBase.DataAccess
+//}

@@ -10,7 +10,7 @@ func BaseTgUserDtoMaker(botID string) (botsfwmodels.BotUserData, error) {
 	return &tgBotUserData, nil
 }
 
-func BaseTgChatDtoMaker(botID string) (botChat botsfwmodels.ChatData, err error) {
+func BaseTgChatDtoMaker(botID string) (botChat botsfwmodels.BotChatData, err error) {
 	tgChat := botsfwtgmodels.TgChatBaseData{}
 	return &tgChat, nil
 }

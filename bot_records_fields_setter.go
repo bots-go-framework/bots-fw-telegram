@@ -40,6 +40,12 @@ func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.BotUserD
 	return nil
 }
 
-func (b tgBotRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.ChatData, chat botsfw.WebhookChat, botID, botUserID, appUserID string, isAccessGranted bool) error {
+func (b tgBotRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.BotChatData, chat botsfw.WebhookChat, botID, botUserID, appUserID string, isAccessGranted bool) error {
+	tgBotChatData := botChat.(botsfwtgmodels.TgChatData)
+	baseTgChatData := tgBotChatData.BaseTgChatData()
+	baseTgChatData.BotID = botID
+	baseTgChatData.BotUserID = botUserID
+	baseTgChatData.AppUserID = appUserID
+	baseTgChatData.SetAccessGranted(isAccessGranted) // TODO(help-wanted): can be set outside, no need to pass as parameter
 	return nil
 }

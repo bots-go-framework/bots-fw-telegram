@@ -8,5 +8,5 @@ func TestNewTelegramWebhookHandler(t *testing.T) {
 			t.Errorf("NewTelegramWebhookHandler() did not panic")
 		}
 	}()
-	NewTelegramWebhookHandler(nil, nil, nil, nil, nil)
+	NewTelegramWebhookHandler(nil, nil, nil, nil)
 }
