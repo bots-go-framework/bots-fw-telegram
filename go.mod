@@ -23,7 +23,7 @@ toolchain go1.21.4
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.4.2
-	github.com/bots-go-framework/bots-fw v0.21.7
+	github.com/bots-go-framework/bots-fw v0.22.0
 	github.com/bots-go-framework/bots-fw-store v0.1.2
 	github.com/bots-go-framework/bots-fw-telegram-models v0.0.14
 	github.com/dal-go/dalgo v0.12.0
