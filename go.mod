@@ -4,34 +4,17 @@ go 1.21
 
 toolchain go1.21.4
 
-//replace github.com/bots-go-framework/bots-fw => ../bots-fw
-
-//
-//replace github.com/bots-go-framework/bots-fw-store => ../bots-fw-store
-
-//
-//replace github.com/bots-go-framework/bots-fw-telegram-models => ../bots-fw-telegram-models
-
-//replace github.com/bots-go-framework/dalgo4botsfw => ../dalgo4botsfw
-
-//
-//replace github.com/strongo/app => ../../strongo/app
-//
-//replace github.com/strongo/i18n => ../../strongo/i18n
-
-//replace github.com/bots-go-framework/dalgo4botsfw-telegram => ../dalgo4botsfw-telegram
-
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.4.2
-	github.com/bots-go-framework/bots-fw v0.22.0
+	github.com/bots-go-framework/bots-fw v0.23.0
 	github.com/bots-go-framework/bots-fw-store v0.1.2
-	github.com/bots-go-framework/bots-fw-telegram-models v0.0.14
+	github.com/bots-go-framework/bots-fw-telegram-models v0.0.15
 	github.com/dal-go/dalgo v0.12.0
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
 	github.com/stretchr/testify v1.8.4
-	github.com/strongo/app v0.5.7
 	github.com/strongo/i18n v0.0.4
 	github.com/strongo/log v0.3.0
+	github.com/strongo/strongoapp v0.9.1
 )
 
 require (

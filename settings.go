@@ -2,13 +2,13 @@ package telegram
 
 import (
 	"github.com/bots-go-framework/bots-fw/botsfw"
-	"github.com/strongo/app"
 	"github.com/strongo/i18n"
+	"github.com/strongo/strongoapp"
 )
 
 // NewTelegramBot creates definition of new telegram bot
 func NewTelegramBot(
-	mode strongo.Environment,
+	mode strongoapp.Environment,
 	profile botsfw.BotProfile,
 	code, token, paymentTestToken, paymentToken, gaToken string,
 	locale i18n.Locale,
