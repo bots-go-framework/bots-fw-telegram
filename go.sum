@@ -6,6 +6,8 @@ github.com/bots-go-framework/bots-fw-store v0.4.0 h1:5gQNsMNJ2rni3uGvXt7TeG+V7LF
 github.com/bots-go-framework/bots-fw-store v0.4.0/go.mod h1:T2yX1QodQ9A1nep/aIAL/czt9adqMyIBVTGOAdNVPAI=
 github.com/bots-go-framework/bots-fw-telegram-models v0.0.15 h1:V0jEZ6RmwKVgVPrfWADXiYiSYpa+rna3SBho8euHU8c=
 github.com/bots-go-framework/bots-fw-telegram-models v0.0.15/go.mod h1:Zl9bA1OJe+5yAt9x76s+fNNXcmeD1Kei1ogvPRb22/M=
+github.com/bots-go-framework/bots-fw-telegram-models v0.0.16 h1:f9v1EJjIyiIpaeJiNR9IUvnVX5XLka4Wn8dVpkdNMXc=
+github.com/bots-go-framework/bots-fw-telegram-models v0.0.16/go.mod h1:7LkpU06SvWDV4Y1y+8IGGowAn2Z8skZQiGJ6cRzAWYg=
 github.com/bots-go-framework/bots-go-core v0.0.2 h1:3F/czNOLZCO5rco1Zr9rATLvJrze5PZpa2dMRv4ON+M=
 github.com/bots-go-framework/bots-go-core v0.0.2/go.mod h1:u4r0W8t+n/07ulLlPZT3rdCt+mb5WHXP72z4oeTJVN0=
 github.com/dal-go/dalgo v0.12.0 h1:giibzqo6mIkU06b0r4uKb3ZEa2agtj1qnL8RNa6sOBM=
