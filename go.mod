@@ -2,7 +2,7 @@ module github.com/bots-go-framework/bots-fw-telegram
 
 go 1.21
 
-toolchain go1.22.3
+toolchain go1.22.4
 
 //replace github.com/bots-go-framework/bots-fw-store => ../bots-fw-store
 
