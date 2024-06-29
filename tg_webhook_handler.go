@@ -7,7 +7,7 @@ import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
 	"github.com/bots-go-framework/bots-fw/botsfw"
-	"github.com/strongo/log"
+	"github.com/strongo/logus"
 	"io"
 	"net/http"
 	"runtime/debug"
@@ -78,10 +78,10 @@ func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host
 
 func httpHandlerTestTimeNow(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log.Debugf(ctx, "Test request")
+	logus.Debugf(ctx, "Test request")
 	now := time.Now().Format(time.RFC3339Nano)
 	if _, err := w.Write([]byte("Test: " + now)); err != nil {
-		log.Errorf(ctx, "Failed to write test response: %v", err)
+		logus.Errorf(ctx, "Failed to write test response: %v", err)
 	}
 }
 
@@ -94,7 +94,7 @@ func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Re
 	defer func() {
 		if err := recover(); err != nil {
 			stack := string(debug.Stack())
-			log.Criticalf(h.Context(r), "Unhandled panic in Telegram handler: %v\nStack trace: %s", err, stack)
+			logus.Criticalf(h.Context(r), "Unhandled panic in Telegram handler: %v\nStack trace: %s", err, stack)
 		}
 	}()
 
@@ -103,7 +103,7 @@ func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Re
 
 func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 	c := h.Context(r)
-	log.Debugf(c, "tgWebhookHandler.SetWebhook()")
+	logus.Debugf(c, "tgWebhookHandler.SetWebhook()")
 	ctxWithDeadline, cancel := context.WithTimeout(c, 30*time.Second)
 	defer cancel()
 	client := h.GetHTTPClient(ctxWithDeadline)
@@ -116,7 +116,7 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		m := fmt.Sprintf("Bot not found by code: %v", botCode)
 		http.Error(w, m, http.StatusBadRequest)
-		log.Errorf(c, fmt.Sprintf("%v. All bots: %v", m, h.botsBy(c).ByCode))
+		logus.Errorf(c, fmt.Sprintf("%v. All bots: %v", m, h.botsBy(c).ByCode))
 		return
 	}
 	bot := tgbotapi.NewBotAPIWithClient(botSettings.Token, client)
@@ -134,20 +134,20 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 		"callback_query",
 	}
 	if response, err := bot.SetWebhook(*webhookConfig); err != nil {
-		log.Errorf(c, "%v", err)
+		logus.Errorf(c, "%v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err := w.Write([]byte(err.Error())); err != nil {
-			log.Errorf(c, "Failed to write error to response: %v", err)
+			logus.Errorf(c, "Failed to write error to response: %v", err)
 		}
 	} else {
 		if _, err := w.Write([]byte(fmt.Sprintf("Webhook set\nErrorCode: %d\nDescription: %v\nContent: %v", response.ErrorCode, response.Description, string(response.Result)))); err != nil {
-			log.Errorf(c, "Failed to write error to response: %v", err)
+			logus.Errorf(c, "Failed to write error to response: %v", err)
 		}
 	}
 }
 
 func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Request) (botContext *botsfw.BotContext, entriesWithInputs []botsfw.EntryInputs, err error) {
-	log.Debugf(c, "tgWebhookHandler.GetBotContextAndInputs(): %s", r.URL.RequestURI())
+	logus.Debugf(c, "tgWebhookHandler.GetBotContextAndInputs(): %s", r.URL.RequestURI())
 	botID := r.URL.Query().Get("id")
 	botSettings, ok := h.botsBy(c).ByCode[botID]
 	if !ok {
@@ -160,7 +160,7 @@ func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Requ
 	defer func() {
 		if r.Body != nil {
 			if err := r.Body.Close(); err != nil {
-				log.Errorf(c, "Failed to close request body: %v", err)
+				logus.Errorf(c, "Failed to close request body: %v", err)
 			}
 		}
 	}()
@@ -181,9 +181,9 @@ func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Requ
 				} else {
 					bodyStr = string(bodyBytes)
 				}
-				log.Debugf(c, "Request body: %v", bodyStr)
+				logus.Debugf(c, "Request body: %v", bodyStr)
 			} else {
-				log.Debugf(c, "Request len(body): %v", len(bodyBytes))
+				logus.Debugf(c, "Request len(body): %v", len(bodyBytes))
 			}
 		}
 	}
@@ -213,7 +213,7 @@ func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Requ
 		err = fmt.Errorf("telegram input is <nil>: %w", botsfw.ErrNotImplemented)
 		return
 	}
-	log.Debugf(c, "Telegram input type: %T", input)
+	logus.Debugf(c, "Telegram input type: %T", input)
 	return
 }
 

@@ -9,7 +9,7 @@ import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/pquerna/ffjson/ffjson"
-	"github.com/strongo/log"
+	"github.com/strongo/logus"
 	"net/http"
 	"strconv"
 	"time"
@@ -29,7 +29,7 @@ func newTgWebhookResponder(w http.ResponseWriter, whc *tgWebhookContext) tgWebho
 }
 
 func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromBot, channel botsfw.BotAPISendMessageChannel) (resp botsfw.OnMessageSentResponse, err error) {
-	log.Debugf(c, "tgWebhookResponder.SendMessage(channel=%v, isEdit=%v)\nm: %+v", channel, m.IsEdit, m)
+	logus.Debugf(c, "tgWebhookResponder.SendMessage(channel=%v, isEdit=%v)\nm: %+v", channel, m.IsEdit, m)
 	if channel != botsfw.BotAPISendMessageOverHTTPS && channel != botsfw.BotAPISendMessageOverResponse {
 		panic(fmt.Sprintf("Unknown channel: [%v]. Expected either 'https' or 'response'.", channel))
 	}
@@ -47,8 +47,11 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 			return "HTML"
 		case botsfw.MessageFormatMarkdown:
 			return "Markdown"
+		case botsfw.MessageFormatText:
+			return "Text"
+		default:
+			return fmt.Sprintf("%d", m.Format)
 		}
-		return ""
 	}
 
 	tgUpdate := r.whc.Input().(tgWebhookUpdateProvider).TgUpdate()
@@ -56,10 +59,10 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 	var botMessage botsfw.BotMessage
 
 	if m.Text == botsfw.NoMessageToSend {
-		log.Debugf(c, botsfw.NoMessageToSend)
+		logus.Debugf(c, botsfw.NoMessageToSend)
 		return
 	} else if botMessage = m.BotMessage; botMessage != nil {
-		log.Debugf(c, "m.BotMessage != nil")
+		logus.Debugf(c, "m.BotMessage != nil")
 		switch m.BotMessage.BotMessageType() {
 		case botsfw.BotMessageTypeInlineResults:
 			chattable = tgbotapi.InlineConfig(m.BotMessage.(InlineBotMessage))
@@ -90,9 +93,9 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 		}
 	} else if m.IsEdit || (tgUpdate.CallbackQuery != nil && tgUpdate.CallbackQuery.InlineMessageID != "" && m.ToChat == nil) {
 		if m.IsEdit {
-			log.Debugf(c, "m.IsEdit")
+			logus.Debugf(c, "m.IsEdit")
 		} else if tgUpdate.CallbackQuery != nil {
-			log.Debugf(c, "tgUpdate.CallbackQuery != nil")
+			logus.Debugf(c, "tgUpdate.CallbackQuery != nil")
 		}
 
 		// Edit message
@@ -132,7 +135,7 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 				return
 			}
 		}
-		log.Debugf(c, "Edit message => inlineMessageID: %v, chatID: %d, messageID: %d", inlineMessageID, chatID, messageID)
+		logus.Debugf(c, "Edit message => inlineMessageID: %v, chatID: %d, messageID: %d", inlineMessageID, chatID, messageID)
 		if inlineMessageID == "" && chatID == 0 && messageID == 0 {
 			err = errors.New("Can't edit Telegram message as inlineMessageID is empty && chatID == 0 && messageID == 0")
 			return
@@ -176,15 +179,15 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 	} else {
 		switch r.whc.InputType() {
 		case botsfw.WebhookInputInlineQuery: // pass
-			log.Debugf(c, "No response to WebhookInputInlineQuery")
+			logus.Debugf(c, "No response to WebhookInputInlineQuery")
 		case botsfw.WebhookInputChosenInlineResult: // pass
 		default:
 			mBytes, err := ffjson.Marshal(m)
 			if err != nil {
-				log.Errorf(c, "Failed to marshal MessageFromBot to JSON: %v", err)
+				logus.Errorf(c, "Failed to marshal MessageFromBot to JSON: %v", err)
 			}
 			inputTypeName := botsfw.WebhookInputTypeNames[r.whc.InputType()]
-			log.Debugf(c, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, string(mBytes))
+			logus.Debugf(c, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, string(mBytes))
 			ffjson.Pool(mBytes)
 		}
 		return
@@ -192,7 +195,7 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 
 	jsonStr, err := ffjson.Marshal(chattable)
 	if err != nil {
-		log.Errorf(c, "Failed to marshal message config to json: %v\n\tJSON: %v\n\tchattable: %v", err, jsonStr, chattable)
+		logus.Errorf(c, "Failed to marshal message config to json: %v\n\tJSON: %v\n\tchattable: %v", err, jsonStr, chattable)
 		ffjson.Pool(jsonStr)
 		return resp, err
 	}
@@ -204,19 +207,19 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 		indentedJSONStr = string(jsonStr)
 	}
 	ffjson.Pool(jsonStr)
-	log.Debugf(c, "Sending to Telegram, Text: %v\n------------------------\nAs JSON: %v", m.Text, indentedJSONStr)
+	logus.Debugf(c, "Sending to Telegram, Text: %v\n------------------------\nAs JSON: %v", m.Text, indentedJSONStr)
 
 	//if values, err := chattable.Values(); err != nil {
-	//	log.Errorf(c, "Failed to marshal message config to url.Values: %v", err)
+	//	logus.Errorf(c, "Failed to marshal message config to url.Values: %v", err)
 	//	return resp, err
 	//} else {
-	//	log.Debugf(c, "Message for sending to Telegram as URL values: %v", values)
+	//	logus.Debugf(c, "Message for sending to Telegram as URL values: %v", values)
 	//}
 
 	switch channel {
 	case botsfw.BotAPISendMessageOverResponse:
 		if _, err := tgbotapi.ReplyToResponse(chattable, r.w); err != nil {
-			log.Errorf(c, "Failed to send message to Telegram throw HTTP response: %v", err)
+			logus.Errorf(c, "Failed to send message to Telegram throw HTTP response: %v", err)
 		}
 		return resp, err
 	case botsfw.BotAPISendMessageOverHTTPS:
@@ -230,13 +233,13 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 		if err != nil {
 			return resp, err
 		} else if message.MessageID != 0 {
-			log.Debugf(c, "Telegram API: MessageID=%v", message.MessageID)
+			logus.Debugf(c, "Telegram API: MessageID=%v", message.MessageID)
 		} else {
 			messageJSON, err := ffjson.Marshal(message)
 			if err != nil {
-				log.Warningf(c, "Telegram API response as raw: %v", message)
+				logus.Warningf(c, "Telegram API response as raw: %v", message)
 			} else {
-				log.Debugf(c, "Telegram API response as JSON: %v", string(messageJSON))
+				logus.Debugf(c, "Telegram API response as JSON: %v", string(messageJSON))
 			}
 			ffjson.Pool(messageJSON)
 		}
