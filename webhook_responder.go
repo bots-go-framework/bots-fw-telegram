@@ -30,7 +30,10 @@ func newTgWebhookResponder(w http.ResponseWriter, whc *tgWebhookContext) tgWebho
 
 func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromBot, channel botsfw.BotAPISendMessageChannel) (resp botsfw.OnMessageSentResponse, err error) {
 	logus.Debugf(c, "tgWebhookResponder.SendMessage(channel=%v, isEdit=%v)\nm: %+v", channel, m.IsEdit, m)
-	if channel != botsfw.BotAPISendMessageOverHTTPS && channel != botsfw.BotAPISendMessageOverResponse {
+	switch channel {
+	case botsfw.BotAPISendMessageOverHTTPS, botsfw.BotAPISendMessageOverResponse:
+	// Known channels
+	default:
 		panic(fmt.Sprintf("Unknown channel: [%v]. Expected either 'https' or 'response'.", channel))
 	}
 	//ctx := tc.Context()
@@ -44,13 +47,13 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 	parseMode := func() string {
 		switch m.Format {
 		case botsfw.MessageFormatHTML:
-			return "HTML"
+			return "html"
 		case botsfw.MessageFormatMarkdown:
-			return "Markdown"
+			return "markdown"
 		case botsfw.MessageFormatText:
-			return "Text"
+			return ""
 		default:
-			return fmt.Sprintf("%d", m.Format)
+			panic(fmt.Sprintf("Unknown message parse_mode value: %d", m.Format))
 		}
 	}
 
