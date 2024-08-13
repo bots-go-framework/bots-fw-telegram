@@ -180,7 +180,7 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 
 		chattable = messageConfig
 	} else {
-		switch r.whc.InputType() {
+		switch inputType := r.whc.InputType(); inputType {
 		case botsfw.WebhookInputInlineQuery: // pass
 			logus.Debugf(c, "No response to WebhookInputInlineQuery")
 		case botsfw.WebhookInputChosenInlineResult: // pass
@@ -189,7 +189,6 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 			if err != nil {
 				logus.Errorf(c, "Failed to marshal MessageFromBot to JSON: %v", err)
 			}
-			inputType := r.whc.InputType()
 			inputTypeName := botsfw.GetWebhookInputTypeIdNameString(inputType)
 			logus.Debugf(c, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, string(mBytes))
 			ffjson.Pool(mBytes)
