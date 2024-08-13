@@ -189,7 +189,8 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 			if err != nil {
 				logus.Errorf(c, "Failed to marshal MessageFromBot to JSON: %v", err)
 			}
-			inputTypeName := botsfw.WebhookInputTypeNames[r.whc.InputType()]
+			inputType := r.whc.InputType()
+			inputTypeName := botsfw.GetWebhookInputTypeIdNameString(inputType)
 			logus.Debugf(c, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, string(mBytes))
 			ffjson.Pool(mBytes)
 		}
