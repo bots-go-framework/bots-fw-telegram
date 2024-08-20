@@ -46,7 +46,7 @@ func (b tgBotRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.BotChatD
 	tgBotChatData := botChat.(botsfwtgmodels.TgChatData)
 	baseTgChatData := tgBotChatData.BaseTgChatData()
 	//baseTgChatData.BotID = botID
-	baseTgChatData.BotUserID = botUserID
+	baseTgChatData.SetBotUserID(botUserID)
 	baseTgChatData.AppUserID = appUserID
 	baseTgChatData.SetAccessGranted(isAccessGranted) // TODO(help-wanted): can be set outside, no need to pass as parameter
 	return nil
