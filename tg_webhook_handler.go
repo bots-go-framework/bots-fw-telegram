@@ -155,7 +155,7 @@ func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Requ
 		err = botsfw.ErrAuthFailed(errMess)
 		return
 	}
-	botContext = botsfw.NewBotContext(h.BotHost, *botSettings)
+	botContext = botsfw.NewBotContext(h.BotHost, botSettings)
 	var bodyBytes []byte
 	defer func() {
 		if r.Body != nil {

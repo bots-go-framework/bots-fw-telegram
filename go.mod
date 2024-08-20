@@ -8,7 +8,7 @@ go 1.23.0
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.4.5
-	github.com/bots-go-framework/bots-fw v0.26.3
+	github.com/bots-go-framework/bots-fw v0.28.0
 	github.com/bots-go-framework/bots-fw-store v0.4.0
 	github.com/bots-go-framework/bots-fw-telegram-models v0.1.8
 	github.com/dal-go/dalgo v0.12.1
