@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
@@ -124,43 +125,45 @@ func newTelegramWebhookContext(
 	args botsfw.CreateWebhookContextArgs,
 	input TgWebhookInput,
 	recordsFieldsSetter botsfw.BotRecordsFieldsSetter,
-) (*tgWebhookContext, error) {
-	twhc := &tgWebhookContext{
-		tgInput: input,
-	}
+) (twhc *tgWebhookContext, err error) {
+	twhc = &tgWebhookContext{tgInput: input}
+
 	chat := twhc.tgInput.TgUpdate().Chat()
 
-	isInGroup := func() bool { // Checks if current chat is a group chat
+	getIsInGroup := func() (isInGroup bool, err error) { // Checks if current chat is a group chat
 		if chat != nil && chat.IsGroup() {
-			return true
+			return true, nil
 		}
 
 		if callbackQuery := twhc.tgInput.TgUpdate().CallbackQuery; callbackQuery != nil && callbackQuery.ChatInstance != "" {
 			c := args.BotContext.BotHost.Context(args.HttpRequest)
 			var isGroupChat bool
-			chatInstance, err := tgChatInstanceDal.GetTelegramChatInstanceByID(c, callbackQuery.ChatInstance)
-			if err != nil {
+			if tgChatInstanceDal == nil {
+				err = errors.New("tgChatInstanceDal is nil")
+				return
+			}
+			var chatInstance botsfwtgmodels.TgChatInstanceData
+			if chatInstance, err = tgChatInstanceDal.GetTelegramChatInstanceByID(c, callbackQuery.ChatInstance); err != nil {
 				if !dal.IsNotFound(err) {
 					logus.Errorf(c, "failed to get tg chat instance: %v", err)
 				}
-				return isGroupChat
+				return isGroupChat, err
 			} else if chatInstance != nil {
 				isGroupChat = chatInstance.GetTgChatID() < 0
 			}
-			return isGroupChat
+			return isGroupChat, err
 		}
 
-		return false
+		return false, err
 	}
 
-	whcb, err := botsfw.NewWebhookContextBase(
+	twhc.WebhookContextBase, err = botsfw.NewWebhookContextBase(
 		args,
 		Platform,
 		recordsFieldsSetter,
-		isInGroup,
+		getIsInGroup,
 		twhc.getLocalAndChatIDByChatInstance,
 	)
-	twhc.WebhookContextBase = whcb
 	return twhc, err
 }
 
