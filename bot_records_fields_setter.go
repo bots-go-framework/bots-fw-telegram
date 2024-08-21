@@ -29,10 +29,10 @@ func (b tgBotRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserD
 	return b.setAppUserFields(appUser, sender)
 }
 
-func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.BotUserData, sender botsfw.WebhookSender, botID, botUserID, appUserID string) error {
+func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.PlatformUserData, sender botsfw.WebhookSender, botID, botUserID, appUserID string) error {
 	//tgSender := sender.(tgWebhookSender)
-	tgBotUser := botUser.(botsfwtgmodels.TgBotUser)
-	tgBotUserBaseData := tgBotUser.TgBotUserBaseData()
+	tgBotUser := botUser.(botsfwtgmodels.TgPlatformUser)
+	tgBotUserBaseData := tgBotUser.TgPlatformUserBaseDbo()
 	botUserBaseData := tgBotUserBaseData.BaseData()
 	//botUserBaseData.AppUserIntID = tgSender.tgUser.ID
 	botUserBaseData.FirstName = sender.GetFirstName()

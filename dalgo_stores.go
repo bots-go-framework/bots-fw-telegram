@@ -14,15 +14,15 @@ package telegram
 //func newDalgoBotUserStore(db dalgo4botsfw.DbProvider) botsfw.BotUserStore {
 //
 //	newUserData := func() botsfw.BotUser {
-//		return new(botsfwtgmodels.TgBotUserBaseData)
+//		return new(botsfwtgmodels.PlatformBotUserBaseData)
 //	}
 //
 //	createBotUser := func(c context.Context, botID string, apiUser botsfw.WebhookActor) (botsfw.BotUser, error) {
 //		if apiUser == nil {
-//			return &botsfwtgmodels.TgBotUserBaseData{}, nil
+//			return &botsfwtgmodels.PlatformBotUserBaseData{}, nil
 //		}
-//		return &botsfwtgmodels.TgBotUserBaseData{
-//			BotUserData: botsfw.BotUserData{
+//		return &botsfwtgmodels.PlatformBotUserBaseData{
+//			PlatformUserData: botsfw.PlatformUserData{
 //				BotEntity: botsfw.BotEntity{
 //					OwnedByUserWithID: user.NewOwnedByUserWithIntID(0, time.Now()),
 //				},
