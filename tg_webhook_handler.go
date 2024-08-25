@@ -181,7 +181,7 @@ func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Requ
 				} else {
 					bodyStr = string(bodyBytes)
 				}
-				logus.Debugf(c, "Request body: %v", bodyStr)
+				logus.Debugf(c, "Request body (%s): %s", r.URL.String(), bodyStr)
 			} else {
 				logus.Debugf(c, "Request len(body): %v", len(bodyBytes))
 			}
