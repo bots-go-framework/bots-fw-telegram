@@ -32,7 +32,7 @@ func NewTelegramWebhookHandler(
 	//dataAccess botsfwdal.DataAccess,
 	botsBy botsfw.SettingsProvider,
 	translatorProvider botsfw.TranslatorProvider,
-	recordsMaker botsfwmodels.BotRecordsMaker,
+	//recordsMaker botsfwmodels.BotRecordsMaker,
 	setAppUserFields func(botsfwmodels.AppUserData, botsfw.WebhookSender) error,
 ) botsfw.WebhookHandler {
 	if translatorProvider == nil {
@@ -42,8 +42,8 @@ func NewTelegramWebhookHandler(
 		botsBy: botsBy,
 		WebhookHandlerBase: botsfw.WebhookHandlerBase{
 			//DataAccess:         dataAccess,
-			BotPlatform:        platform{},
-			RecordsMaker:       recordsMaker,
+			BotPlatform: platform{},
+			//RecordsMaker:       recordsMaker,
 			TranslatorProvider: translatorProvider,
 			RecordsFieldsSetter: tgBotRecordsFieldsSetter{
 				setAppUserFields: setAppUserFields,
