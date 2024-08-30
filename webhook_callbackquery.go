@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/bots-go-framework/bots-fw/botinput"
 	"strconv"
 )
 
@@ -14,14 +14,14 @@ type TgWebhookCallbackQuery struct { // TODO: make non-exportable
 }
 
 var (
-	_ botsfw.WebhookCallbackQuery = (*TgWebhookCallbackQuery)(nil)
-	_ TgWebhookInput              = (*TgWebhookCallbackQuery)(nil)
-	_ botsfw.WebhookInput         = (*TgWebhookCallbackQuery)(nil)
+	_ botinput.WebhookCallbackQuery = (*TgWebhookCallbackQuery)(nil)
+	_ TgWebhookInput                = (*TgWebhookCallbackQuery)(nil)
+	_ botinput.WebhookInput         = (*TgWebhookCallbackQuery)(nil)
 )
 
 // InputType return WebhookInputCallbackQuery
-func (twhcbq TgWebhookCallbackQuery) InputType() botsfw.WebhookInputType {
-	return botsfw.WebhookInputCallbackQuery
+func (twhcbq TgWebhookCallbackQuery) InputType() botinput.WebhookInputType {
+	return botinput.WebhookInputCallbackQuery
 }
 
 func newTelegramWebhookCallbackQuery(input tgWebhookInput) TgWebhookCallbackQuery {
@@ -46,7 +46,7 @@ func (twhcbq TgWebhookCallbackQuery) Sequence() int {
 }
 
 // GetMessage returns message
-func (twhcbq TgWebhookCallbackQuery) GetMessage() botsfw.WebhookMessage {
+func (twhcbq TgWebhookCallbackQuery) GetMessage() botinput.WebhookMessage {
 	return newTelegramWebhookMessage(twhcbq.tgWebhookInput, twhcbq.update.CallbackQuery.Message)
 }
 
@@ -56,8 +56,8 @@ func (twhcbq TgWebhookCallbackQuery) TelegramCallbackMessage() *tgbotapi.Message
 }
 
 // GetFrom returns sender
-func (twhcbq TgWebhookCallbackQuery) GetFrom() botsfw.WebhookSender {
-	return tgWebhookSender{tgUser: twhcbq.update.CallbackQuery.From}
+func (twhcbq TgWebhookCallbackQuery) GetFrom() botinput.WebhookSender {
+	return tgWebhookUser{tgUser: twhcbq.update.CallbackQuery.From}
 }
 
 // GetData returns callback query data
@@ -79,7 +79,7 @@ func (twhcbq TgWebhookCallbackQuery) BotChatID() (string, error) {
 }
 
 // EditMessageOnCallbackQuery creates edit message
-func EditMessageOnCallbackQuery(whcbq botsfw.WebhookCallbackQuery, parseMode, text string) *tgbotapi.EditMessageTextConfig {
+func EditMessageOnCallbackQuery(whcbq botinput.WebhookCallbackQuery, parseMode, text string) *tgbotapi.EditMessageTextConfig {
 	twhcbq := whcbq.(TgWebhookCallbackQuery)
 	callbackQuery := twhcbq.update.CallbackQuery
 

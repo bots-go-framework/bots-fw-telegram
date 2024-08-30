@@ -1,23 +1,25 @@
 package telegram
 
-import "github.com/bots-go-framework/bots-fw/botsfw"
+import (
+	"github.com/bots-go-framework/bots-fw/botinput"
+)
 
 type tgWebhookNewChatMembersMessage struct {
 	tgWebhookMessage
 }
 
-func (tgWebhookNewChatMembersMessage) InputType() botsfw.WebhookInputType {
-	return botsfw.WebhookInputNewChatMembers
+func (tgWebhookNewChatMembersMessage) InputType() botinput.WebhookInputType {
+	return botinput.WebhookInputNewChatMembers
 }
 
-var _ botsfw.WebhookNewChatMembersMessage = (*tgWebhookNewChatMembersMessage)(nil)
+var _ botinput.WebhookNewChatMembersMessage = (*tgWebhookNewChatMembersMessage)(nil)
 
 func newTgWebhookNewChatMembersMessage(input tgWebhookInput) tgWebhookNewChatMembersMessage {
 	return tgWebhookNewChatMembersMessage{tgWebhookMessage: newTelegramWebhookMessage(input, input.update.Message)}
 }
 
-func (m tgWebhookNewChatMembersMessage) NewChatMembers() []botsfw.WebhookActor {
-	members := make([]botsfw.WebhookActor, len(m.message.NewChatMembers))
+func (m tgWebhookNewChatMembersMessage) NewChatMembers() []botinput.WebhookActor {
+	members := make([]botinput.WebhookActor, len(m.message.NewChatMembers))
 	for i, m := range m.message.NewChatMembers {
 		members[i] = m
 	}

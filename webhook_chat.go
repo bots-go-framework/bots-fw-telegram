@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/bots-go-framework/bots-fw/botinput"
 	"strconv"
 )
 
@@ -11,7 +11,7 @@ type TgWebhookChat struct {
 	chat *tgbotapi.Chat
 }
 
-var _ botsfw.WebhookChat = (*TgWebhookChat)(nil)
+var _ botinput.WebhookChat = (*TgWebhookChat)(nil)
 
 // GetID returns telegram chat ID
 func (wh TgWebhookChat) GetID() string {

@@ -1,15 +1,17 @@
 package telegram
 
-import "github.com/bots-go-framework/bots-fw/botsfw"
+import (
+	"github.com/bots-go-framework/bots-fw/botinput"
+)
 
 type tgWebhookChosenInlineResult struct {
 	tgWebhookInput
 }
 
-var _ botsfw.WebhookChosenInlineResult = (*tgWebhookChosenInlineResult)(nil)
+var _ botinput.WebhookChosenInlineResult = (*tgWebhookChosenInlineResult)(nil)
 
-func (tgWebhookChosenInlineResult) InputType() botsfw.WebhookInputType {
-	return botsfw.WebhookInputChosenInlineResult
+func (tgWebhookChosenInlineResult) InputType() botinput.WebhookInputType {
+	return botinput.WebhookInputChosenInlineResult
 }
 
 func newTelegramWebhookChosenInlineResult(input tgWebhookInput) tgWebhookChosenInlineResult {
@@ -31,8 +33,8 @@ func (q tgWebhookChosenInlineResult) GetInlineMessageID() string {
 	return ""
 }
 
-func (q tgWebhookChosenInlineResult) GetFrom() botsfw.WebhookSender {
-	return tgWebhookSender{tgUser: q.update.ChosenInlineResult.From}
+func (q tgWebhookChosenInlineResult) GetFrom() botinput.WebhookSender {
+	return tgWebhookUser{tgUser: q.update.ChosenInlineResult.From}
 }
 
 func (q tgWebhookChosenInlineResult) BotChatID() (string, error) {

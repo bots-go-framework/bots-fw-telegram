@@ -2,43 +2,47 @@ package telegram
 
 import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
-var _ botsfw.WebhookSender = (*tgWebhookSender)(nil)
+var _ botinput.WebhookUser = (*tgWebhookUser)(nil)
 
-type tgWebhookSender struct {
+type tgWebhookUser struct {
 	tgUser *tgbotapi.User
 }
 
-func (tgWebhookSender) IsBotUser() bool { // TODO: Can we get rid of it here?
-	return false
-}
-
-func (s tgWebhookSender) GetID() interface{} {
-	return s.tgUser.ID
-}
-
-func (s tgWebhookSender) GetFirstName() string {
-	return s.tgUser.FirstName
-}
-
-func (s tgWebhookSender) GetLastName() string {
-	return s.tgUser.LastName
-}
-
-func (s tgWebhookSender) GetUserName() string {
-	return s.tgUser.UserName
-}
-
-func (tgWebhookSender) Platform() string {
-	return PlatformID
-}
-
-func (tgWebhookSender) GetAvatar() string {
+func (s tgWebhookUser) GetCountry() string {
 	return ""
 }
 
-func (s tgWebhookSender) GetLanguage() string {
+func (tgWebhookUser) IsBotUser() bool { // TODO: Can we get rid of it here?
+	return false
+}
+
+func (s tgWebhookUser) GetID() interface{} {
+	return s.tgUser.ID
+}
+
+func (s tgWebhookUser) GetFirstName() string {
+	return s.tgUser.FirstName
+}
+
+func (s tgWebhookUser) GetLastName() string {
+	return s.tgUser.LastName
+}
+
+func (s tgWebhookUser) GetUserName() string {
+	return s.tgUser.UserName
+}
+
+func (tgWebhookUser) Platform() string {
+	return PlatformID
+}
+
+func (tgWebhookUser) GetAvatar() string {
+	return ""
+}
+
+func (s tgWebhookUser) GetLanguage() string {
 	return s.tgUser.LanguageCode
 }

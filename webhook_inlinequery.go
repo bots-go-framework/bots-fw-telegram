@@ -1,6 +1,8 @@
 package telegram
 
-import "github.com/bots-go-framework/bots-fw/botsfw"
+import (
+	"github.com/bots-go-framework/bots-fw/botinput"
+)
 
 // TgWebhookInlineQuery is wrapper
 type TgWebhookInlineQuery struct {
@@ -8,11 +10,11 @@ type TgWebhookInlineQuery struct {
 }
 
 // InputType returns WebhookInputInlineQuery
-func (TgWebhookInlineQuery) InputType() botsfw.WebhookInputType {
-	return botsfw.WebhookInputInlineQuery
+func (TgWebhookInlineQuery) InputType() botinput.WebhookInputType {
+	return botinput.WebhookInputInlineQuery
 }
 
-var _ botsfw.WebhookInlineQuery = (*TgWebhookInlineQuery)(nil)
+var _ botinput.WebhookInlineQuery = (*TgWebhookInlineQuery)(nil)
 
 func newTelegramWebhookInlineQuery(input tgWebhookInput) TgWebhookInlineQuery {
 	return TgWebhookInlineQuery{tgWebhookInput: input}
@@ -29,8 +31,8 @@ func (iq TgWebhookInlineQuery) GetQuery() string {
 }
 
 // GetFrom returns recipient
-func (iq TgWebhookInlineQuery) GetFrom() botsfw.WebhookSender {
-	return tgWebhookSender{tgUser: iq.update.InlineQuery.From}
+func (iq TgWebhookInlineQuery) GetFrom() botinput.WebhookSender {
+	return tgWebhookUser{tgUser: iq.update.InlineQuery.From}
 }
 
 // GetOffset returns offset

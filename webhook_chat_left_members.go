@@ -1,21 +1,23 @@
 package telegram
 
-import "github.com/bots-go-framework/bots-fw/botsfw"
+import (
+	"github.com/bots-go-framework/bots-fw/botinput"
+)
 
 type tgWebhookLeftChatMembersMessage struct {
 	tgWebhookMessage
 }
 
-func (tgWebhookLeftChatMembersMessage) InputType() botsfw.WebhookInputType {
-	return botsfw.WebhookInputLeftChatMembers
+func (tgWebhookLeftChatMembersMessage) InputType() botinput.WebhookInputType {
+	return botinput.WebhookInputLeftChatMembers
 }
 
-var _ botsfw.WebhookLeftChatMembersMessage = (*tgWebhookLeftChatMembersMessage)(nil)
+var _ botinput.WebhookLeftChatMembersMessage = (*tgWebhookLeftChatMembersMessage)(nil)
 
 func newTgWebhookLeftChatMembersMessage(input tgWebhookInput) tgWebhookNewChatMembersMessage {
 	return tgWebhookNewChatMembersMessage{tgWebhookMessage: newTelegramWebhookMessage(input, input.update.Message)}
 }
 
-func (m *tgWebhookLeftChatMembersMessage) LeftChatMembers() []botsfw.WebhookActor {
-	return []botsfw.WebhookActor{m.message.LeftChatMember}
+func (m *tgWebhookLeftChatMembersMessage) LeftChatMembers() []botinput.WebhookActor {
+	return []botinput.WebhookActor{m.message.LeftChatMember}
 }

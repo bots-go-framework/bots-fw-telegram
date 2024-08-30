@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
 type tgWebhookAudioMessage struct {
@@ -10,10 +10,10 @@ type tgWebhookAudioMessage struct {
 	TgMessageType TgMessageType
 }
 
-var _ botsfw.WebhookAudioMessage = (*tgWebhookAudioMessage)(nil)
+var _ botinput.WebhookAudioMessage = (*tgWebhookAudioMessage)(nil)
 
-func (tgWebhookAudioMessage) InputType() botsfw.WebhookInputType {
-	return botsfw.WebhookInputAudio
+func (tgWebhookAudioMessage) InputType() botinput.WebhookInputType {
+	return botinput.WebhookInputAudio
 }
 
 func newTgWebhookAudioMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookAudioMessage {

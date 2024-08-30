@@ -1,33 +1,36 @@
 package telegram
 
-import "github.com/bots-go-framework/bots-fw/botsfw"
+import (
+	"github.com/bots-go-framework/bots-fw/botinput"
+	"strconv"
+)
 
 type tgWebhookContactMessage struct {
 	tgWebhookMessage
 }
 
-func (tgWebhookContactMessage) InputType() botsfw.WebhookInputType {
-	return botsfw.WebhookInputContact
+func (tgWebhookContactMessage) InputType() botinput.WebhookInputType {
+	return botinput.WebhookInputContact
 }
 
-var _ botsfw.WebhookContactMessage = (*tgWebhookContactMessage)(nil)
+var _ botinput.WebhookContactMessage = (*tgWebhookContactMessage)(nil)
 
 func newTgWebhookContact(input tgWebhookInput) tgWebhookContactMessage {
 	return tgWebhookContactMessage{tgWebhookMessage: newTelegramWebhookMessage(input, input.update.Message)}
 }
 
-func (m tgWebhookContactMessage) FirstName() string {
+func (m tgWebhookContactMessage) GetFirstName() string {
 	return m.update.Message.Contact.FirstName
 }
 
-func (m tgWebhookContactMessage) LastName() string {
+func (m tgWebhookContactMessage) GetLastName() string {
 	return m.update.Message.Contact.LastName
 }
 
-func (m tgWebhookContactMessage) PhoneNumber() string {
+func (m tgWebhookContactMessage) GetPhoneNumber() string {
 	return m.update.Message.Contact.PhoneNumber
 }
 
-func (m tgWebhookContactMessage) UserID() interface{} {
-	return m.update.Message.Contact.UserID
+func (m tgWebhookContactMessage) GetBotUserID() string {
+	return strconv.Itoa(m.update.Message.Contact.UserID)
 }

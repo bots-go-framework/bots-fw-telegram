@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
 type tgWebhookPhotoMessage struct {
@@ -10,10 +10,10 @@ type tgWebhookPhotoMessage struct {
 	TgMessageType TgMessageType
 }
 
-var _ botsfw.WebhookPhotoMessage = (*tgWebhookPhotoMessage)(nil)
+var _ botinput.WebhookPhotoMessage = (*tgWebhookPhotoMessage)(nil)
 
-func (tgWebhookPhotoMessage) InputType() botsfw.WebhookInputType {
-	return botsfw.WebhookInputPhoto
+func (tgWebhookPhotoMessage) InputType() botinput.WebhookInputType {
+	return botinput.WebhookInputPhoto
 }
 
 func newTgWebhookPhotoMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookPhotoMessage {

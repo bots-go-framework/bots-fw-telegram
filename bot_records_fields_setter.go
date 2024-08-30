@@ -3,11 +3,12 @@ package telegram
 import (
 	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
 	"github.com/bots-go-framework/bots-fw-telegram-models/botsfwtgmodels"
+	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 )
 
 func NewBotRecordsFieldsSetter(
-	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botsfw.WebhookSender) error,
+	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botinput.WebhookSender) error,
 ) botsfw.BotRecordsFieldsSetter {
 	if setAppUserFields == nil {
 		panic("setAppUserFields is nil")
@@ -18,19 +19,19 @@ func NewBotRecordsFieldsSetter(
 }
 
 type tgBotRecordsFieldsSetter struct {
-	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botsfw.WebhookSender) error
+	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botinput.WebhookSender) error
 }
 
 func (b tgBotRecordsFieldsSetter) Platform() string {
 	return PlatformID
 }
 
-func (b tgBotRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserData, sender botsfw.WebhookSender) error {
+func (b tgBotRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserData, sender botinput.WebhookSender) error {
 	return b.setAppUserFields(appUser, sender)
 }
 
-func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.PlatformUserData, sender botsfw.WebhookSender, botID, botUserID, appUserID string) error {
-	//tgSender := sender.(tgWebhookSender)
+func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.PlatformUserData, sender botinput.WebhookSender, botID, botUserID, appUserID string) error {
+	//tgSender := sender.(tgWebhookUser)
 	tgBotUser := botUser.(botsfwtgmodels.TgPlatformUser)
 	tgBotUserBaseData := tgBotUser.TgPlatformUserBaseDbo()
 	botUserBaseData := tgBotUserBaseData.BaseData()
@@ -40,7 +41,7 @@ func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.Platform
 	return nil
 }
 
-func (b tgBotRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.BotChatData, chat botsfw.WebhookChat, botID, botUserID, appUserID string, isAccessGranted bool) error {
+func (b tgBotRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.BotChatData, chat botinput.WebhookChat, botID, botUserID, appUserID string, isAccessGranted bool) error {
 	_ = botID
 	_ = chat
 	tgBotChatData := botChat.(botsfwtgmodels.TgChatData)

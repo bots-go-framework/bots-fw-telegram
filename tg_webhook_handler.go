@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
+	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/strongo/logus"
 	"io"
@@ -32,7 +33,7 @@ type tgWebhookHandler struct {
 func NewTelegramWebhookHandler(
 	botContextProvider botsfw.BotContextProvider,
 	translatorProvider botsfw.TranslatorProvider,
-	setAppUserFields func(botsfwmodels.AppUserData, botsfw.WebhookSender) error, // TODO: Move to botsfwdal.AppUserDal ?
+	setAppUserFields func(botsfwmodels.AppUserData, botinput.WebhookSender) error, // TODO: Move to botsfwdal.AppUserDal ?
 ) botsfw.WebhookHandler {
 	if botContextProvider == nil {
 		panic("botContextProvider == nil")
@@ -56,8 +57,8 @@ func NewTelegramWebhookHandler(
 }
 
 func (h tgWebhookHandler) HandleUnmatched(whc botsfw.WebhookContext) (m botsfw.MessageFromBot) {
-	switch whc.InputType() {
-	case botsfw.WebhookInputCallbackQuery:
+	switch whc.Input().InputType() {
+	case botinput.WebhookInputCallbackQuery:
 		m.BotMessage = CallbackAnswer(tgbotapi.AnswerCallbackQueryConfig{
 			Text:      "⚠️ Error: Not matched to any command",
 			ShowAlert: true,
@@ -196,7 +197,7 @@ func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Re
 		return
 	}
 
-	var input botsfw.WebhookInput
+	var input botinput.WebhookInput
 	if input, err = NewTelegramWebhookInput(update, logRequestBody); err != nil {
 		logRequestBody()
 		return
@@ -206,7 +207,7 @@ func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Re
 	entriesWithInputs = []botsfw.EntryInputs{
 		{
 			Entry:  tgWebhookEntry{update: update},
-			Inputs: []botsfw.WebhookInput{input},
+			Inputs: []botinput.WebhookInput{input},
 		},
 	}
 

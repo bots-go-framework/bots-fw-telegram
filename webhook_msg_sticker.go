@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
 type tgWebhookStickerMessage struct {
@@ -10,10 +10,10 @@ type tgWebhookStickerMessage struct {
 	TgMessageType TgMessageType
 }
 
-var _ botsfw.WebhookStickerMessage = (*tgWebhookStickerMessage)(nil)
+var _ botinput.WebhookStickerMessage = (*tgWebhookStickerMessage)(nil)
 
-func (tgWebhookStickerMessage) InputType() botsfw.WebhookInputType {
-	return botsfw.WebhookInputSticker
+func (tgWebhookStickerMessage) InputType() botinput.WebhookInputType {
+	return botinput.WebhookInputSticker
 }
 
 func newTgWebhookStickerMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookStickerMessage {

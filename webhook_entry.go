@@ -2,7 +2,7 @@ package telegram
 
 import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/bots-go-framework/bots-fw/botinput"
 	"time"
 )
 
@@ -10,7 +10,7 @@ type tgWebhookEntry struct {
 	update *tgbotapi.Update
 }
 
-var _ botsfw.WebhookEntry = (*tgWebhookEntry)(nil)
+var _ botinput.WebhookEntry = (*tgWebhookEntry)(nil)
 
 func (e tgWebhookEntry) GetID() interface{} {
 	return e.update.UpdateID

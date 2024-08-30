@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
+	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/pquerna/ffjson/ffjson"
 	"github.com/strongo/logus"
@@ -181,15 +182,15 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 		chattable = messageConfig
 	} else {
 		switch inputType := r.whc.InputType(); inputType {
-		case botsfw.WebhookInputInlineQuery: // pass
+		case botinput.WebhookInputInlineQuery: // pass
 			logus.Debugf(c, "No response to WebhookInputInlineQuery")
-		case botsfw.WebhookInputChosenInlineResult: // pass
+		case botinput.WebhookInputChosenInlineResult: // pass
 		default:
 			mBytes, err := ffjson.Marshal(m)
 			if err != nil {
 				logus.Errorf(c, "Failed to marshal MessageFromBot to JSON: %v", err)
 			}
-			inputTypeName := botsfw.GetWebhookInputTypeIdNameString(inputType)
+			inputTypeName := botinput.GetWebhookInputTypeIdNameString(inputType)
 			logus.Debugf(c, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, string(mBytes))
 			ffjson.Pool(mBytes)
 		}
