@@ -210,6 +210,9 @@ func (twhc *tgWebhookContext) AppUserData() (botsfwmodels.AppUserData, error) {
 	ctx := twhc.Context()
 	tx := twhc.Tx()
 	appUser, err := twhc.BotContext().BotSettings.GetAppUserByID(ctx, tx, appUserID)
+	if err != nil {
+		return nil, err
+	}
 	return appUser.Data, err
 }
 

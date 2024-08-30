@@ -24,26 +24,29 @@ var _ botsfw.WebhookHandler = (*tgWebhookHandler)(nil)
 
 type tgWebhookHandler struct {
 	botsfw.WebhookHandlerBase
-	botsBy botsfw.SettingsProvider
+	botContextProvider botsfw.BotContextProvider
+	//botsBy botsfw.BotSettingsProvider
 }
 
 // NewTelegramWebhookHandler creates new Telegram webhooks handler
 func NewTelegramWebhookHandler(
-	//dataAccess botsfwdal.DataAccess,
-	botsBy botsfw.SettingsProvider,
+	botContextProvider botsfw.BotContextProvider,
 	translatorProvider botsfw.TranslatorProvider,
-	//recordsMaker botsfwmodels.BotRecordsMaker,
-	setAppUserFields func(botsfwmodels.AppUserData, botsfw.WebhookSender) error,
+	setAppUserFields func(botsfwmodels.AppUserData, botsfw.WebhookSender) error, // TODO: Move to botsfwdal.AppUserDal ?
 ) botsfw.WebhookHandler {
+	if botContextProvider == nil {
+		panic("botContextProvider == nil")
+	}
 	if translatorProvider == nil {
 		panic("translatorProvider == nil")
 	}
+	if setAppUserFields == nil {
+		panic("setAppUserFields == nil")
+	}
 	return tgWebhookHandler{
-		botsBy: botsBy,
+		botContextProvider: botContextProvider,
 		WebhookHandlerBase: botsfw.WebhookHandlerBase{
-			//DataAccess:         dataAccess,
-			BotPlatform: platform{},
-			//RecordsMaker:       recordsMaker,
+			BotPlatform:        platform{},
 			TranslatorProvider: translatorProvider,
 			RecordsFieldsSetter: tgBotRecordsFieldsSetter{
 				setAppUserFields: setAppUserFields,
@@ -59,6 +62,8 @@ func (h tgWebhookHandler) HandleUnmatched(whc botsfw.WebhookContext) (m botsfw.M
 			Text:      "⚠️ Error: Not matched to any command",
 			ShowAlert: true,
 		})
+	default:
+		// TODO: Do nothing?
 	}
 	return
 }
@@ -102,9 +107,9 @@ func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Re
 }
 
 func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
-	c := h.Context(r)
-	logus.Debugf(c, "tgWebhookHandler.SetWebhook()")
-	ctxWithDeadline, cancel := context.WithTimeout(c, 30*time.Second)
+	ctx := h.Context(r)
+	logus.Debugf(ctx, "tgWebhookHandler.SetWebhook()")
+	ctxWithDeadline, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 	client := h.GetHTTPClient(ctxWithDeadline)
 	botCode := r.URL.Query().Get("code")
@@ -112,15 +117,15 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "tgWebhookHandler: Missing required parameter: code", http.StatusBadRequest)
 		return
 	}
-	botSettings, ok := h.botsBy(c).ByCode[botCode]
-	if !ok {
-		m := fmt.Sprintf("Bot not found by code: %v", botCode)
-		http.Error(w, m, http.StatusBadRequest)
-		logus.Errorf(c, fmt.Sprintf("%v. All bots: %v", m, h.botsBy(c).ByCode))
+	botContext, err := h.botContextProvider.GetBotContext(ctx, PlatformID, botCode)
+	if err != nil {
+		err = fmt.Errorf("failed to get bot context: %w", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	bot := tgbotapi.NewBotAPIWithClient(botSettings.Token, client)
-	bot.EnableDebug(c)
+
+	bot := tgbotapi.NewBotAPIWithClient(botContext.BotSettings.Token, client)
+	bot.EnableDebug(ctx)
 	//bot.Debug = true
 
 	webhookURL := fmt.Sprintf("https://%v/bot/tg/hook?id=%v", r.Host, botCode)
@@ -134,33 +139,30 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 		"callback_query",
 	}
 	if response, err := bot.SetWebhook(*webhookConfig); err != nil {
-		logus.Errorf(c, "%v", err)
+		logus.Errorf(ctx, "%v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err := w.Write([]byte(err.Error())); err != nil {
-			logus.Errorf(c, "Failed to write error to response: %v", err)
+			logus.Errorf(ctx, "Failed to write error to response: %v", err)
 		}
 	} else {
 		if _, err := w.Write([]byte(fmt.Sprintf("Webhook set\nErrorCode: %d\nDescription: %v\nContent: %v", response.ErrorCode, response.Description, string(response.Result)))); err != nil {
-			logus.Errorf(c, "Failed to write error to response: %v", err)
+			logus.Errorf(ctx, "Failed to write error to response: %v", err)
 		}
 	}
 }
 
-func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Request) (botContext *botsfw.BotContext, entriesWithInputs []botsfw.EntryInputs, err error) {
-	logus.Debugf(c, "tgWebhookHandler.GetBotContextAndInputs(): %s", r.URL.RequestURI())
+func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Request) (botContext *botsfw.BotContext, entriesWithInputs []botsfw.EntryInputs, err error) {
+	logus.Debugf(ctx, "tgWebhookHandler.GetBotContextAndInputs(): %s", r.URL.RequestURI())
 	botID := r.URL.Query().Get("id")
-	botSettings, ok := h.botsBy(c).ByCode[botID]
-	if !ok {
-		errMess := fmt.Sprintf("Unknown bot ID (username): [%v]", botID)
-		err = botsfw.ErrAuthFailed(errMess)
+	if botContext, err = h.botContextProvider.GetBotContext(ctx, PlatformID, botID); err != nil {
 		return
 	}
-	botContext = botsfw.NewBotContext(h.BotHost, botSettings)
+
 	var bodyBytes []byte
 	defer func() {
 		if r.Body != nil {
 			if err := r.Body.Close(); err != nil {
-				logus.Errorf(c, "Failed to close request body: %v", err)
+				logus.Errorf(ctx, "Failed to close request body: %v", err)
 			}
 		}
 	}()
@@ -181,15 +183,15 @@ func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Requ
 				} else {
 					bodyStr = string(bodyBytes)
 				}
-				logus.Debugf(c, "Request body (%s): %s", r.URL.String(), bodyStr)
+				logus.Debugf(ctx, "Request body (%s): %s", r.URL.String(), bodyStr)
 			} else {
-				logus.Debugf(c, "Request len(body): %v", len(bodyBytes))
+				logus.Debugf(ctx, "Request len(body): %v", len(bodyBytes))
 			}
 		}
 	}
 
 	var update *tgbotapi.Update
-	if update, err = h.unmarshalUpdate(c, bodyBytes); err != nil {
+	if update, err = h.unmarshalUpdate(ctx, bodyBytes); err != nil {
 		logRequestBody()
 		return
 	}
@@ -213,7 +215,7 @@ func (h tgWebhookHandler) GetBotContextAndInputs(c context.Context, r *http.Requ
 		err = fmt.Errorf("telegram input is <nil>: %w", botsfw.ErrNotImplemented)
 		return
 	}
-	logus.Debugf(c, "Telegram input type: %T", input)
+	logus.Debugf(ctx, "Telegram input type: %T", input)
 	return
 }
 
