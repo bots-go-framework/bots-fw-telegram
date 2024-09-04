@@ -9,6 +9,10 @@ type tgWebhookContactMessage struct {
 	tgWebhookMessage
 }
 
+func (m tgWebhookContactMessage) GetVCard() string {
+	return m.update.Message.Contact.VCard
+}
+
 func (tgWebhookContactMessage) InputType() botinput.WebhookInputType {
 	return botinput.WebhookInputContact
 }
@@ -32,5 +36,5 @@ func (m tgWebhookContactMessage) GetPhoneNumber() string {
 }
 
 func (m tgWebhookContactMessage) GetBotUserID() string {
-	return strconv.Itoa(m.update.Message.Contact.UserID)
+	return strconv.FormatInt(m.update.Message.Contact.UserID, 10)
 }
