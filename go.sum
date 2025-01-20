@@ -28,6 +28,8 @@ github.com/bots-go-framework/bots-fw-telegram-models v0.3.7 h1:vT8HUFEjJ0gCzfuIw
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.7/go.mod h1:2VLh0jRUWm1bWi/ph0+Hly9CHidON7lNPVCjF4Mu5as=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.8 h1:BeyoBAp/D1T1q4gsRTfll2B9qj36LNektJ+/SHMdqmM=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.8/go.mod h1:sM6X2PI21CofxPD5NJrScZT7pFE20VSsGacOeDWXSrA=
+github.com/bots-go-framework/bots-fw-telegram-models v0.3.9 h1:JKr0um6N1AEGEqmXTt3/0Chpb3nSa8jsDW6VUFRdOsw=
+github.com/bots-go-framework/bots-fw-telegram-models v0.3.9/go.mod h1:z/AIwD4Myx8MQ3Ag0uODcw+biot49CY8RVJc2DmNbQU=
 github.com/bots-go-framework/bots-go-core v0.0.3 h1:z3A7DLUgxbHWxvTCGnkHP9WHpTT9xxROEypoqAfvYIQ=
 github.com/bots-go-framework/bots-go-core v0.0.3/go.mod h1:XCn9z4TI8sbgwyus+VDzw7iMY2QCPWEAvl23GMDjeEU=
 github.com/dal-go/dalgo v0.13.1 h1:vRV4dGpBKaRYteJRIbDTh+7lqS/7Gs8ns3ij3jEy/Ug=
@@ -73,6 +75,8 @@ github.com/strongo/strongoapp v0.25.2 h1:a6VUj/05eaJ8hWxdHsGRPncz5Ezq+w3cQgNmwqR
 github.com/strongo/strongoapp v0.25.2/go.mod h1:DVwHFNNiC88gnW8iy3ggRrnAnI4oVTYyIdLeXPSNuLs=
 github.com/strongo/strongoapp v0.25.4 h1:AD9GrtuHXS4A6Hvv3yjPdSnOwxMt7gopMvukt/egFPk=
 github.com/strongo/strongoapp v0.25.4/go.mod h1:0ZHjfOhfg1za8ouzLoMoID7Qn3fg5IMDdjDt69xUAYI=
+github.com/strongo/strongoapp v0.25.5 h1:MOb3JYiyZX0g+AswccUGYW7J/tO1b9oPWa+UZj+5+x4=
+github.com/strongo/strongoapp v0.25.5/go.mod h1:jCdLBw1iXnG0mMu9RxET2lIfriBO4Q1qdNEbX8sAAkE=
 github.com/strongo/validation v0.0.7 h1:gs6YkwPsYtVsepQaQOB+ZF+T0Gu5+nk4ZMND8F85e+U=
 github.com/strongo/validation v0.0.7/go.mod h1:YUwoPEItLJd/Bc9X1OCUm03ofhvm3kwZvuihU7/jz58=
 github.com/technoweenie/multipartstreamer v1.0.1 h1:XRztA5MXiR1TIRHxH2uNxXxaIkKQDeX7m2XsSOlQEnM=
