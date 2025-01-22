@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -8,15 +9,11 @@ import (
 	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
 	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/pquerna/ffjson/ffjson"
 	"github.com/strongo/logus"
 	"io"
 	"net/http"
 	"runtime/debug"
-
-	//"github.com/kylelemons/go-gypsy/yaml"
-	//"bytes"
-	"bytes"
-	"github.com/pquerna/ffjson/ffjson"
 	"strings"
 	"time"
 )

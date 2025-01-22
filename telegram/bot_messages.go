@@ -5,7 +5,7 @@ import (
 	"github.com/bots-go-framework/bots-fw/botsfw"
 )
 
-// InlineBotMessage is wrapper for Telegram bot message
+// InlineBotMessage is a wrapper for Telegram bot message
 type InlineBotMessage tgbotapi.InlineConfig
 
 // BotMessageType returns BotMessageTypeInlineResults
@@ -13,7 +13,7 @@ func (InlineBotMessage) BotMessageType() botsfw.BotMessageType {
 	return botsfw.BotMessageTypeInlineResults
 }
 
-// CallbackAnswer is callback answer message
+// CallbackAnswer is a callback answer message
 type CallbackAnswer tgbotapi.AnswerCallbackQueryConfig
 
 // BotMessageType returns BotMessageTypeCallbackAnswer
@@ -21,7 +21,7 @@ func (CallbackAnswer) BotMessageType() botsfw.BotMessageType {
 	return botsfw.BotMessageTypeCallbackAnswer
 }
 
-// LeaveChat is leave chat message from bot
+// LeaveChat is a leave chat message from bot
 type LeaveChat tgbotapi.LeaveChatConfig
 
 // BotMessageType return BotMessageTypeLeaveChat
@@ -29,7 +29,7 @@ func (LeaveChat) BotMessageType() botsfw.BotMessageType {
 	return botsfw.BotMessageTypeLeaveChat
 }
 
-// ExportChatInviteLink is TG message
+// ExportChatInviteLink is a TG message
 type ExportChatInviteLink tgbotapi.ExportChatInviteLink
 
 // BotMessageType returns BotMessageTypeExportChatInviteLink
