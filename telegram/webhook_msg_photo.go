@@ -5,12 +5,12 @@ import (
 	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
+var _ botinput.WebhookPhotoMessage = (*tgWebhookPhotoMessage)(nil)
+
 type tgWebhookPhotoMessage struct {
 	tgWebhookMessage
 	TgMessageType TgMessageType
 }
-
-var _ botinput.WebhookPhotoMessage = (*tgWebhookPhotoMessage)(nil)
 
 func (tgWebhookPhotoMessage) InputType() botinput.WebhookInputType {
 	return botinput.WebhookInputPhoto

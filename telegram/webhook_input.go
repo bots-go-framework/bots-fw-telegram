@@ -65,6 +65,8 @@ func message2input(input tgWebhookInput, tgMessageType TgMessageType, tgMessage 
 		return newTgWebhookAudioMessage(input, tgMessageType, tgMessage)
 	case tgMessage.Sticker != nil:
 		return newTgWebhookStickerMessage(input, tgMessageType, tgMessage)
+	case tgMessage.UsersShared != nil:
+		return newTgWebhookUsersSharedMessage(input, tgMessageType, tgMessage)
 	default:
 		return nil
 	}
