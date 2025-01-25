@@ -1,9 +1,10 @@
 package telegram
 
 import (
+	"strconv"
+
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw/botinput"
-	"strconv"
 )
 
 var _ botinput.WebhookSharedUserMessage = (*tgWebhookUsersSharedMessage)(nil)
@@ -13,9 +14,18 @@ type tgWebhookUsersSharedMessage struct {
 	TgMessageType TgMessageType
 }
 
-func (m tgWebhookUsersSharedMessage) GetSharedUsers() []botinput.SharedUserMessageItem {
-	//TODO implement me
-	panic("implement me")
+func (m tgWebhookUsersSharedMessage) GetSharedUsers() (sharedUsers []botinput.SharedUserMessageItem) {
+	if m.message == nil {
+		panic("m.message is nil")
+	}
+	if m.message.UsersShared == nil {
+		panic("m.message.UsersShared is nil")
+	}
+	sharedUsers = make([]botinput.SharedUserMessageItem, 0, len(m.message.UsersShared.Users))
+	for _, sharedUser := range m.message.UsersShared.Users {
+		sharedUsers = append(sharedUsers, tgSharedUser{SharedUser: sharedUser})
+	}
+	return
 }
 
 func (tgWebhookUsersSharedMessage) InputType() botinput.WebhookInputType {
