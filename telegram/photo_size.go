@@ -15,6 +15,10 @@ func (v photoSize) GetFileID() string {
 	return v.FileID
 }
 
+func (v photoSize) GetFileUniqueID() string {
+	return v.FileUniqueID
+}
+
 func (v photoSize) GetWidth() int {
 	return v.Width
 }
