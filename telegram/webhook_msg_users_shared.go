@@ -7,7 +7,7 @@ import (
 	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
-var _ botinput.WebhookSharedUserMessage = (*tgWebhookUsersSharedMessage)(nil)
+var _ botinput.WebhookSharedUsersMessage = (*tgWebhookUsersSharedMessage)(nil)
 
 type tgWebhookUsersSharedMessage struct {
 	tgWebhookMessage
