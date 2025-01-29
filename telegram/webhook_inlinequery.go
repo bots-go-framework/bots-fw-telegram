@@ -4,14 +4,14 @@ import (
 	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
+var (
+	_ botinput.WebhookInput       = (*TgWebhookInlineQuery)(nil)
+	_ botinput.WebhookInlineQuery = (*TgWebhookInlineQuery)(nil)
+)
+
 // TgWebhookInlineQuery is wrapper
 type TgWebhookInlineQuery struct {
 	tgWebhookInput
-}
-
-// InputType returns WebhookInputInlineQuery
-func (TgWebhookInlineQuery) InputType() botinput.WebhookInputType {
-	return botinput.WebhookInputInlineQuery
 }
 
 var _ botinput.WebhookInlineQuery = (*TgWebhookInlineQuery)(nil)

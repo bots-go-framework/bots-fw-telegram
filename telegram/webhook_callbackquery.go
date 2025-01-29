@@ -6,22 +6,17 @@ import (
 	"strconv"
 )
 
+var (
+	_ TgWebhookInput                = (*TgWebhookCallbackQuery)(nil)
+	_ botinput.WebhookInput         = (*TgWebhookCallbackQuery)(nil)
+	_ botinput.WebhookCallbackQuery = (*TgWebhookCallbackQuery)(nil)
+)
+
 // TgWebhookCallbackQuery is wrapper on callback query
 type TgWebhookCallbackQuery struct { // TODO: make non-exportable
 	tgWebhookInput
 	//callbackQuery *tgbotapi.CallbackQuery
 	//message       botsfw.WebhookMessage
-}
-
-var (
-	_ botinput.WebhookCallbackQuery = (*TgWebhookCallbackQuery)(nil)
-	_ TgWebhookInput                = (*TgWebhookCallbackQuery)(nil)
-	_ botinput.WebhookInput         = (*TgWebhookCallbackQuery)(nil)
-)
-
-// InputType return WebhookInputCallbackQuery
-func (twhcbq TgWebhookCallbackQuery) InputType() botinput.WebhookInputType {
-	return botinput.WebhookInputCallbackQuery
 }
 
 func newTelegramWebhookCallbackQuery(input tgWebhookInput) TgWebhookCallbackQuery {
@@ -36,43 +31,43 @@ func newTelegramWebhookCallbackQuery(input tgWebhookInput) TgWebhookCallbackQuer
 }
 
 // GetID returns update ID
-func (twhcbq TgWebhookCallbackQuery) GetID() string {
-	return twhcbq.update.CallbackQuery.ID
+func (whi TgWebhookCallbackQuery) GetID() string {
+	return whi.update.CallbackQuery.ID
 }
 
 // Sequence returns update ID
-func (twhcbq TgWebhookCallbackQuery) Sequence() int {
-	return twhcbq.update.UpdateID
+func (whi TgWebhookCallbackQuery) Sequence() int {
+	return whi.update.UpdateID
 }
 
 // GetMessage returns message
-func (twhcbq TgWebhookCallbackQuery) GetMessage() botinput.WebhookMessage {
-	return newTelegramWebhookMessage(twhcbq.tgWebhookInput, twhcbq.update.CallbackQuery.Message)
+func (whi TgWebhookCallbackQuery) GetMessage() botinput.WebhookMessage {
+	return newTelegramWebhookMessage(whi.tgWebhookInput, whi.update.CallbackQuery.Message)
 }
 
 // TelegramCallbackMessage returns message
-func (twhcbq TgWebhookCallbackQuery) TelegramCallbackMessage() *tgbotapi.Message {
-	return twhcbq.update.CallbackQuery.Message
+func (whi TgWebhookCallbackQuery) TelegramCallbackMessage() *tgbotapi.Message {
+	return whi.update.CallbackQuery.Message
 }
 
 // GetFrom returns sender
-func (twhcbq TgWebhookCallbackQuery) GetFrom() botinput.WebhookSender {
-	return tgWebhookUser{tgUser: twhcbq.update.CallbackQuery.From}
+func (whi TgWebhookCallbackQuery) GetFrom() botinput.WebhookSender {
+	return tgWebhookUser{tgUser: whi.update.CallbackQuery.From}
 }
 
 // GetData returns callback query data
-func (twhcbq TgWebhookCallbackQuery) GetData() string {
-	return twhcbq.update.CallbackQuery.Data
+func (whi TgWebhookCallbackQuery) GetData() string {
+	return whi.update.CallbackQuery.Data
 }
 
 // GetInlineMessageID returns callback query inline message ID
-func (twhcbq TgWebhookCallbackQuery) GetInlineMessageID() string {
-	return twhcbq.update.CallbackQuery.InlineMessageID
+func (whi TgWebhookCallbackQuery) GetInlineMessageID() string {
+	return whi.update.CallbackQuery.InlineMessageID
 }
 
 // BotChatID returns bot chat ID
-func (twhcbq TgWebhookCallbackQuery) BotChatID() (string, error) {
-	if cbq := twhcbq.update.CallbackQuery; cbq.Message != nil && cbq.Message.Chat != nil {
+func (whi TgWebhookCallbackQuery) BotChatID() (string, error) {
+	if cbq := whi.update.CallbackQuery; cbq.Message != nil && cbq.Message.Chat != nil {
 		return strconv.FormatInt(cbq.Message.Chat.ID, 10), nil
 	}
 	return "", nil

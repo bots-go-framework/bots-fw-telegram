@@ -5,12 +5,16 @@ import (
 	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
+var (
+	_ botinput.WebhookInput       = (*tgWebhookTextMessage)(nil)
+	_ botinput.WebhookMessage     = (*tgWebhookTextMessage)(nil)
+	_ botinput.WebhookTextMessage = (*tgWebhookTextMessage)(nil)
+)
+
 type tgWebhookTextMessage struct {
 	tgWebhookMessage
 	TgMessageType TgMessageType
 }
-
-var _ botinput.WebhookTextMessage = (*tgWebhookTextMessage)(nil)
 
 func (tgWebhookTextMessage) InputType() botinput.WebhookInputType {
 	return botinput.WebhookInputText

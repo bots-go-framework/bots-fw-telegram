@@ -6,12 +6,42 @@ import (
 	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/pquerna/ffjson/ffjson"
+	"strconv"
 	"time"
 )
 
+var _ botinput.WebhookInput = (*tgWebhookInput)(nil)
+
 type tgWebhookInput struct {
-	update     *tgbotapi.Update // TODO: Make a pointer?
+	update     *tgbotapi.Update
 	logRequest func()
+}
+
+func (whi tgWebhookInput) BotChatID() (string, error) {
+	tgChat := whi.update.Chat()
+	return strconv.FormatInt(tgChat.ID, 10), nil
+}
+
+func (whi tgWebhookInput) InputType() botinput.WebhookInputType {
+	switch {
+	case whi.update.InlineQuery != nil:
+		return botinput.WebhookInputInlineQuery
+
+	case whi.update.CallbackQuery != nil:
+		return botinput.WebhookInputCallbackQuery
+
+	case whi.update.ChosenInlineResult != nil:
+		return botinput.WebhookInputChosenInlineResult
+
+	case whi.update.Message != nil || whi.update.EditedMessage != nil:
+		return botinput.WebhookInputText
+
+	case whi.update.ChannelPost != nil || whi.update.EditedChannelPost != nil:
+		return botinput.WebhookInputNotImplemented
+
+	default:
+		return botinput.WebhookInputUnknown
+	}
 }
 
 // TgWebhookInput is a wrapper of telegram update struct to bots framework interface
@@ -76,42 +106,37 @@ func message2input(input tgWebhookInput, tgMessageType TgMessageType, tgMessage 
 func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botinput.WebhookInput, error) {
 	input := tgWebhookInput{update: update, logRequest: logRequest}
 
-	switch {
-
-	case update.InlineQuery != nil:
+	switch input.InputType() {
+	case botinput.WebhookInputInlineQuery:
 		return newTelegramWebhookInlineQuery(input), nil
-
-	case update.CallbackQuery != nil:
+	case botinput.WebhookInputCallbackQuery:
 		return newTelegramWebhookCallbackQuery(input), nil
-
-	case update.ChosenInlineResult != nil:
+	case botinput.WebhookInputChosenInlineResult:
 		return newTelegramWebhookChosenInlineResult(input), nil
-
-	default:
-
+	case botinput.WebhookInputText:
 		switch {
-
 		case update.Message != nil:
 			return message2input(input, TgMessageTypeRegular, update.Message), nil
 
 		case update.EditedMessage != nil:
 			return message2input(input, TgMessageTypeEdited, update.EditedMessage), nil
 
+		}
+	case botinput.WebhookInputNotImplemented:
+		switch {
+
 		case update.ChannelPost != nil:
 			channelPost, _ := ffjson.MarshalFast(update.ChannelPost)
 			return nil, fmt.Errorf("the ChannelPost is not supported at the moment: [%s]: %w", channelPost, botsfw.ErrNotImplemented)
-			//return message2input(TgMessageTypeChannelPost, update.ChannelPost), nil
 
 		case update.EditedChannelPost != nil:
 			editedChannelPost, _ := ffjson.MarshalFast(update.EditedChannelPost)
 			return nil, fmt.Errorf("the EditedChannelPost is not supported at the moment: [%s]: %w", string(editedChannelPost), botsfw.ErrNotImplemented)
-			//	return message2input(TgMessageTypeEditedChannelPost, update.EditedChannelPost), nil
-
-		default:
-			return nil, botsfw.ErrNotImplemented
-
 		}
+	default:
+		return nil, botsfw.ErrNotImplemented
 	}
+	return nil, botsfw.ErrNotImplemented
 }
 
 func (whi tgWebhookInput) GetSender() botinput.WebhookUser {

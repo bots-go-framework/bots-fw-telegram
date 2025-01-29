@@ -8,7 +8,7 @@ type tgWebhookLeftChatMembersMessage struct {
 	tgWebhookMessage
 }
 
-func (tgWebhookLeftChatMembersMessage) InputType() botinput.WebhookInputType {
+func (*tgWebhookLeftChatMembersMessage) InputType() botinput.WebhookInputType {
 	return botinput.WebhookInputLeftChatMembers
 }
 

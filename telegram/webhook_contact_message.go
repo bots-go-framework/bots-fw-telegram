@@ -5,6 +5,12 @@ import (
 	"strconv"
 )
 
+var (
+	_ botinput.WebhookInput          = (*tgWebhookContactMessage)(nil)
+	_ botinput.WebhookMessage        = (*tgWebhookContactMessage)(nil)
+	_ botinput.WebhookContactMessage = (*tgWebhookContactMessage)(nil)
+)
+
 type tgWebhookContactMessage struct {
 	tgWebhookMessage
 }
@@ -12,12 +18,6 @@ type tgWebhookContactMessage struct {
 func (m tgWebhookContactMessage) GetVCard() string {
 	return m.update.Message.Contact.VCard
 }
-
-func (tgWebhookContactMessage) InputType() botinput.WebhookInputType {
-	return botinput.WebhookInputContact
-}
-
-var _ botinput.WebhookContactMessage = (*tgWebhookContactMessage)(nil)
 
 func newTgWebhookContact(input tgWebhookInput) tgWebhookContactMessage {
 	return tgWebhookContactMessage{tgWebhookMessage: newTelegramWebhookMessage(input, input.update.Message)}

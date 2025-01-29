@@ -4,15 +4,15 @@ import (
 	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
+var (
+	_ botinput.WebhookInput                 = (*tgWebhookNewChatMembersMessage)(nil)
+	_ botinput.WebhookMessage               = (*tgWebhookNewChatMembersMessage)(nil)
+	_ botinput.WebhookNewChatMembersMessage = (*tgWebhookNewChatMembersMessage)(nil)
+)
+
 type tgWebhookNewChatMembersMessage struct {
 	tgWebhookMessage
 }
-
-func (tgWebhookNewChatMembersMessage) InputType() botinput.WebhookInputType {
-	return botinput.WebhookInputNewChatMembers
-}
-
-var _ botinput.WebhookNewChatMembersMessage = (*tgWebhookNewChatMembersMessage)(nil)
 
 func newTgWebhookNewChatMembersMessage(input tgWebhookInput) tgWebhookNewChatMembersMessage {
 	return tgWebhookNewChatMembersMessage{tgWebhookMessage: newTelegramWebhookMessage(input, input.update.Message)}
