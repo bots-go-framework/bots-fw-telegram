@@ -58,7 +58,7 @@ func (v tgSharedUser) GetUsername() string {
 }
 
 func (v tgSharedUser) GetFirstName() string {
-	return v.Username
+	return v.FirstName
 }
 
 func (v tgSharedUser) GetLastName() string {
