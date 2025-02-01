@@ -18,6 +18,10 @@ type tgWebhookUsersSharedMessage struct {
 	TgMessageType TgMessageType
 }
 
+func (m tgWebhookUsersSharedMessage) GetRequestID() int {
+	return m.message.UsersShared.RequestID
+}
+
 func (m tgWebhookUsersSharedMessage) GetSharedUsers() (sharedUsers []botinput.SharedUserMessageItem) {
 	if m.message == nil {
 		panic("m.message is nil")
