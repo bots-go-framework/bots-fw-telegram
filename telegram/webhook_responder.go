@@ -96,15 +96,13 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 			err = fmt.Errorf("unknown bot message type %v==%T", m.BotMessage.BotMessageType(), botMessage)
 			return
 		}
-	} else if m.IsEdit || (tgUpdate.CallbackQuery != nil && tgUpdate.CallbackQuery.InlineMessageID != "" && m.ToChat == nil) {
-		if m.IsEdit {
-			logus.Debugf(c, "m.IsEdit")
-		} else if tgUpdate.CallbackQuery != nil {
-			logus.Debugf(c, "tgUpdate.CallbackQuery != nil")
-		}
-
+	} else if m.IsEdit || m.EditMessageIntID != 0 || (tgUpdate.CallbackQuery != nil && tgUpdate.CallbackQuery.InlineMessageID != "" && m.ToChat == nil) {
 		// Edit message
 		inlineMessageID, chatID, messageID := getTgMessageIDs(tgUpdate)
+		if m.EditMessageIntID != 0 {
+			messageID = m.EditMessageIntID
+			inlineMessageID = ""
+		}
 		if m.EditMessageUID != nil {
 			switch m.EditMessageUID.(type) { // TODO: How do we remove duplicates for value & pointer cases?
 			case callbackCurrent:
