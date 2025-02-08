@@ -22,6 +22,23 @@ type tgWebhookResponder struct {
 	whc *tgWebhookContext
 }
 
+func (r tgWebhookResponder) DeleteMessage(ctx context.Context, messageID string) (err error) {
+	var msgID int
+	if msgID, err = strconv.Atoi(messageID); err != nil {
+		err = fmt.Errorf("failed to parse messageID='%s' as int: %w", messageID, err)
+		return
+	}
+	if r.whc.chatID == "" {
+		return errors.New("whc.chatID is empty")
+	}
+	botContext := r.whc.BotContext()
+	httpClient := botContext.BotHost.GetHTTPClient(ctx)
+	botAPI := tgbotapi.NewBotAPIWithClient(botContext.BotSettings.Token, httpClient)
+	botAPI.EnableDebug(ctx)
+	_, err = botAPI.DeleteMessage(r.whc.chatID, msgID)
+	return
+}
+
 var _ botsfw.WebhookResponder = (*tgWebhookResponder)(nil)
 
 func newTgWebhookResponder(w http.ResponseWriter, whc *tgWebhookContext) tgWebhookResponder {
@@ -30,8 +47,8 @@ func newTgWebhookResponder(w http.ResponseWriter, whc *tgWebhookContext) tgWebho
 	return responder
 }
 
-func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromBot, channel botsfw.BotAPISendMessageChannel) (resp botsfw.OnMessageSentResponse, err error) {
-	logus.Debugf(c, "tgWebhookResponder.SendMessage(channel=%v, isEdit=%v)\nm: %+v", channel, m.IsEdit, m)
+func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFromBot, channel botsfw.BotAPISendMessageChannel) (resp botsfw.OnMessageSentResponse, err error) {
+	logus.Debugf(ctx, "tgWebhookResponder.SendMessage(channel=%v, isEdit=%v)\nm: %+v", channel, m.IsEdit, m)
 	switch channel {
 	case botsfw.BotAPISendMessageOverHTTPS, botsfw.BotAPISendMessageOverResponse:
 	// Known channels
@@ -41,7 +58,7 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 	//ctx := tc.Context()
 
 	var cancel context.CancelFunc
-	c, cancel = context.WithTimeout(c, 10*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
 	var chattable tgbotapi.Chattable
@@ -64,10 +81,10 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 	var botMessage botsfw.BotMessage
 
 	if m.Text == botsfw.NoMessageToSend {
-		logus.Debugf(c, botsfw.NoMessageToSend)
+		logus.Debugf(ctx, botsfw.NoMessageToSend)
 		return
 	} else if botMessage = m.BotMessage; botMessage != nil {
-		logus.Debugf(c, "m.BotMessage != nil")
+		logus.Debugf(ctx, "m.BotMessage != nil")
 		switch m.BotMessage.BotMessageType() {
 		case botsfw.BotMessageTypeInlineResults:
 			chattable = tgbotapi.InlineConfig(m.BotMessage.(InlineBotMessage))
@@ -138,7 +155,7 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 				return
 			}
 		}
-		logus.Debugf(c, "Edit message => inlineMessageID: %v, chatID: %d, messageID: %d", inlineMessageID, chatID, messageID)
+		logus.Debugf(ctx, "Edit message => inlineMessageID: %v, chatID: %d, messageID: %d", inlineMessageID, chatID, messageID)
 		if inlineMessageID == "" && chatID == 0 && messageID == 0 {
 			err = errors.New("can't edit Telegram message as inlineMessageID is empty && chatID == 0 && messageID == 0")
 			return
@@ -182,15 +199,15 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 	} else {
 		switch inputType := r.whc.InputType(); inputType {
 		case botinput.WebhookInputInlineQuery: // pass
-			logus.Debugf(c, "No response to WebhookInputInlineQuery")
+			logus.Debugf(ctx, "No response to WebhookInputInlineQuery")
 		case botinput.WebhookInputChosenInlineResult: // pass
 		default:
 			mBytes, err := ffjson.Marshal(m)
 			if err != nil {
-				logus.Errorf(c, "Failed to marshal MessageFromBot to JSON: %v", err)
+				logus.Errorf(ctx, "Failed to marshal MessageFromBot to JSON: %v", err)
 			}
 			inputTypeName := botinput.GetWebhookInputTypeIdNameString(inputType)
-			logus.Debugf(c, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, string(mBytes))
+			logus.Debugf(ctx, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, string(mBytes))
 			ffjson.Pool(mBytes)
 		}
 		return
@@ -198,7 +215,7 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 
 	jsonStr, err := ffjson.Marshal(chattable)
 	if err != nil {
-		logus.Errorf(c, "Failed to marshal message config to json: %v\n\tJSON: %v\n\tchattable: %v", err, jsonStr, chattable)
+		logus.Errorf(ctx, "Failed to marshal message config to json: %v\n\tJSON: %v\n\tchattable: %v", err, jsonStr, chattable)
 		ffjson.Pool(jsonStr)
 		return resp, err
 	}
@@ -210,44 +227,50 @@ func (r tgWebhookResponder) SendMessage(c context.Context, m botsfw.MessageFromB
 		indentedJSONStr = string(jsonStr)
 	}
 	ffjson.Pool(jsonStr)
-	logus.Debugf(c, "Sending to Telegram, Text: %v\n------------------------\nAs JSON: %v", m.Text, indentedJSONStr)
+	logus.Debugf(ctx, "Sending to Telegram, Text: %v\n------------------------\nAs JSON: %v", m.Text, indentedJSONStr)
 
 	//if values, err := chattable.Values(); err != nil {
-	//	logus.Errorf(c, "Failed to marshal message config to url.Values: %v", err)
+	//	logus.Errorf(ctx, "Failed to marshal message config to url.Values: %v", err)
 	//	return resp, err
 	//} else {
-	//	logus.Debugf(c, "Message for sending to Telegram as URL values: %v", values)
+	//	logus.Debugf(ctx, "Message for sending to Telegram as URL values: %v", values)
 	//}
 
 	switch channel {
 	case botsfw.BotAPISendMessageOverResponse:
 		if _, err := tgbotapi.ReplyToResponse(chattable, r.w); err != nil {
-			logus.Errorf(c, "Failed to send message to Telegram throw HTTP response: %v", err)
+			logus.Errorf(ctx, "Failed to send message to Telegram throw HTTP response: %v", err)
 		}
 		return resp, err
 	case botsfw.BotAPISendMessageOverHTTPS:
-		botContext := r.whc.BotContext()
-		botAPI := tgbotapi.NewBotAPIWithClient(
-			botContext.BotSettings.Token,
-			botContext.BotHost.GetHTTPClient(c),
-		)
-		botAPI.EnableDebug(c)
-		message, err := botAPI.Send(chattable)
-		if err != nil {
-			return resp, err
-		} else if message.MessageID != 0 {
-			logus.Debugf(c, "Telegram API: MessageID=%v", message.MessageID)
-		} else {
-			messageJSON, err := ffjson.Marshal(message)
-			if err != nil {
-				logus.Warningf(c, "Telegram API response as raw: %v", message)
-			} else {
-				logus.Debugf(c, "Telegram API response as JSON: %v", string(messageJSON))
-			}
-			ffjson.Pool(messageJSON)
-		}
+		var message tgbotapi.Message
+		message, err = r.sendOverHttps(ctx, chattable)
 		return botsfw.OnMessageSentResponse{TelegramMessage: message}, nil
 	default:
 		panic(fmt.Sprintf("Unknown channel: %v", channel))
 	}
+}
+
+func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotapi.Chattable) (message tgbotapi.Message, err error) {
+	botContext := r.whc.BotContext()
+	botAPI := tgbotapi.NewBotAPIWithClient(
+		botContext.BotSettings.Token,
+		botContext.BotHost.GetHTTPClient(ctx),
+	)
+	botAPI.EnableDebug(ctx)
+
+	if message, err = botAPI.Send(chattable); err != nil {
+		return
+	} else if message.MessageID != 0 {
+		logus.Debugf(ctx, "Telegram API: MessageID=%v", message.MessageID)
+	} else {
+		var messageJSON []byte
+		if messageJSON, err = ffjson.Marshal(message); err != nil {
+			logus.Warningf(ctx, "Telegram API response as raw: %v", message)
+		} else {
+			logus.Debugf(ctx, "Telegram API response as JSON: %v", string(messageJSON))
+		}
+		ffjson.Pool(messageJSON)
+	}
+	return
 }
