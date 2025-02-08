@@ -28,14 +28,27 @@ func (r tgWebhookResponder) DeleteMessage(ctx context.Context, messageID string)
 		err = fmt.Errorf("failed to parse messageID='%s' as int: %w", messageID, err)
 		return
 	}
-	if r.whc.chatID == "" {
-		return errors.New("whc.chatID is empty")
+	chatID := r.whc.chatID
+	if chatID == "" {
+		input := r.whc.Input()
+		if tgInput, ok := input.(tgWebhookTextMessage); ok {
+			if chat := tgInput.Chat(); chat != nil {
+				chatID = chat.GetID()
+			} else if tgInput.update.Message != nil {
+				if tgInput.update.Message.Chat != nil && tgInput.update.Message.Chat.ID != 0 {
+					chatID = strconv.FormatInt(tgInput.update.Message.Chat.ID, 10)
+				}
+			}
+		}
+	}
+	if chatID == "" {
+		return errors.New("can not determine chatID from current WebhookContext")
 	}
 	botContext := r.whc.BotContext()
 	httpClient := botContext.BotHost.GetHTTPClient(ctx)
 	botAPI := tgbotapi.NewBotAPIWithClient(botContext.BotSettings.Token, httpClient)
 	botAPI.EnableDebug(ctx)
-	_, err = botAPI.DeleteMessage(r.whc.chatID, msgID)
+	_, err = botAPI.DeleteMessage(chatID, msgID)
 	return
 }
 
