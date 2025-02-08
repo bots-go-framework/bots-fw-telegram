@@ -2,12 +2,12 @@ github.com/alexsergivan/transliterator v1.0.1 h1:vON2ilWCHjq+S5Y4obhLGhHK4Y1VIhs
 github.com/alexsergivan/transliterator v1.0.1/go.mod h1:0IrumukulURJ4PD0z6UcdJKP2job1DYDhnHAP5y+5pE=
 github.com/bots-go-framework/bots-api-telegram v0.8.2 h1:ml2S6J7snlgjkYONt9fhdzRqQHnNKqpnDXKMFRwjVj8=
 github.com/bots-go-framework/bots-api-telegram v0.8.2/go.mod h1:aY3y10SeCY4K3pHOrqOxXImjs8CfYD7n71Q5VZXKkJw=
-github.com/bots-go-framework/bots-fw v0.50.1 h1:olmVFdrroEUrr/B23lTz8ppTS9gcFzMF+uH1i/gZjNA=
-github.com/bots-go-framework/bots-fw v0.50.1/go.mod h1:0jnsvUxO7RiYYaHQ4MIu5xT+YMwMb8LZMcBz/odkPuE=
+github.com/bots-go-framework/bots-fw v0.52.0 h1:gHS05MIDdeSTOCmdsYi5dZaqiMayqIcA1u9WBd0nbpw=
+github.com/bots-go-framework/bots-fw v0.52.0/go.mod h1:0jnsvUxO7RiYYaHQ4MIu5xT+YMwMb8LZMcBz/odkPuE=
 github.com/bots-go-framework/bots-fw-store v0.10.0 h1:e6bD274mjrHVp+X05/7uqqT3s5xZOqV9divKTaM2W+w=
 github.com/bots-go-framework/bots-fw-store v0.10.0/go.mod h1:7oU4B8j5HuJZM8AftosbyQD+AqckXsDv8eU1auGPzn8=
-github.com/bots-go-framework/bots-fw-telegram-models v0.3.11 h1:Z5UpviNiz2ThypSfr+v14sEhqvUVsu9lB9GZqdRKRZQ=
-github.com/bots-go-framework/bots-fw-telegram-models v0.3.11/go.mod h1:C1UFxujWhIsbdMVlLXYR3Ejfb7cndat5JHkiKkpT3Gw=
+github.com/bots-go-framework/bots-fw-telegram-models v0.3.12 h1:iyWy6gIa5xwRf62XKfOJncb268DgwkPzNyUIuq/KINY=
+github.com/bots-go-framework/bots-fw-telegram-models v0.3.12/go.mod h1:3sKXa5EoYYYqoBp3vA9wbk+0XQC3lfdJXvAKYb7/01Y=
 github.com/bots-go-framework/bots-go-core v0.0.3 h1:z3A7DLUgxbHWxvTCGnkHP9WHpTT9xxROEypoqAfvYIQ=
 github.com/bots-go-framework/bots-go-core v0.0.3/go.mod h1:XCn9z4TI8sbgwyus+VDzw7iMY2QCPWEAvl23GMDjeEU=
 github.com/dal-go/dalgo v0.16.1 h1:cr1CefLIEH/Q1jIJuygv5sh02CDKKAqHXDNPOsUUSwE=
