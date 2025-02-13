@@ -12,6 +12,8 @@ github.com/bots-go-framework/bots-fw v0.53.0 h1:dRb69FBAgOIbh6EzdpVAE+LYqlX2FUyB
 github.com/bots-go-framework/bots-fw v0.53.0/go.mod h1:0jnsvUxO7RiYYaHQ4MIu5xT+YMwMb8LZMcBz/odkPuE=
 github.com/bots-go-framework/bots-fw v0.53.2 h1:tWW2PMwzZs4sbTjS+szgI1eScU1n0t9x4aJDz2waWe4=
 github.com/bots-go-framework/bots-fw v0.53.2/go.mod h1:0jnsvUxO7RiYYaHQ4MIu5xT+YMwMb8LZMcBz/odkPuE=
+github.com/bots-go-framework/bots-fw v0.53.3 h1:R/KfTDQhrYaj9Iwyx1ObuYACK0P6DcST1oxLdwgYdEk=
+github.com/bots-go-framework/bots-fw v0.53.3/go.mod h1:0jnsvUxO7RiYYaHQ4MIu5xT+YMwMb8LZMcBz/odkPuE=
 github.com/bots-go-framework/bots-fw-store v0.10.0 h1:e6bD274mjrHVp+X05/7uqqT3s5xZOqV9divKTaM2W+w=
 github.com/bots-go-framework/bots-fw-store v0.10.0/go.mod h1:7oU4B8j5HuJZM8AftosbyQD+AqckXsDv8eU1auGPzn8=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.12 h1:iyWy6gIa5xwRf62XKfOJncb268DgwkPzNyUIuq/KINY=
