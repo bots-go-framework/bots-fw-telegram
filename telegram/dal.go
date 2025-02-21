@@ -16,4 +16,6 @@ type TgChatInstanceDal interface {
 	SaveTelegramChatInstance(c context.Context, id string, tgChatInstance botsfwtgmodels.TgChatInstanceData) (err error)
 }
 
-var tgChatInstanceDal TgChatInstanceDal
+var NewChatInstanceData = func(botCode string) botsfwtgmodels.TgChatInstanceData {
+	panic("telegram.NewChatInstanceData is not set")
+}

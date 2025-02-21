@@ -10,6 +10,7 @@ var (
 	_ TgWebhookInput                = (*TgWebhookCallbackQuery)(nil)
 	_ botinput.WebhookInput         = (*TgWebhookCallbackQuery)(nil)
 	_ botinput.WebhookCallbackQuery = (*TgWebhookCallbackQuery)(nil)
+	_ WebhookCallbackQuery          = (*TgWebhookCallbackQuery)(nil)
 )
 
 // TgWebhookCallbackQuery is wrapper on callback query
@@ -17,6 +18,10 @@ type TgWebhookCallbackQuery struct { // TODO: make non-exportable
 	tgWebhookInput
 	//callbackQuery *tgbotapi.CallbackQuery
 	//message       botsfw.WebhookMessage
+}
+
+func (whi TgWebhookCallbackQuery) GetChatInstanceID() string {
+	return whi.tgWebhookInput.update.CallbackQuery.ChatInstance
 }
 
 func newTelegramWebhookCallbackQuery(input tgWebhookInput) TgWebhookCallbackQuery {
