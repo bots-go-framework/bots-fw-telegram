@@ -10,6 +10,8 @@ github.com/bots-go-framework/bots-fw v0.56.5 h1:3Gg4qzNf2oA5xlSZqbc+mBc+uU0x7ugZ
 github.com/bots-go-framework/bots-fw v0.56.5/go.mod h1:ilehI7OfAHMrw3HDtSzEMobPaf6xDR30Bjgpbb2uxYs=
 github.com/bots-go-framework/bots-fw v0.56.6 h1:Q7/097VRvVc09gDtiGvpfGabmOj2wW00LJIipxpEirg=
 github.com/bots-go-framework/bots-fw v0.56.6/go.mod h1:+WvuSWy1AoE/PYudRYbBXZKgA3bhaIjJLNIag4GWDSQ=
+github.com/bots-go-framework/bots-fw v0.56.8 h1:GvI64fbEu1/IzDuC1a4aAbYyfPEKZ7jXcU8HWFcSpjg=
+github.com/bots-go-framework/bots-fw v0.56.8/go.mod h1:ACPz3YEtwvJEPZRLFqFdEKnI1EJcEOthzBquZ25GKn4=
 github.com/bots-go-framework/bots-fw-store v0.10.0 h1:e6bD274mjrHVp+X05/7uqqT3s5xZOqV9divKTaM2W+w=
 github.com/bots-go-framework/bots-fw-store v0.10.0/go.mod h1:7oU4B8j5HuJZM8AftosbyQD+AqckXsDv8eU1auGPzn8=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.12 h1:iyWy6gIa5xwRf62XKfOJncb268DgwkPzNyUIuq/KINY=
@@ -28,6 +30,8 @@ github.com/dal-go/dalgo v0.18.0 h1:GAl+WiRg7J2Y3SWaKI12+PgKebA6Z2dZGXyZ3NPktI4=
 github.com/dal-go/dalgo v0.18.0/go.mod h1:BoMNGwDE9FdjynV7xCn5f/GdVJxvfePwjsMldn+BhqA=
 github.com/dal-go/dalgo v0.18.1 h1:QV4xkjEE5I5PS6ZTKINQhU3+J5loKiCkj/vUmF+8Hd8=
 github.com/dal-go/dalgo v0.18.1/go.mod h1:BoMNGwDE9FdjynV7xCn5f/GdVJxvfePwjsMldn+BhqA=
+github.com/dal-go/dalgo v0.18.2 h1:KMHfJgkf7wKtyM/VAlg4ZCQa+kFrFdErrgXPCFxPqc4=
+github.com/dal-go/dalgo v0.18.2/go.mod h1:BoMNGwDE9FdjynV7xCn5f/GdVJxvfePwjsMldn+BhqA=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
