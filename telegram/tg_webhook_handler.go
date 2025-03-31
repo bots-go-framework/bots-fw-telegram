@@ -70,7 +70,7 @@ func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host
 	if router == nil {
 		panic("router == nil")
 	}
-	h.WebhookHandlerBase.Register(driver, host)
+	h.Register(driver, host)
 
 	pathPrefix = strings.TrimSuffix(pathPrefix, "/")
 	//router.POST(pathPrefix+"/telegram/webhook", h.HandleWebhookRequest) // TODO: Remove obsolete
@@ -136,16 +136,15 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 		"chosen_inline_result",
 		"callback_query",
 	}
-	if response, err := bot.SetWebhook(*webhookConfig); err != nil {
+	var response tgbotapi.APIResponse
+	if response, err = bot.SetWebhook(*webhookConfig); err != nil {
 		logus.Errorf(ctx, "%v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err := w.Write([]byte(err.Error())); err != nil {
 			logus.Errorf(ctx, "Failed to write error to response: %v", err)
 		}
-	} else {
-		if _, err := w.Write([]byte(fmt.Sprintf("Webhook set\nErrorCode: %d\nDescription: %v\nContent: %v", response.ErrorCode, response.Description, string(response.Result)))); err != nil {
-			logus.Errorf(ctx, "Failed to write error to response: %v", err)
-		}
+	} else if _, err = fmt.Fprintf(w, "Webhook set\nErrorCode: %d\nDescription: %v\nContent: %v", response.ErrorCode, response.Description, string(response.Result)); err != nil {
+		logus.Errorf(ctx, "Failed to write error to response: %v", err)
 	}
 }
 

@@ -21,7 +21,7 @@ type TgWebhookCallbackQuery struct { // TODO: make non-exportable
 }
 
 func (whi TgWebhookCallbackQuery) GetChatInstanceID() string {
-	return whi.tgWebhookInput.update.CallbackQuery.ChatInstance
+	return whi.update.CallbackQuery.ChatInstance
 }
 
 func newTelegramWebhookCallbackQuery(input tgWebhookInput) TgWebhookCallbackQuery {
