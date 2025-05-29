@@ -4,10 +4,14 @@ github.com/bots-go-framework/bots-api-telegram v0.11.1 h1:Zl4bjyRHqp6R9DFSZWPY/V
 github.com/bots-go-framework/bots-api-telegram v0.11.1/go.mod h1:aY3y10SeCY4K3pHOrqOxXImjs8CfYD7n71Q5VZXKkJw=
 github.com/bots-go-framework/bots-fw v0.57.1 h1:0ubGRkYkYXwEJ85YS6mlWimGk6J/3XOdqrt+WAliY+4=
 github.com/bots-go-framework/bots-fw v0.57.1/go.mod h1:LLqtmwSRkri8URnSD4OvRSHpeXOXAteZ1LE5RvTVaHw=
+github.com/bots-go-framework/bots-fw v0.57.8 h1:IDDAgDeMnXWTUWtnfledJ+3s3cRXWxOY2kpyIQ8616E=
+github.com/bots-go-framework/bots-fw v0.57.8/go.mod h1:emBsjfW5yd+JQ74T0UFGs0KfMDC+mGIXjDo4HKfRrrU=
 github.com/bots-go-framework/bots-fw-store v0.10.0 h1:e6bD274mjrHVp+X05/7uqqT3s5xZOqV9divKTaM2W+w=
 github.com/bots-go-framework/bots-fw-store v0.10.0/go.mod h1:7oU4B8j5HuJZM8AftosbyQD+AqckXsDv8eU1auGPzn8=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.21 h1:WWeDBS5mlwFqy2DYGvh9Bu5Xc9Vd0v02hb/bmKlacUc=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.21/go.mod h1:9md/BbO2TrUPi3eeU4Iqc1NtOELhVo+CvAkVI98nMNM=
+github.com/bots-go-framework/bots-fw-telegram-models v0.3.22 h1:BrZNhCb6NRW0JHtDqXLVDUE0f2AochHum33nAe4ZlZg=
+github.com/bots-go-framework/bots-fw-telegram-models v0.3.22/go.mod h1:zA/C08sUpvpvyUT1+WcnWjivGrd7SqmVqXjfmhx1JcY=
 github.com/bots-go-framework/bots-go-core v0.0.3 h1:z3A7DLUgxbHWxvTCGnkHP9WHpTT9xxROEypoqAfvYIQ=
 github.com/bots-go-framework/bots-go-core v0.0.3/go.mod h1:XCn9z4TI8sbgwyus+VDzw7iMY2QCPWEAvl23GMDjeEU=
 github.com/dal-go/dalgo v0.21.0 h1:dtUi3x4LgZkg94vegDYSoBwxbsguyYoBFAS1rLaCSpA=
@@ -25,6 +29,8 @@ github.com/stretchr/testify v1.10.0 h1:Xv5erBjTwe/5IxqUQTdXv5kgmIvbHo3QQyRwhJsOf
 github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/strongo/analytics v0.0.6 h1:C552+Vk0wpRTkoSaHB4FCK2B2VbBUmX2y0fNHmGUCYg=
 github.com/strongo/analytics v0.0.6/go.mod h1:1OdiZI9/fPDN8ep1Pbz+F3UZPNbttUD7T1St15r760c=
+github.com/strongo/analytics v0.0.9 h1:7tHxih16cMqdgQlkAc7jM0XVP1gE2I9H898yP6LN/nk=
+github.com/strongo/analytics v0.0.9/go.mod h1:1OdiZI9/fPDN8ep1Pbz+F3UZPNbttUD7T1St15r760c=
 github.com/strongo/i18n v0.6.1 h1:hNtpU97R5xYavf6n2wfRFWGZHjRZ2lHmube0t2+FHFE=
 github.com/strongo/i18n v0.6.1/go.mod h1:4jBQ4PJ3Uiri2Y+LHJ5/o1nB1H2ToddRW/yZXSOTUjE=
 github.com/strongo/logus v0.2.1 h1:ZzAtdSg6PPF1Y43WbNWl7MH1XYl7kvKMxyxv/lpbadI=
