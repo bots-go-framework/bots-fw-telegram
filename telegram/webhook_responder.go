@@ -31,14 +31,28 @@ func (r tgWebhookResponder) DeleteMessage(ctx context.Context, messageID string)
 	chatID := r.whc.chatID
 	if chatID == "" {
 		input := r.whc.Input()
-		if tgInput, ok := input.(tgWebhookTextMessage); ok {
-			if chat := tgInput.Chat(); chat != nil {
-				chatID = chat.GetID()
-			} else if tgInput.update.Message != nil {
-				if tgInput.update.Message.Chat != nil && tgInput.update.Message.Chat.ID != 0 {
-					chatID = strconv.FormatInt(tgInput.update.Message.Chat.ID, 10)
-				}
+		var chat botinput.WebhookChat
+		if inputWithChat, ok := input.(interface{ Chat() botinput.WebhookChat }); ok {
+			chat = inputWithChat.Chat()
+		}
+		if chat != nil {
+			chatID = chat.GetID()
+		} else {
+			var message *tgbotapi.Message
+			switch tgInput := input.(type) {
+			case tgWebhookTextMessage:
+				chat = tgInput.Chat()
+				message = tgInput.update.Message
+			case TgWebhookCallbackQuery:
+				chat = tgInput.Chat()
+				message = tgInput.update.Message
 			}
+			if message != nil && message.Chat != nil && message.Chat.ID != 0 {
+				chatID = strconv.FormatInt(message.Chat.ID, 10)
+			}
+		}
+		if chatID == "" && chat != nil {
+			chatID = chat.GetID()
 		}
 	}
 	if chatID == "" {
