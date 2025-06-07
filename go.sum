@@ -8,6 +8,8 @@ github.com/bots-go-framework/bots-fw v0.57.8 h1:IDDAgDeMnXWTUWtnfledJ+3s3cRXWxOY
 github.com/bots-go-framework/bots-fw v0.57.8/go.mod h1:emBsjfW5yd+JQ74T0UFGs0KfMDC+mGIXjDo4HKfRrrU=
 github.com/bots-go-framework/bots-fw v0.60.0 h1:adLt5627dCrPUdP1RZIjxa6/KPv+YzIM4rH2xDn4iZk=
 github.com/bots-go-framework/bots-fw v0.60.0/go.mod h1:/8nJnFU6eG9TkKJyn9PltgirIKcrevEII20yLPHrlF8=
+github.com/bots-go-framework/bots-fw v0.61.1 h1:aughew4qJ/1h+UJU2+U3FNm6tImJtlTRb+ScC6J3NMo=
+github.com/bots-go-framework/bots-fw v0.61.1/go.mod h1:rUhzGj83QYpkUZ41eHwXYj16sJUG79NwbiEybUwrXbI=
 github.com/bots-go-framework/bots-fw-store v0.10.0 h1:e6bD274mjrHVp+X05/7uqqT3s5xZOqV9divKTaM2W+w=
 github.com/bots-go-framework/bots-fw-store v0.10.0/go.mod h1:7oU4B8j5HuJZM8AftosbyQD+AqckXsDv8eU1auGPzn8=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.21 h1:WWeDBS5mlwFqy2DYGvh9Bu5Xc9Vd0v02hb/bmKlacUc=
@@ -39,6 +41,8 @@ github.com/strongo/i18n v0.6.1 h1:hNtpU97R5xYavf6n2wfRFWGZHjRZ2lHmube0t2+FHFE=
 github.com/strongo/i18n v0.6.1/go.mod h1:4jBQ4PJ3Uiri2Y+LHJ5/o1nB1H2ToddRW/yZXSOTUjE=
 github.com/strongo/i18n v0.7.1 h1:hbExifxl5+5+5QS9P7tvLtwFMzlVpPTsC1qYU3A3Fb8=
 github.com/strongo/i18n v0.7.1/go.mod h1:4jBQ4PJ3Uiri2Y+LHJ5/o1nB1H2ToddRW/yZXSOTUjE=
+github.com/strongo/i18n v0.8.2 h1:tJxeajC6OLENFus2GQ/jZGDjFmd6lPQuhand9jD0Moc=
+github.com/strongo/i18n v0.8.2/go.mod h1:4jBQ4PJ3Uiri2Y+LHJ5/o1nB1H2ToddRW/yZXSOTUjE=
 github.com/strongo/logus v0.2.1 h1:ZzAtdSg6PPF1Y43WbNWl7MH1XYl7kvKMxyxv/lpbadI=
 github.com/strongo/logus v0.2.1/go.mod h1:sd8gjJklqGQAg+Q0mlP5MWgzguAuxR25YYFSkfVOPdc=
 github.com/strongo/random v0.0.1 h1:OZHJBb/3uEa7OX8L2Dv2pLnSeewRmXMyTACoeto6O8I=
