@@ -76,6 +76,7 @@ func newTgWebhookResponder(w http.ResponseWriter, whc *tgWebhookContext) tgWebho
 
 func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFromBot, channel botsfw.BotAPISendMessageChannel) (resp botsfw.OnMessageSentResponse, err error) {
 	logus.Debugf(ctx, "tgWebhookResponder.SendMessage(channel=%v, isEdit=%v)\nm: %+v", channel, m.IsEdit, m)
+	channel = botsfw.BotAPISendMessageOverHTTPS
 	switch channel {
 	case botsfw.BotAPISendMessageOverHTTPS, botsfw.BotAPISendMessageOverResponse:
 	// Known channels
@@ -84,11 +85,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 	}
 	//ctx := tc.Context()
 
-	var cancel context.CancelFunc
-	ctx, cancel = context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-
-	var chattable tgbotapi.Chattable
+	var sendable tgbotapi.Sendable
 
 	parseMode := func() string {
 		switch m.Format {
@@ -114,31 +111,53 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 		logus.Debugf(ctx, "m.BotMessage != nil")
 		switch m.BotMessage.BotMessageType() {
 		case botsfw.BotMessageTypeInlineResults:
-			chattable = tgbotapi.InlineConfig(m.BotMessage.(InlineBotMessage))
+			sendable = tgbotapi.InlineConfig(m.BotMessage.(InlineBotMessage))
 		case botsfw.BotMessageTypeCallbackAnswer:
 			callbackAnswer := tgbotapi.AnswerCallbackQueryConfig(m.BotMessage.(CallbackAnswer))
 			if callbackAnswer.CallbackQueryID == "" && tgUpdate.CallbackQuery != nil {
 				callbackAnswer.CallbackQueryID = tgUpdate.CallbackQuery.ID
 			}
-			chattable = callbackAnswer
+			sendable = callbackAnswer
 		case botsfw.BotMessageTypeLeaveChat:
 			leaveChat := tgbotapi.LeaveChatConfig(m.BotMessage.(LeaveChat))
 			if leaveChat.ChatID == "" {
 				leaveChat.ChatID = strconv.FormatInt(tgUpdate.Chat().ID, 10)
 			}
-			chattable = leaveChat
+			sendable = leaveChat
 		case botsfw.BotMessageTypeExportChatInviteLink:
 			exportChatInviteLink := tgbotapi.ExportChatInviteLink(m.BotMessage.(ExportChatInviteLink))
 			if exportChatInviteLink.ChatID == "" {
 				exportChatInviteLink.ChatID = strconv.FormatInt(tgUpdate.Chat().ID, 10)
 			}
-			chattable = exportChatInviteLink
+			sendable = exportChatInviteLink
 		case botsfw.BotMessageTypeUndefined:
 			err = fmt.Errorf("bot message type %v==undefined", m.BotMessage.BotMessageType())
 			return
+		case botsfw.BotMessageTypeSendInvoice:
+			invoiceConfig := tgbotapi.InvoiceConfig(m.BotMessage.(Invoice))
+			if invoiceConfig.ChatID == 0 {
+				invoiceConfig.ChatID = tgUpdate.Chat().ID
+			}
+			sendable = &invoiceConfig
+		case botsfw.BotMessageTypeSetDescription:
+			setBotDescription := m.BotMessage.(SetBotDescription)
+			sendable = (tgbotapi.SetMyDescription)(setBotDescription)
+		case botsfw.BotMessageTypeSetShortDescription:
+			setBotDescription := m.BotMessage.(SetBotShortDescription)
+			sendable = (tgbotapi.SetMyShortDescription)(setBotDescription)
+		case botsfw.BotMessageTypeSetCommands:
+			setBotDescription := m.BotMessage.(SetBotCommands)
+			sendable = (tgbotapi.SetMyCommandsConfig)(setBotDescription)
+		case botsfw.BotMessageTypeAnswerPreCheckoutQuery:
+			answerPreCheckoutQuery := m.BotMessage.(PreCheckoutQueryAnswer)
+			sendable = (tgbotapi.AnswerPreCheckoutQueryConfig)(answerPreCheckoutQuery)
 		default:
+			//var ok bool
+			//sendable, ok = m.BotMessage.(tgbotapi.Sendable)
+			//if !ok {
 			err = fmt.Errorf("unknown bot message type %v==%T", m.BotMessage.BotMessageType(), botMessage)
 			return
+			//}
 		}
 	} else if m.IsEdit || m.EditMessageIntID != 0 || (tgUpdate.CallbackQuery != nil && tgUpdate.CallbackQuery.InlineMessageID != "" && m.ToChat == nil) {
 		// Edit message
@@ -188,7 +207,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 			return
 		}
 		if m.Text == "" && m.Keyboard != nil {
-			chattable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, m.Keyboard.(*tgbotapi.InlineKeyboardMarkup))
+			sendable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, m.Keyboard.(*tgbotapi.InlineKeyboardMarkup))
 		} else if m.Text != "" {
 			editMessageTextConfig := tgbotapi.NewEditMessageText(chatID, messageID, inlineMessageID, m.Text)
 			editMessageTextConfig.ParseMode = parseMode()
@@ -203,7 +222,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 					panic(fmt.Sprintf("m.Keyboard has unsupported type %T", m.Keyboard))
 				}
 			}
-			chattable = editMessageTextConfig
+			sendable = editMessageTextConfig
 		} else {
 			err = fmt.Errorf("can't edit telegram message as got unknown output: %v", m)
 			panic(err)
@@ -222,14 +241,15 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 
 		messageConfig.ParseMode = parseMode()
 
-		chattable = messageConfig
+		sendable = messageConfig
 	} else {
 		switch inputType := r.whc.InputType(); inputType {
 		case botinput.WebhookInputInlineQuery: // pass
 			logus.Debugf(ctx, "No response to WebhookInputInlineQuery")
 		case botinput.WebhookInputChosenInlineResult: // pass
 		default:
-			mBytes, err := ffjson.Marshal(m)
+			var mBytes []byte
+			mBytes, err = ffjson.Marshal(m)
 			if err != nil {
 				logus.Errorf(ctx, "Failed to marshal MessageFromBot to JSON: %v", err)
 			}
@@ -240,9 +260,10 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 		return
 	}
 
-	jsonStr, err := ffjson.Marshal(chattable)
+	var jsonStr []byte
+	jsonStr, err = ffjson.Marshal(sendable)
 	if err != nil {
-		logus.Errorf(ctx, "Failed to marshal message config to json: %v\n\tJSON: %v\n\tchattable: %v", err, jsonStr, chattable)
+		logus.Errorf(ctx, "Failed to marshal message config to json: %v\n\tJSON: %v\n\tsendable: %v", err, jsonStr, sendable)
 		ffjson.Pool(jsonStr)
 		return resp, err
 	}
@@ -256,7 +277,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 	ffjson.Pool(jsonStr)
 	logus.Debugf(ctx, "Sending to Telegram, Text: %v\n------------------------\nAs JSON: %v", m.Text, indentedJSONStr)
 
-	//if values, err := chattable.Values(); err != nil {
+	//if values, err := sendable.Values(); err != nil {
 	//	logus.Errorf(ctx, "Failed to marshal message config to url.Values: %v", err)
 	//	return resp, err
 	//} else {
@@ -265,20 +286,24 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 
 	switch channel {
 	case botsfw.BotAPISendMessageOverResponse:
-		if _, err := tgbotapi.ReplyToResponse(chattable, r.w); err != nil {
-			logus.Errorf(ctx, "Failed to send message to Telegram throw HTTP response: %v", err)
+		if _, err = tgbotapi.ReplyToResponse(sendable, r.w); err != nil {
+			logus.Errorf(ctx, "Failed to send message to Telegram via HTTP response: %v", err)
 		}
 		return resp, err
 	case botsfw.BotAPISendMessageOverHTTPS:
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+
 		var message tgbotapi.Message
-		message, err = r.sendOverHttps(ctx, chattable)
-		return botsfw.OnMessageSentResponse{TelegramMessage: message}, nil
+		message, err = r.sendOverHttps(ctx, sendable)
+		return botsfw.OnMessageSentResponse{TelegramMessage: message}, err
 	default:
 		panic(fmt.Sprintf("Unknown channel: %v", channel))
 	}
 }
 
-func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotapi.Chattable) (message tgbotapi.Message, err error) {
+func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotapi.Sendable) (message tgbotapi.Message, err error) {
 	botContext := r.whc.BotContext()
 	botAPI := tgbotapi.NewBotAPIWithClient(
 		botContext.BotSettings.Token,
@@ -300,4 +325,11 @@ func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotap
 		ffjson.Pool(messageJSON)
 	}
 	return
+}
+
+func GetTelegramBotAPIClient(ctx context.Context, botContext botsfw.BotContext) *tgbotapi.BotAPI {
+	return tgbotapi.NewBotAPIWithClient(
+		botContext.BotSettings.Token,
+		botContext.BotHost.GetHTTPClient(ctx),
+	)
 }

@@ -6,8 +6,7 @@ import (
 
 func Test_botRecordsFieldsSetter_Platform(t *testing.T) {
 	actual := tgBotRecordsFieldsSetter{}.Platform()
-	expected := PlatformID
-	if actual != expected {
-		t.Errorf("Expected %v, got %v", expected, actual)
+	if actual != string(PlatformID) {
+		t.Errorf("Expected %s, got %s", PlatformID, actual)
 	}
 }

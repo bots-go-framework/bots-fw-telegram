@@ -25,14 +25,12 @@ func (whi TgWebhookCallbackQuery) GetChatInstanceID() string {
 }
 
 func newTelegramWebhookCallbackQuery(input tgWebhookInput) TgWebhookCallbackQuery {
-	callbackQuery := input.update.CallbackQuery
-	if callbackQuery == nil {
+	if input.update.CallbackQuery == nil {
 		panic("update.CallbackQuery == nil")
 	}
-	q := TgWebhookCallbackQuery{
+	return TgWebhookCallbackQuery{
 		tgWebhookInput: input,
 	}
-	return q
 }
 
 // GetID returns update ID

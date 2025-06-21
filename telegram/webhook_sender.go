@@ -36,7 +36,7 @@ func (s tgWebhookUser) GetUserName() string {
 }
 
 func (tgWebhookUser) Platform() string {
-	return PlatformID
+	return string(PlatformID)
 }
 
 func (tgWebhookUser) GetAvatar() string {

@@ -19,6 +19,9 @@ type tgWebhookInput struct {
 
 func (whi tgWebhookInput) BotChatID() (string, error) {
 	tgChat := whi.update.Chat()
+	if tgChat == nil {
+		return "", nil
+	}
 	return strconv.FormatInt(tgChat.ID, 10), nil
 }
 
@@ -33,11 +36,21 @@ func (whi tgWebhookInput) InputType() botinput.WebhookInputType {
 	case whi.update.ChosenInlineResult != nil:
 		return botinput.WebhookInputChosenInlineResult
 
-	case whi.update.Message != nil || whi.update.EditedMessage != nil:
-		return botinput.WebhookInputText
-
 	case whi.update.ChannelPost != nil || whi.update.EditedChannelPost != nil:
 		return botinput.WebhookInputNotImplemented
+
+	case whi.update.PreCheckoutQuery != nil:
+		return botinput.WebhookInputPreCheckoutQuery
+
+	case whi.update.Message.SuccessfulPayment != nil:
+		return botinput.WebhookInputSuccessfulPayment
+
+	case whi.update.Message.RefundedPayment != nil:
+		return botinput.WebhookInputRefundedPayment
+
+	case whi.update.Message != nil || whi.update.EditedMessage != nil:
+		// This should be after any whi.update.Message.* checks
+		return botinput.WebhookInputText
 
 	default:
 		return botinput.WebhookInputUnknown
@@ -106,13 +119,19 @@ func message2input(input tgWebhookInput, tgMessageType TgMessageType, tgMessage 
 func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botinput.WebhookInput, error) {
 	input := tgWebhookInput{update: update, logRequest: logRequest}
 
-	switch input.InputType() {
+	switch inputType := input.InputType(); inputType {
 	case botinput.WebhookInputInlineQuery:
 		return newTelegramWebhookInlineQuery(input), nil
 	case botinput.WebhookInputCallbackQuery:
 		return newTelegramWebhookCallbackQuery(input), nil
 	case botinput.WebhookInputChosenInlineResult:
 		return newTelegramWebhookChosenInlineResult(input), nil
+	case botinput.WebhookInputPreCheckoutQuery:
+		return newTgWebhookPreCheckoutQuery(input), nil
+	case botinput.WebhookInputSuccessfulPayment:
+		return newTgWebhookSuccessfulPayment(input), nil
+	case botinput.WebhookInputRefundedPayment:
+		return newTgWebhookRefundedPayment(input), nil
 	case botinput.WebhookInputText:
 		switch {
 		case update.Message != nil:
@@ -134,7 +153,7 @@ func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botinp
 			return nil, fmt.Errorf("the EditedChannelPost is not supported at the moment: [%s]: %w", string(editedChannelPost), botsfw.ErrNotImplemented)
 		}
 	default:
-		return nil, botsfw.ErrNotImplemented
+		return nil, fmt.Errorf("%w: %v", botsfw.ErrNotImplemented, inputType)
 	}
 	return nil, botsfw.ErrNotImplemented
 }
@@ -151,6 +170,8 @@ func (whi tgWebhookInput) GetSender() botinput.WebhookUser {
 		return tgWebhookUser{tgUser: whi.update.InlineQuery.From}
 	case whi.update.ChosenInlineResult != nil:
 		return tgWebhookUser{tgUser: whi.update.ChosenInlineResult.From}
+	case whi.update.PreCheckoutQuery != nil:
+		return tgWebhookUser{tgUser: whi.update.PreCheckoutQuery.From}
 	//case whi.update.ChannelPost != nil:
 	//	chat := whi.update.ChannelPost.Chat
 	//	return tgWebhookUser{  // TODO: Seems to be dirty hack.

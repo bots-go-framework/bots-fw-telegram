@@ -23,7 +23,7 @@ type tgBotRecordsFieldsSetter struct {
 }
 
 func (b tgBotRecordsFieldsSetter) Platform() string {
-	return PlatformID
+	return string(PlatformID)
 }
 
 func (b tgBotRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserData, sender botinput.WebhookSender) error {

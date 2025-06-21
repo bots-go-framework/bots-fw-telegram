@@ -126,7 +126,7 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 	bot.EnableDebug(ctx)
 	//bot.Debug = true
 
-	webhookURL := fmt.Sprintf("https://%v/bot/tg/hook?id=%v", r.Host, botCode)
+	webhookURL := fmt.Sprintf("https://%s/bot/tg/hook?id=%s", r.Host, botCode)
 
 	webhookConfig := tgbotapi.NewWebhook(webhookURL)
 	webhookConfig.AllowedUpdates = []string{
@@ -135,6 +135,10 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 		"inline_query",
 		"chosen_inline_result",
 		"callback_query",
+		"pre_checkout_query",
+		"successful_payment",
+		"refunded_payment",
+		"purchased_paid_media",
 	}
 	var response tgbotapi.APIResponse
 	if response, err = bot.SetWebhook(*webhookConfig); err != nil {
@@ -143,7 +147,14 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 		if _, err := w.Write([]byte(err.Error())); err != nil {
 			logus.Errorf(ctx, "Failed to write error to response: %v", err)
 		}
-	} else if _, err = fmt.Fprintf(w, "Webhook set\nErrorCode: %d\nDescription: %v\nContent: %v", response.ErrorCode, response.Description, string(response.Result)); err != nil {
+	} else if _, err = fmt.Fprintf(w, `Webhook set
+ErrorCode: %d
+Description: %v
+Content: %v
+
+Parametes:
+	allowed_updates: %s
+`, response.ErrorCode, response.Description, string(response.Result), strings.Join(webhookConfig.AllowedUpdates, ",")); err != nil {
 		logus.Errorf(ctx, "Failed to write error to response: %v", err)
 	}
 }
