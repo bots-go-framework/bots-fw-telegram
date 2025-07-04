@@ -9,7 +9,6 @@ import (
 	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
 	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
-	"github.com/pquerna/ffjson/ffjson"
 	"github.com/strongo/logus"
 	"io"
 	"net/http"
@@ -229,7 +228,7 @@ func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Re
 
 func (h tgWebhookHandler) unmarshalUpdate(_ context.Context, content []byte) (update *tgbotapi.Update, err error) {
 	update = new(tgbotapi.Update)
-	if err = ffjson.UnmarshalFast(content, update); err != nil {
+	if err = json.Unmarshal(content, update); err != nil {
 		return
 	}
 	return

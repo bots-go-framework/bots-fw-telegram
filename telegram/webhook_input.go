@@ -5,7 +5,6 @@ import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
-	"github.com/pquerna/ffjson/ffjson"
 	"strconv"
 	"time"
 )
@@ -145,12 +144,19 @@ func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botinp
 		switch {
 
 		case update.ChannelPost != nil:
-			channelPost, _ := ffjson.MarshalFast(update.ChannelPost)
+			channelPost, err := encodeToJsonString(update.ChannelPost)
+			if err != nil {
+				panic(err)
+			}
 			return nil, fmt.Errorf("the ChannelPost is not supported at the moment: [%s]: %w", channelPost, botsfw.ErrNotImplemented)
 
 		case update.EditedChannelPost != nil:
-			editedChannelPost, _ := ffjson.MarshalFast(update.EditedChannelPost)
-			return nil, fmt.Errorf("the EditedChannelPost is not supported at the moment: [%s]: %w", string(editedChannelPost), botsfw.ErrNotImplemented)
+
+			editedChannelPost, err := encodeToJsonString(update.EditedChannelPost)
+			if err != nil {
+				panic(err)
+			}
+			return nil, fmt.Errorf("the EditedChannelPost is not supported at the moment: [%s]: %w", editedChannelPost, botsfw.ErrNotImplemented)
 		}
 	default:
 		return nil, fmt.Errorf("%w: %v", botsfw.ErrNotImplemented, inputType)

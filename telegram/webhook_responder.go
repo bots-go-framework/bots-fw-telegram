@@ -13,7 +13,6 @@ import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
-	"github.com/pquerna/ffjson/ffjson"
 	"github.com/strongo/logus"
 )
 
@@ -90,9 +89,9 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 	parseMode := func() string {
 		switch m.Format {
 		case botsfw.MessageFormatHTML:
-			return "html"
+			return "HTML"
 		case botsfw.MessageFormatMarkdown:
-			return "markdown"
+			return "MarkdownV2"
 		case botsfw.MessageFormatText:
 			return ""
 		default:
@@ -151,6 +150,15 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 		case botsfw.BotMessageTypeAnswerPreCheckoutQuery:
 			answerPreCheckoutQuery := m.BotMessage.(PreCheckoutQueryAnswer)
 			sendable = (tgbotapi.AnswerPreCheckoutQueryConfig)(answerPreCheckoutQuery)
+		case botsfw.BotMessageTypeSendPhoto:
+			photoConfig := m.BotMessage.(SendPhoto)
+			if photoConfig.ChatID == 0 {
+				photoConfig.ChatID = tgUpdate.Chat().ID
+			}
+			if photoConfig.Caption != "" {
+				photoConfig.ParseMode = parseMode()
+			}
+			sendable = (tgbotapi.PhotoConfig)(photoConfig)
 		default:
 			//var ok bool
 			//sendable, ok = m.BotMessage.(tgbotapi.Sendable)
@@ -248,34 +256,24 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 			logus.Debugf(ctx, "No response to WebhookInputInlineQuery")
 		case botinput.WebhookInputChosenInlineResult: // pass
 		default:
-			var mBytes []byte
-			mBytes, err = ffjson.Marshal(m)
-			if err != nil {
+			var mJson string
+			if mJson, err = encodeToJsonString(m); err != nil {
 				logus.Errorf(ctx, "Failed to marshal MessageFromBot to JSON: %v", err)
+			} else {
+				inputTypeName := botinput.GetWebhookInputTypeIdNameString(inputType)
+				logus.Debugf(ctx, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, mJson)
 			}
-			inputTypeName := botinput.GetWebhookInputTypeIdNameString(inputType)
-			logus.Debugf(ctx, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, string(mBytes))
-			ffjson.Pool(mBytes)
 		}
 		return
 	}
 
-	var jsonStr []byte
-	jsonStr, err = ffjson.Marshal(sendable)
-	if err != nil {
-		logus.Errorf(ctx, "Failed to marshal message config to json: %v\n\tJSON: %v\n\tsendable: %v", err, jsonStr, sendable)
-		ffjson.Pool(jsonStr)
+	var sendableStr string
+
+	if sendableStr, err = encodeToJsonString(sendable); err != nil {
+		logus.Errorf(ctx, "Failed to marshal message config to json: %v\n\tsendable: %v", err, sendable)
 		return resp, err
 	}
-	var indentedJSON bytes.Buffer
-	var indentedJSONStr string
-	if indentedErr := json.Indent(&indentedJSON, jsonStr, "", "\t"); indentedErr == nil {
-		indentedJSONStr = indentedJSON.String()
-	} else {
-		indentedJSONStr = string(jsonStr)
-	}
-	ffjson.Pool(jsonStr)
-	logus.Debugf(ctx, "Sending to Telegram, Text: %v\n------------------------\nAs JSON: %v", m.Text, indentedJSONStr)
+	logus.Debugf(ctx, "Sending to Telegram, Text: %v\n------------------------\nAs JSON: %v", m.Text, sendableStr)
 
 	//if values, err := sendable.Values(); err != nil {
 	//	logus.Errorf(ctx, "Failed to marshal message config to url.Values: %v", err)
@@ -316,13 +314,15 @@ func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotap
 	} else if message.MessageID != 0 {
 		logus.Debugf(ctx, "Telegram API: MessageID=%v", message.MessageID)
 	} else {
-		var messageJSON []byte
-		if messageJSON, err = ffjson.Marshal(message); err != nil {
+		var buf bytes.Buffer
+		encoder := json.NewEncoder(&buf)
+		encoder.SetIndent("", "\t")
+		encoder.SetEscapeHTML(false)
+		if err = encoder.Encode(chattable); err != nil {
 			logus.Warningf(ctx, "Telegram API response as raw: %v", message)
 		} else {
-			logus.Debugf(ctx, "Telegram API response as JSON: %v", string(messageJSON))
+			logus.Debugf(ctx, "Telegram API response as JSON: %v", string(buf.String()))
 		}
-		ffjson.Pool(messageJSON)
 	}
 	return
 }

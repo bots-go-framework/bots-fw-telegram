@@ -111,3 +111,13 @@ func (SetBotCommands) BotMessageType() botsfw.BotMessageType {
 func (m SetBotCommands) BotEndpoint() string {
 	return (tgbotapi.SetMyCommandsConfig)(m).TelegramMethod()
 }
+
+type SendPhoto tgbotapi.PhotoConfig
+
+func (SendPhoto) BotMessageType() botsfw.BotMessageType {
+	return botsfw.BotMessageTypeSendPhoto
+}
+
+func (m SendPhoto) BotEndpoint() string {
+	return (tgbotapi.PhotoConfig)(m).TelegramMethod()
+}
