@@ -10,10 +10,10 @@ go 1.24.3
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.13.0
-	github.com/bots-go-framework/bots-fw v0.63.0
+	github.com/bots-go-framework/bots-fw v0.63.1
 	github.com/bots-go-framework/bots-fw-store v0.10.0
 	github.com/bots-go-framework/bots-fw-telegram-models v0.3.25
-	github.com/dal-go/dalgo v0.23.0
+	github.com/dal-go/dalgo v0.24.0
 	github.com/strongo/i18n v0.8.2
 	github.com/strongo/logus v0.2.1
 	go.uber.org/mock v0.5.2
