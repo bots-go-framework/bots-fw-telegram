@@ -21,7 +21,7 @@ require (
 
 require (
 	github.com/alexsergivan/transliterator v1.0.1 // indirect
-	github.com/bots-go-framework/bots-go-core v0.1.0 // indirect
+	github.com/bots-go-framework/bots-go-core v0.2.1 // indirect
 	github.com/strongo/analytics v0.0.11 // indirect
 	github.com/strongo/random v0.0.1 // indirect
 	github.com/strongo/slice v0.3.1 // indirect

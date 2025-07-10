@@ -345,8 +345,20 @@ func getTelegramInlineKeyboard(keyboard botkb.Keyboard) *tgbotapi.InlineKeyboard
 				switch btn := button.(type) {
 				case botkb.DataButton:
 					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonData(btn.Text, btn.Data)
+				case *botkb.DataButton:
+					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonData(btn.Text, btn.Data)
 				case botkb.UrlButton:
 					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonURL(btn.Text, btn.URL)
+				case *botkb.UrlButton:
+					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonURL(btn.Text, btn.URL)
+				case botkb.SwitchInlineQueryButton:
+					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQuery(btn.Text, btn.Query)
+				case *botkb.SwitchInlineQueryButton:
+					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQuery(btn.Text, btn.Query)
+				case botkb.SwitchInlineQueryCurrentChatButton:
+					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
+				case *botkb.SwitchInlineQueryCurrentChatButton:
+					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
 				default:
 					panic(fmt.Sprintf("Unknown button type at [%d][%d]: %T", i, j, btn))
 				}
