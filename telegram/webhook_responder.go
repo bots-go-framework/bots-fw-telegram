@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/bots-go-framework/bots-go-core/botkb"
 	"net/http"
 	"strconv"
 	"time"
@@ -215,20 +216,25 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 			return
 		}
 		if m.Text == "" && m.Keyboard != nil {
-			sendable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, m.Keyboard.(*tgbotapi.InlineKeyboardMarkup))
+			switch keyboard := m.Keyboard.(type) {
+			case *tgbotapi.InlineKeyboardMarkup:
+				sendable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, keyboard)
+			case *botkb.MessageKeyboard:
+				switch keyboard.KeyboardType() {
+				case botkb.KeyboardTypeInline:
+					kb := getTelegramInlineKeyboard(m.Keyboard)
+					sendable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, tgbotapi.NewInlineKeyboardMarkup(kb.InlineKeyboard...))
+				default:
+					err = fmt.Errorf("unknown keyboard type %T(%v)", keyboard.KeyboardType(), keyboard)
+					return
+				}
+			}
 		} else if m.Text != "" {
 			editMessageTextConfig := tgbotapi.NewEditMessageText(chatID, messageID, inlineMessageID, m.Text)
 			editMessageTextConfig.ParseMode = parseMode()
 			editMessageTextConfig.DisableWebPagePreview = m.DisableWebPagePreview
 			if m.Keyboard != nil {
-				switch keyboard := m.Keyboard.(type) {
-				case *tgbotapi.InlineKeyboardMarkup:
-					editMessageTextConfig.ReplyMarkup = keyboard
-				//case tgbotapi.ForceReply:
-				//	editMessageTextConfig.ReplyMarkup = keyboard
-				default:
-					panic(fmt.Sprintf("m.Keyboard has unsupported type %T", m.Keyboard))
-				}
+				editMessageTextConfig.ReplyMarkup = getTelegramInlineKeyboard(m.Keyboard)
 			}
 			sendable = editMessageTextConfig
 		} else {
@@ -244,7 +250,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 		messageConfig.DisableWebPagePreview = m.DisableWebPagePreview
 		messageConfig.DisableNotification = m.DisableNotification
 		if m.Keyboard != nil {
-			messageConfig.ReplyMarkup = m.Keyboard
+			messageConfig.ReplyMarkup = getTelegramInlineKeyboard(m.Keyboard)
 		}
 
 		messageConfig.ParseMode = parseMode()
@@ -325,6 +331,31 @@ func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotap
 		}
 	}
 	return
+}
+
+func getTelegramInlineKeyboard(keyboard botkb.Keyboard) *tgbotapi.InlineKeyboardMarkup {
+	switch kb := keyboard.(type) {
+	case *tgbotapi.InlineKeyboardMarkup:
+		return kb
+	case *botkb.MessageKeyboard:
+		tgButtons := make([][]tgbotapi.InlineKeyboardButton, len(kb.Buttons))
+		for i, buttons := range kb.Buttons {
+			tgButtons[i] = make([]tgbotapi.InlineKeyboardButton, len(buttons))
+			for j, button := range buttons {
+				switch btn := button.(type) {
+				case botkb.DataButton:
+					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonData(btn.Text, btn.Data)
+				case botkb.UrlButton:
+					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonURL(btn.Text, btn.URL)
+				default:
+					panic(fmt.Sprintf("Unknown button type at [%d][%d]: %T", i, j, btn))
+				}
+			}
+		}
+		return tgbotapi.NewInlineKeyboardMarkup(tgButtons...)
+	default:
+		panic(fmt.Sprintf("m.Keyboard has unsupported type %v", kb.KeyboardType()))
+	}
 }
 
 func GetTelegramBotAPIClient(ctx context.Context, botContext botsfw.BotContext) *tgbotapi.BotAPI {
