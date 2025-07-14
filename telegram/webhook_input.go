@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var _ botinput.WebhookInput = (*tgWebhookInput)(nil)
+var _ botinput.InputMessage = (*tgWebhookInput)(nil)
 
 type tgWebhookInput struct {
 	update     *tgbotapi.Update
@@ -24,35 +24,35 @@ func (whi tgWebhookInput) BotChatID() (string, error) {
 	return strconv.FormatInt(tgChat.ID, 10), nil
 }
 
-func (whi tgWebhookInput) InputType() botinput.WebhookInputType {
+func (whi tgWebhookInput) InputType() botinput.Type {
 	switch {
 	case whi.update.InlineQuery != nil:
-		return botinput.WebhookInputInlineQuery
+		return botinput.TypeInlineQuery
 
 	case whi.update.CallbackQuery != nil:
-		return botinput.WebhookInputCallbackQuery
+		return botinput.TypeCallbackQuery
 
 	case whi.update.ChosenInlineResult != nil:
-		return botinput.WebhookInputChosenInlineResult
+		return botinput.TypeChosenInlineResult
 
 	case whi.update.ChannelPost != nil || whi.update.EditedChannelPost != nil:
-		return botinput.WebhookInputNotImplemented
+		return botinput.TypeNotImplemented
 
 	case whi.update.PreCheckoutQuery != nil:
-		return botinput.WebhookInputPreCheckoutQuery
+		return botinput.TypePreCheckoutQuery
 
 	case whi.update.Message.SuccessfulPayment != nil:
-		return botinput.WebhookInputSuccessfulPayment
+		return botinput.TypeSuccessfulPayment
 
 	case whi.update.Message.RefundedPayment != nil:
-		return botinput.WebhookInputRefundedPayment
+		return botinput.TypeRefundedPayment
 
 	case whi.update.Message != nil || whi.update.EditedMessage != nil:
 		// This should be after any whi.update.Message.* checks
-		return botinput.WebhookInputText
+		return botinput.TypeText
 
 	default:
-		return botinput.WebhookInputUnknown
+		return botinput.TypeUnknown
 	}
 }
 
@@ -78,18 +78,18 @@ func (whi tgWebhookInput) TgUpdate() *tgbotapi.Update {
 	return whi.update
 }
 
-var _ botinput.WebhookInput = (*tgWebhookTextMessage)(nil)
-var _ botinput.WebhookInput = (*tgWebhookContactMessage)(nil)
-var _ botinput.WebhookInput = (*TgWebhookInlineQuery)(nil)
-var _ botinput.WebhookInput = (*tgWebhookChosenInlineResult)(nil)
-var _ botinput.WebhookInput = (*TgWebhookCallbackQuery)(nil)
-var _ botinput.WebhookInput = (*tgWebhookNewChatMembersMessage)(nil)
+var _ botinput.InputMessage = (*tgWebhookTextMessage)(nil)
+var _ botinput.InputMessage = (*tgWebhookContactMessage)(nil)
+var _ botinput.InputMessage = (*TgWebhookInlineQuery)(nil)
+var _ botinput.InputMessage = (*tgWebhookChosenInlineResult)(nil)
+var _ botinput.InputMessage = (*TgWebhookCallbackQuery)(nil)
+var _ botinput.InputMessage = (*tgWebhookNewChatMembersMessage)(nil)
 
 func (whi tgWebhookInput) GetID() interface{} {
 	return whi.update.UpdateID
 }
 
-func message2input(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) botinput.WebhookInput {
+func message2input(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) botinput.InputMessage {
 	switch {
 	case tgMessage.Text != "":
 		return newTgWebhookTextMessage(input, tgMessageType, tgMessage)
@@ -115,23 +115,23 @@ func message2input(input tgWebhookInput, tgMessageType TgMessageType, tgMessage 
 }
 
 // NewTelegramWebhookInput maps telegram update struct to bots framework interface
-func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botinput.WebhookInput, error) {
+func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botinput.InputMessage, error) {
 	input := tgWebhookInput{update: update, logRequest: logRequest}
 
 	switch inputType := input.InputType(); inputType {
-	case botinput.WebhookInputInlineQuery:
+	case botinput.TypeInlineQuery:
 		return newTelegramWebhookInlineQuery(input), nil
-	case botinput.WebhookInputCallbackQuery:
+	case botinput.TypeCallbackQuery:
 		return newTelegramWebhookCallbackQuery(input), nil
-	case botinput.WebhookInputChosenInlineResult:
+	case botinput.TypeChosenInlineResult:
 		return newTelegramWebhookChosenInlineResult(input), nil
-	case botinput.WebhookInputPreCheckoutQuery:
+	case botinput.TypePreCheckoutQuery:
 		return newTgWebhookPreCheckoutQuery(input), nil
-	case botinput.WebhookInputSuccessfulPayment:
+	case botinput.TypeSuccessfulPayment:
 		return newTgWebhookSuccessfulPayment(input), nil
-	case botinput.WebhookInputRefundedPayment:
+	case botinput.TypeRefundedPayment:
 		return newTgWebhookRefundedPayment(input), nil
-	case botinput.WebhookInputText:
+	case botinput.TypeText:
 		switch {
 		case update.Message != nil:
 			return message2input(input, TgMessageTypeRegular, update.Message), nil
@@ -140,7 +140,7 @@ func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botinp
 			return message2input(input, TgMessageTypeEdited, update.EditedMessage), nil
 
 		}
-	case botinput.WebhookInputNotImplemented:
+	case botinput.TypeNotImplemented:
 		switch {
 
 		case update.ChannelPost != nil:
@@ -164,7 +164,7 @@ func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botinp
 	return nil, botsfw.ErrNotImplemented
 }
 
-func (whi tgWebhookInput) GetSender() botinput.WebhookUser {
+func (whi tgWebhookInput) GetSender() botinput.User {
 	switch {
 	case whi.update.Message != nil:
 		return tgWebhookUser{tgUser: whi.update.Message.From}
@@ -193,7 +193,7 @@ func (whi tgWebhookInput) GetSender() botinput.WebhookUser {
 	}
 }
 
-func (whi tgWebhookInput) GetRecipient() botinput.WebhookRecipient {
+func (whi tgWebhookInput) GetRecipient() botinput.Recipient {
 	panic("Not implemented")
 }
 
@@ -221,7 +221,7 @@ func (whi tgWebhookInput) TelegramChatID() int64 {
 	panic("Can't get Telegram chat ID from `update.Message` or `update.EditedMessage`.")
 }
 
-func (whi tgWebhookInput) Chat() botinput.WebhookChat {
+func (whi tgWebhookInput) Chat() botinput.Chat {
 	update := whi.update
 	if update.Message != nil {
 		return TgWebhookChat{

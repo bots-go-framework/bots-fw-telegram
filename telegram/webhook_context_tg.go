@@ -6,6 +6,7 @@ import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
 	"github.com/bots-go-framework/bots-fw-telegram-models/botsfwtgmodels"
+	"github.com/bots-go-framework/bots-fw/botmsg"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/dal-go/dalgo/dal"
 	"github.com/strongo/logus"
@@ -29,7 +30,7 @@ type tgWebhookContext struct {
 	chatID    string
 }
 
-func (twhc *tgWebhookContext) NewEditMessage(text string, format botsfw.MessageFormat) (m botsfw.MessageFromBot, err error) {
+func (twhc *tgWebhookContext) NewEditMessage(text string, format botmsg.Format) (m botmsg.MessageFromBot, err error) {
 	m.Text = text
 	m.Format = format
 	m.IsEdit = true

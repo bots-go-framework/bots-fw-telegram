@@ -10,10 +10,10 @@ type tgWebhookStickerMessage struct {
 	TgMessageType TgMessageType
 }
 
-var _ botinput.WebhookStickerMessage = (*tgWebhookStickerMessage)(nil)
+var _ botinput.StickerMessage = (*tgWebhookStickerMessage)(nil)
 
-func (tgWebhookStickerMessage) InputType() botinput.WebhookInputType {
-	return botinput.WebhookInputSticker
+func (tgWebhookStickerMessage) InputType() botinput.Type {
+	return botinput.TypeSticker
 }
 
 func newTgWebhookStickerMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookStickerMessage {

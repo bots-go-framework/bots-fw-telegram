@@ -5,16 +5,14 @@ import (
 )
 
 var (
-	_ botinput.WebhookInput       = (*TgWebhookInlineQuery)(nil)
-	_ botinput.WebhookInlineQuery = (*TgWebhookInlineQuery)(nil)
+	_ botinput.InputMessage = (*TgWebhookInlineQuery)(nil)
+	_ botinput.InlineQuery  = (*TgWebhookInlineQuery)(nil)
 )
 
 // TgWebhookInlineQuery is wrapper
 type TgWebhookInlineQuery struct {
 	tgWebhookInput
 }
-
-var _ botinput.WebhookInlineQuery = (*TgWebhookInlineQuery)(nil)
 
 func newTelegramWebhookInlineQuery(input tgWebhookInput) TgWebhookInlineQuery {
 	return TgWebhookInlineQuery{tgWebhookInput: input}
@@ -31,7 +29,7 @@ func (iq TgWebhookInlineQuery) GetQuery() string {
 }
 
 // GetFrom returns recipient
-func (iq TgWebhookInlineQuery) GetFrom() botinput.WebhookSender {
+func (iq TgWebhookInlineQuery) GetFrom() botinput.Sender {
 	return tgWebhookUser{tgUser: iq.update.InlineQuery.From}
 }
 

@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	_ botinput.WebhookInput       = (*tgWebhookTextMessage)(nil)
-	_ botinput.WebhookMessage     = (*tgWebhookTextMessage)(nil)
-	_ botinput.WebhookTextMessage = (*tgWebhookTextMessage)(nil)
+	_ botinput.Message      = (*tgWebhookTextMessage)(nil)
+	_ botinput.InputMessage = (*tgWebhookTextMessage)(nil)
+	_ botinput.TextMessage  = (*tgWebhookTextMessage)(nil)
 )
 
 type tgWebhookTextMessage struct {
@@ -16,8 +16,8 @@ type tgWebhookTextMessage struct {
 	TgMessageType TgMessageType
 }
 
-func (tgWebhookTextMessage) InputType() botinput.WebhookInputType {
-	return botinput.WebhookInputText
+func (tgWebhookTextMessage) InputType() botinput.Type {
+	return botinput.TypeText
 }
 
 func newTgWebhookTextMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookTextMessage {

@@ -5,7 +5,7 @@ import (
 	"github.com/bots-go-framework/bots-fw/botinput"
 )
 
-var _ botinput.WebhookUser = (*tgWebhookUser)(nil)
+var _ botinput.User = (*tgWebhookUser)(nil)
 
 type tgWebhookUser struct {
 	tgUser *tgbotapi.User

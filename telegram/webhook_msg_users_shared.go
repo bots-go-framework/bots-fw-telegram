@@ -8,9 +8,9 @@ import (
 )
 
 var (
-	_ botinput.WebhookInput              = (*tgWebhookUsersSharedMessage)(nil)
-	_ botinput.WebhookMessage            = (*tgWebhookUsersSharedMessage)(nil)
-	_ botinput.WebhookSharedUsersMessage = (*tgWebhookUsersSharedMessage)(nil)
+	_ botinput.InputMessage       = (*tgWebhookUsersSharedMessage)(nil)
+	_ botinput.Message            = (*tgWebhookUsersSharedMessage)(nil)
+	_ botinput.SharedUsersMessage = (*tgWebhookUsersSharedMessage)(nil)
 )
 
 type tgWebhookUsersSharedMessage struct {
@@ -36,8 +36,8 @@ func (m tgWebhookUsersSharedMessage) GetSharedUsers() (sharedUsers []botinput.Sh
 	return
 }
 
-func (tgWebhookUsersSharedMessage) InputType() botinput.WebhookInputType {
-	return botinput.WebhookInputSharedUsers
+func (tgWebhookUsersSharedMessage) InputType() botinput.Type {
+	return botinput.TypeSharedUsers
 }
 
 func newTgWebhookUsersSharedMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookUsersSharedMessage {

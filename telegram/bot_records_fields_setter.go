@@ -8,7 +8,7 @@ import (
 )
 
 func NewBotRecordsFieldsSetter(
-	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botinput.WebhookSender) error,
+	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botinput.Sender) error,
 ) botsfw.BotRecordsFieldsSetter {
 	if setAppUserFields == nil {
 		panic("setAppUserFields is nil")
@@ -19,18 +19,18 @@ func NewBotRecordsFieldsSetter(
 }
 
 type tgBotRecordsFieldsSetter struct {
-	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botinput.WebhookSender) error
+	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botinput.Sender) error
 }
 
 func (b tgBotRecordsFieldsSetter) Platform() string {
 	return string(PlatformID)
 }
 
-func (b tgBotRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserData, sender botinput.WebhookSender) error {
+func (b tgBotRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserData, sender botinput.Sender) error {
 	return b.setAppUserFields(appUser, sender)
 }
 
-func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.PlatformUserData, sender botinput.WebhookSender, botID, botUserID, appUserID string) error {
+func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.PlatformUserData, sender botinput.Sender, botID, botUserID, appUserID string) error {
 	//tgSender := sender.(tgWebhookUser)
 	tgBotUser := botUser.(botsfwtgmodels.TgPlatformUser)
 	tgBotUserBaseData := tgBotUser.TgPlatformUserBaseDbo()
@@ -41,7 +41,7 @@ func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.Platform
 	return nil
 }
 
-func (b tgBotRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.BotChatData, chat botinput.WebhookChat, botID, botUserID, appUserID string, isAccessGranted bool) error {
+func (b tgBotRecordsFieldsSetter) SetBotChatFields(botChat botsfwmodels.BotChatData, chat botinput.Chat, botID, botUserID, appUserID string, isAccessGranted bool) error {
 	_ = botID
 	_ = chat
 	tgBotChatData := botChat.(botsfwtgmodels.TgChatData)

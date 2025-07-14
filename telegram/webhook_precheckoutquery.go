@@ -5,9 +5,9 @@ import (
 )
 
 var (
-	_ TgWebhookInput                   = (*tgWebhookPreCheckoutQuery)(nil)
-	_ botinput.WebhookInput            = (*tgWebhookPreCheckoutQuery)(nil)
-	_ botinput.WebhookPreCheckoutQuery = (*tgWebhookPreCheckoutQuery)(nil)
+	_ TgWebhookInput            = (*tgWebhookPreCheckoutQuery)(nil)
+	_ botinput.InputMessage     = (*tgWebhookPreCheckoutQuery)(nil)
+	_ botinput.PreCheckoutQuery = (*tgWebhookPreCheckoutQuery)(nil)
 )
 
 type tgWebhookPreCheckoutQuery struct {
@@ -30,7 +30,7 @@ func (q tgWebhookPreCheckoutQuery) GetInvoicePayload() string {
 	return q.update.PreCheckoutQuery.InvoicePayload
 }
 
-func (q tgWebhookPreCheckoutQuery) GetFrom() botinput.WebhookSender {
+func (q tgWebhookPreCheckoutQuery) GetFrom() botinput.Sender {
 	return tgWebhookUser{tgUser: q.update.ChosenInlineResult.From}
 }
 

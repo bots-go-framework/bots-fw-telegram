@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	_ TgWebhookInput                    = (*tgWebhookSuccessfulPayment)(nil)
-	_ botinput.WebhookInput             = (*tgWebhookSuccessfulPayment)(nil)
-	_ botinput.WebhookSuccessfulPayment = (*tgWebhookSuccessfulPayment)(nil)
+	_ TgWebhookInput             = (*tgWebhookSuccessfulPayment)(nil)
+	_ botinput.InputMessage      = (*tgWebhookSuccessfulPayment)(nil)
+	_ botinput.SuccessfulPayment = (*tgWebhookSuccessfulPayment)(nil)
 )
 
 type tgWebhookSuccessfulPayment struct {

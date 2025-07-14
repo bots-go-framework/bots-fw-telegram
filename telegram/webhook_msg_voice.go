@@ -10,10 +10,10 @@ type tgWebhookVoiceMessage struct {
 	TgMessageType TgMessageType
 }
 
-var _ botinput.WebhookVoiceMessage = (*tgWebhookVoiceMessage)(nil)
+var _ botinput.VoiceMessage = (*tgWebhookVoiceMessage)(nil)
 
-func (tgWebhookVoiceMessage) InputType() botinput.WebhookInputType {
-	return botinput.WebhookInputVoice
+func (tgWebhookVoiceMessage) InputType() botinput.Type {
+	return botinput.TypeVoice
 }
 
 func newTgWebhookVoiceMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookVoiceMessage {

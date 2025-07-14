@@ -5,9 +5,9 @@ import (
 )
 
 var (
-	_ botinput.WebhookInput                 = (*tgWebhookNewChatMembersMessage)(nil)
-	_ botinput.WebhookMessage               = (*tgWebhookNewChatMembersMessage)(nil)
-	_ botinput.WebhookNewChatMembersMessage = (*tgWebhookNewChatMembersMessage)(nil)
+	_ botinput.InputMessage          = (*tgWebhookNewChatMembersMessage)(nil)
+	_ botinput.Message               = (*tgWebhookNewChatMembersMessage)(nil)
+	_ botinput.NewChatMembersMessage = (*tgWebhookNewChatMembersMessage)(nil)
 )
 
 type tgWebhookNewChatMembersMessage struct {
@@ -18,8 +18,8 @@ func newTgWebhookNewChatMembersMessage(input tgWebhookInput) tgWebhookNewChatMem
 	return tgWebhookNewChatMembersMessage{tgWebhookMessage: newTelegramWebhookMessage(input, input.update.Message)}
 }
 
-func (m tgWebhookNewChatMembersMessage) NewChatMembers() []botinput.WebhookActor {
-	members := make([]botinput.WebhookActor, len(m.message.NewChatMembers))
+func (m tgWebhookNewChatMembersMessage) NewChatMembers() []botinput.Actor {
+	members := make([]botinput.Actor, len(m.message.NewChatMembers))
 	for i, m := range m.message.NewChatMembers {
 		members[i] = m
 	}

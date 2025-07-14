@@ -7,10 +7,10 @@ import (
 )
 
 var (
-	_ TgWebhookInput                = (*TgWebhookCallbackQuery)(nil)
-	_ botinput.WebhookInput         = (*TgWebhookCallbackQuery)(nil)
-	_ botinput.WebhookCallbackQuery = (*TgWebhookCallbackQuery)(nil)
-	_ WebhookCallbackQuery          = (*TgWebhookCallbackQuery)(nil)
+	_ TgWebhookInput         = (*TgWebhookCallbackQuery)(nil)
+	_ botinput.InputMessage  = (*TgWebhookCallbackQuery)(nil)
+	_ botinput.CallbackQuery = (*TgWebhookCallbackQuery)(nil)
+	_ WebhookCallbackQuery   = (*TgWebhookCallbackQuery)(nil)
 )
 
 // TgWebhookCallbackQuery is wrapper on callback query
@@ -44,7 +44,7 @@ func (whi TgWebhookCallbackQuery) Sequence() int {
 }
 
 // GetMessage returns message
-func (whi TgWebhookCallbackQuery) GetMessage() botinput.WebhookMessage {
+func (whi TgWebhookCallbackQuery) GetMessage() botinput.Message {
 	return newTelegramWebhookMessage(whi.tgWebhookInput, whi.update.CallbackQuery.Message)
 }
 
@@ -54,7 +54,7 @@ func (whi TgWebhookCallbackQuery) TelegramCallbackMessage() *tgbotapi.Message {
 }
 
 // GetFrom returns sender
-func (whi TgWebhookCallbackQuery) GetFrom() botinput.WebhookSender {
+func (whi TgWebhookCallbackQuery) GetFrom() botinput.Sender {
 	return tgWebhookUser{tgUser: whi.update.CallbackQuery.From}
 }
 
@@ -77,7 +77,7 @@ func (whi TgWebhookCallbackQuery) BotChatID() (string, error) {
 }
 
 // EditMessageOnCallbackQuery creates edit message
-func EditMessageOnCallbackQuery(whcbq botinput.WebhookCallbackQuery, parseMode, text string) *tgbotapi.EditMessageTextConfig {
+func EditMessageOnCallbackQuery(whcbq botinput.CallbackQuery, parseMode, text string) *tgbotapi.EditMessageTextConfig {
 	twhcbq := whcbq.(TgWebhookCallbackQuery)
 	callbackQuery := twhcbq.update.CallbackQuery
 

@@ -10,7 +10,7 @@ type tgWebhookEntry struct {
 	update *tgbotapi.Update
 }
 
-var _ botinput.WebhookEntry = (*tgWebhookEntry)(nil)
+var _ botinput.Entry = (*tgWebhookEntry)(nil)
 
 func (e tgWebhookEntry) GetID() interface{} {
 	return e.update.UpdateID

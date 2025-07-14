@@ -35,7 +35,7 @@ func TestTelegramWebhookHandler_Handle(t *testing.T) {
 		var translatorProvider botsfw.TranslatorProvider = func(c context.Context) i18n.Translator {
 			return nil
 		}
-		setAppUserFields := func(botsfwmodels.AppUserData, botinput.WebhookSender) error {
+		setAppUserFields := func(botsfwmodels.AppUserData, botinput.Sender) error {
 			return nil
 		}
 		handler := NewTelegramWebhookHandler(botContextProvider, translatorProvider, setAppUserFields)
@@ -89,10 +89,10 @@ func TestTelegramWebhookHandler_Handle(t *testing.T) {
 		if len(entriesWithInputs[0].Inputs) != 1 {
 			t.Errorf("len(entriesWithInputs[0].Inputs) = %v, want 1", len(entriesWithInputs[0].Inputs))
 		}
-		if inputType := entriesWithInputs[0].Inputs[0].InputType(); inputType != botinput.WebhookInputSuccessfulPayment {
-			t.Errorf("entriesWithInputs[0].Inputs[0].InputType() = %v, want %v", inputType, botinput.WebhookInputSuccessfulPayment)
+		if inputType := entriesWithInputs[0].Inputs[0].InputType(); inputType != botinput.TypeSuccessfulPayment {
+			t.Errorf("entriesWithInputs[0].Inputs[0].InputType() = %v, want %v", inputType, botinput.TypeSuccessfulPayment)
 		}
-		successfulPayment := entriesWithInputs[0].Inputs[0].(botinput.WebhookSuccessfulPayment)
+		successfulPayment := entriesWithInputs[0].Inputs[0].(botinput.SuccessfulPayment)
 
 		if currency := successfulPayment.GetCurrency(); currency != "XTR" {
 			t.Errorf("successfulPayment.GetCurrency() = %v, want XTR", currency)

@@ -11,7 +11,7 @@ type TgWebhookChat struct {
 	chat *tgbotapi.Chat
 }
 
-var _ botinput.WebhookChat = (*TgWebhookChat)(nil)
+var _ botinput.Chat = (*TgWebhookChat)(nil)
 
 // GetID returns telegram chat ID
 func (wh TgWebhookChat) GetID() string {

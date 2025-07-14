@@ -8,6 +8,7 @@ import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
 	"github.com/bots-go-framework/bots-fw/botinput"
+	"github.com/bots-go-framework/bots-fw/botmsg"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/strongo/logus"
 	"io"
@@ -29,7 +30,7 @@ type tgWebhookHandler struct {
 func NewTelegramWebhookHandler(
 	botContextProvider botsfw.BotContextProvider,
 	translatorProvider botsfw.TranslatorProvider,
-	setAppUserFields func(botsfwmodels.AppUserData, botinput.WebhookSender) error, // TODO: Move to botsfwdal.AppUserDal ?
+	setAppUserFields func(botsfwmodels.AppUserData, botinput.Sender) error, // TODO: Move to botsfwdal.AppUserDal ?
 ) botsfw.WebhookHandler {
 	if botContextProvider == nil {
 		panic("botContextProvider == nil")
@@ -52,9 +53,9 @@ func NewTelegramWebhookHandler(
 	}
 }
 
-func (h tgWebhookHandler) HandleUnmatched(whc botsfw.WebhookContext) (m botsfw.MessageFromBot) {
+func (h tgWebhookHandler) HandleUnmatched(whc botsfw.WebhookContext) (m botmsg.MessageFromBot) {
 	switch whc.Input().InputType() {
-	case botinput.WebhookInputCallbackQuery:
+	case botinput.TypeCallbackQuery:
 		m.BotMessage = CallbackAnswer(tgbotapi.AnswerCallbackQueryConfig{
 			Text:      "⚠️ Error: Not matched to any command",
 			ShowAlert: true,
@@ -158,7 +159,7 @@ Parametes:
 	}
 }
 
-func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Request) (botContext *botsfw.BotContext, entriesWithInputs []botsfw.EntryInputs, err error) {
+func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Request) (botContext *botsfw.BotContext, entriesWithInputs []botinput.EntryInputs, err error) {
 	logus.Debugf(ctx, "tgWebhookHandler.GetBotContextAndInputs(): %s", r.URL.RequestURI())
 	botID := r.URL.Query().Get("id")
 	if botContext, err = h.botContextProvider.GetBotContext(ctx, PlatformID, botID); err != nil {
@@ -203,17 +204,17 @@ func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Re
 		return
 	}
 
-	var input botinput.WebhookInput
+	var input botinput.InputMessage
 	if input, err = NewTelegramWebhookInput(update, logRequestBody); err != nil {
 		logRequestBody()
 		return
 	}
 	logRequestBody()
 
-	entriesWithInputs = []botsfw.EntryInputs{
+	entriesWithInputs = []botinput.EntryInputs{
 		{
 			Entry:  tgWebhookEntry{update: update},
-			Inputs: []botinput.WebhookInput{input},
+			Inputs: []botinput.InputMessage{input},
 		},
 	}
 

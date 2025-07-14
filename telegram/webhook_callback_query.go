@@ -5,7 +5,7 @@ import (
 )
 
 type WebhookCallbackQuery interface {
-	botinput.WebhookCallbackQuery
+	botinput.CallbackQuery
 	GetInlineMessageID() string // Telegram only?
 	GetChatInstanceID() string  // Telegram only?
 }

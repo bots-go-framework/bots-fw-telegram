@@ -6,15 +6,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
+	"github.com/bots-go-framework/bots-fw/botinput"
+	"github.com/bots-go-framework/bots-fw/botmsg"
+	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/bots-go-framework/bots-go-core/botkb"
+	"github.com/strongo/logus"
 	"net/http"
 	"strconv"
 	"time"
-
-	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw/botinput"
-	"github.com/bots-go-framework/bots-fw/botsfw"
-	"github.com/strongo/logus"
 )
 
 type tgWebhookResponder struct {
@@ -31,8 +31,8 @@ func (r tgWebhookResponder) DeleteMessage(ctx context.Context, messageID string)
 	chatID := r.whc.chatID
 	if chatID == "" {
 		input := r.whc.Input()
-		var chat botinput.WebhookChat
-		if inputWithChat, ok := input.(interface{ Chat() botinput.WebhookChat }); ok {
+		var chat botinput.Chat
+		if inputWithChat, ok := input.(interface{ Chat() botinput.Chat }); ok {
 			chat = inputWithChat.Chat()
 		}
 		if chat != nil {
@@ -74,7 +74,7 @@ func newTgWebhookResponder(w http.ResponseWriter, whc *tgWebhookContext) tgWebho
 	return responder
 }
 
-func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFromBot, channel botsfw.BotAPISendMessageChannel) (resp botsfw.OnMessageSentResponse, err error) {
+func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFromBot, channel botmsg.BotAPISendMessageChannel) (resp botsfw.OnMessageSentResponse, err error) {
 	logus.Debugf(ctx, "tgWebhookResponder.SendMessage(channel=%v, isEdit=%v)\nm: %+v", channel, m.IsEdit, m)
 	channel = botsfw.BotAPISendMessageOverHTTPS
 	switch channel {
@@ -89,11 +89,11 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 
 	parseMode := func() string {
 		switch m.Format {
-		case botsfw.MessageFormatHTML:
+		case botmsg.FormatHTML:
 			return "HTML"
-		case botsfw.MessageFormatMarkdown:
+		case botmsg.FormatMarkdown:
 			return "MarkdownV2"
-		case botsfw.MessageFormatText:
+		case botmsg.FormatText:
 			return ""
 		default:
 			panic(fmt.Sprintf("Unknown message parse_mode value: %d", m.Format))
@@ -102,56 +102,56 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 
 	tgUpdate := r.whc.Input().(tgWebhookUpdateProvider).TgUpdate()
 
-	var botMessage botsfw.BotMessage
+	var botMessage botmsg.BotMessage
 
-	if m.Text == botsfw.NoMessageToSend {
-		logus.Debugf(ctx, botsfw.NoMessageToSend)
+	if m.Text == botmsg.NoMessageToSend {
+		logus.Debugf(ctx, botmsg.NoMessageToSend)
 		return
 	} else if botMessage = m.BotMessage; botMessage != nil {
 		logus.Debugf(ctx, "m.BotMessage != nil")
 		switch m.BotMessage.BotMessageType() {
-		case botsfw.BotMessageTypeInlineResults:
+		case botmsg.BotMessageTypeInlineResults:
 			sendable = tgbotapi.InlineConfig(m.BotMessage.(InlineBotMessage))
-		case botsfw.BotMessageTypeCallbackAnswer:
+		case botmsg.TypeCallbackAnswer:
 			callbackAnswer := tgbotapi.AnswerCallbackQueryConfig(m.BotMessage.(CallbackAnswer))
 			if callbackAnswer.CallbackQueryID == "" && tgUpdate.CallbackQuery != nil {
 				callbackAnswer.CallbackQueryID = tgUpdate.CallbackQuery.ID
 			}
 			sendable = callbackAnswer
-		case botsfw.BotMessageTypeLeaveChat:
+		case botmsg.TypeLeaveChat:
 			leaveChat := tgbotapi.LeaveChatConfig(m.BotMessage.(LeaveChat))
 			if leaveChat.ChatID == "" {
 				leaveChat.ChatID = strconv.FormatInt(tgUpdate.Chat().ID, 10)
 			}
 			sendable = leaveChat
-		case botsfw.BotMessageTypeExportChatInviteLink:
+		case botmsg.TypeExportChatInviteLink:
 			exportChatInviteLink := tgbotapi.ExportChatInviteLink(m.BotMessage.(ExportChatInviteLink))
 			if exportChatInviteLink.ChatID == "" {
 				exportChatInviteLink.ChatID = strconv.FormatInt(tgUpdate.Chat().ID, 10)
 			}
 			sendable = exportChatInviteLink
-		case botsfw.BotMessageTypeUndefined:
+		case botmsg.TypeUndefined:
 			err = fmt.Errorf("bot message type %v==undefined", m.BotMessage.BotMessageType())
 			return
-		case botsfw.BotMessageTypeSendInvoice:
+		case botmsg.TypeSendInvoice:
 			invoiceConfig := tgbotapi.InvoiceConfig(m.BotMessage.(Invoice))
 			if invoiceConfig.ChatID == 0 {
 				invoiceConfig.ChatID = tgUpdate.Chat().ID
 			}
 			sendable = &invoiceConfig
-		case botsfw.BotMessageTypeSetDescription:
+		case botmsg.TypeSetDescription:
 			setBotDescription := m.BotMessage.(SetBotDescription)
 			sendable = (tgbotapi.SetMyDescription)(setBotDescription)
-		case botsfw.BotMessageTypeSetShortDescription:
+		case botmsg.TypeSetShortDescription:
 			setBotDescription := m.BotMessage.(SetBotShortDescription)
 			sendable = (tgbotapi.SetMyShortDescription)(setBotDescription)
-		case botsfw.BotMessageTypeSetCommands:
+		case botmsg.TypeSetCommands:
 			setBotDescription := m.BotMessage.(SetBotCommands)
 			sendable = (tgbotapi.SetMyCommandsConfig)(setBotDescription)
-		case botsfw.BotMessageTypeAnswerPreCheckoutQuery:
+		case botmsg.TypeAnswerPreCheckoutQuery:
 			answerPreCheckoutQuery := m.BotMessage.(PreCheckoutQueryAnswer)
 			sendable = (tgbotapi.AnswerPreCheckoutQueryConfig)(answerPreCheckoutQuery)
-		case botsfw.BotMessageTypeSendPhoto:
+		case botmsg.TypeSendPhoto:
 			photoConfig := m.BotMessage.(SendPhoto)
 			if photoConfig.ChatID == 0 {
 				photoConfig.ChatID = tgUpdate.Chat().ID
@@ -245,7 +245,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 	} else if m.Text != "" {
 		messageConfig := r.whc.NewTgMessage(m.Text)
 		if m.ToChat != nil {
-			messageConfig.ChatID = int64(m.ToChat.(botsfw.ChatIntID))
+			messageConfig.ChatID = int64(m.ToChat.(botmsg.ChatIntID))
 		}
 		messageConfig.DisableWebPagePreview = m.DisableWebPagePreview
 		messageConfig.DisableNotification = m.DisableNotification
@@ -258,15 +258,15 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botsfw.MessageFro
 		sendable = messageConfig
 	} else {
 		switch inputType := r.whc.InputType(); inputType {
-		case botinput.WebhookInputInlineQuery: // pass
+		case botinput.TypeInlineQuery: // pass
 			logus.Debugf(ctx, "No response to WebhookInputInlineQuery")
-		case botinput.WebhookInputChosenInlineResult: // pass
+		case botinput.TypeChosenInlineResult: // pass
 		default:
 			var mJson string
 			if mJson, err = encodeToJsonString(m); err != nil {
 				logus.Errorf(ctx, "Failed to marshal MessageFromBot to JSON: %v", err)
 			} else {
-				inputTypeName := botinput.GetWebhookInputTypeIdNameString(inputType)
+				inputTypeName := inputType.String()
 				logus.Debugf(ctx, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, mJson)
 			}
 		}

@@ -2,14 +2,14 @@ package telegram
 
 import (
 	"fmt"
-	"github.com/bots-go-framework/bots-fw/botsfw"
+	"github.com/bots-go-framework/bots-fw/botmsg"
 )
 
 type callbackCurrent struct {
 }
 
 // CallbackCurrent is what?
-var CallbackCurrent botsfw.MessageUID = &callbackCurrent{}
+var CallbackCurrent botmsg.MessageUID = &callbackCurrent{}
 
 func (callbackCurrent) UID() string {
 	return "callbackCurrent"
@@ -20,7 +20,7 @@ type InlineMessageUID struct {
 	InlineMessageID string
 }
 
-var _ botsfw.MessageUID = (*InlineMessageUID)(nil)
+var _ botmsg.MessageUID = (*InlineMessageUID)(nil)
 
 // NewInlineMessageUID creates new inline message UID
 func NewInlineMessageUID(inlineMessageID string) *InlineMessageUID {
@@ -43,7 +43,7 @@ type ChatMessageUID struct {
 	MessageID int
 }
 
-var _ botsfw.MessageUID = (*ChatMessageUID)(nil)
+var _ botmsg.MessageUID = (*ChatMessageUID)(nil)
 
 // UID return unique ID of the message
 func (m ChatMessageUID) UID() string {

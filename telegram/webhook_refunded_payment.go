@@ -5,9 +5,9 @@ import (
 )
 
 var (
-	_ TgWebhookInput                  = (*tgWebhookRefundedPayment)(nil)
-	_ botinput.WebhookInput           = (*tgWebhookRefundedPayment)(nil)
-	_ botinput.WebhookRefundedPayment = (*tgWebhookRefundedPayment)(nil)
+	_ TgWebhookInput           = (*tgWebhookRefundedPayment)(nil)
+	_ botinput.InputMessage    = (*tgWebhookRefundedPayment)(nil)
+	_ botinput.RefundedPayment = (*tgWebhookRefundedPayment)(nil)
 )
 
 type tgWebhookRefundedPayment struct {

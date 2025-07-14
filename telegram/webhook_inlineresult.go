@@ -8,10 +8,11 @@ type tgWebhookChosenInlineResult struct {
 	tgWebhookInput
 }
 
-var _ botinput.WebhookChosenInlineResult = (*tgWebhookChosenInlineResult)(nil)
+var _ botinput.InputMessage = (*tgWebhookChosenInlineResult)(nil)
+var _ botinput.ChosenInlineResult = (*tgWebhookChosenInlineResult)(nil)
 
-func (tgWebhookChosenInlineResult) InputType() botinput.WebhookInputType {
-	return botinput.WebhookInputChosenInlineResult
+func (tgWebhookChosenInlineResult) InputType() botinput.Type {
+	return botinput.TypeChosenInlineResult
 }
 
 func newTelegramWebhookChosenInlineResult(input tgWebhookInput) tgWebhookChosenInlineResult {
@@ -33,7 +34,7 @@ func (q tgWebhookChosenInlineResult) GetInlineMessageID() string {
 	return ""
 }
 
-func (q tgWebhookChosenInlineResult) GetFrom() botinput.WebhookSender {
+func (q tgWebhookChosenInlineResult) GetFrom() botinput.Sender {
 	return tgWebhookUser{tgUser: q.update.ChosenInlineResult.From}
 }
 

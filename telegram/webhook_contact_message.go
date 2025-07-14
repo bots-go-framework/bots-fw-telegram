@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	_ botinput.WebhookInput          = (*tgWebhookContactMessage)(nil)
-	_ botinput.WebhookMessage        = (*tgWebhookContactMessage)(nil)
-	_ botinput.WebhookContactMessage = (*tgWebhookContactMessage)(nil)
+	_ botinput.InputMessage   = (*tgWebhookContactMessage)(nil)
+	_ botinput.Message        = (*tgWebhookContactMessage)(nil)
+	_ botinput.ContactMessage = (*tgWebhookContactMessage)(nil)
 )
 
 type tgWebhookContactMessage struct {
