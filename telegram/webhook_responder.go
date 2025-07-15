@@ -113,7 +113,19 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 		case botmsg.BotMessageTypeInlineResults:
 			sendable = tgbotapi.InlineConfig(m.BotMessage.(InlineBotMessage))
 		case botmsg.TypeCallbackAnswer:
-			callbackAnswer := tgbotapi.AnswerCallbackQueryConfig(m.BotMessage.(CallbackAnswer))
+			var callbackAnswer tgbotapi.AnswerCallbackQueryConfig
+			switch botMsg := botMessage.(type) {
+			case CallbackAnswer:
+				callbackAnswer = tgbotapi.AnswerCallbackQueryConfig(botMsg)
+			case botmsg.AnswerCallbackQuery:
+				callbackAnswer = tgbotapi.AnswerCallbackQueryConfig{
+					CallbackQueryID: botMsg.CallbackQueryID,
+					Text:            botMsg.Text,
+					ShowAlert:       botMsg.ShowAlert,
+					URL:             botMsg.URL,
+					CacheTime:       botMsg.CacheTime,
+				}
+			}
 			if callbackAnswer.CallbackQueryID == "" && tgUpdate.CallbackQuery != nil {
 				callbackAnswer.CallbackQueryID = tgUpdate.CallbackQuery.ID
 			}
