@@ -207,8 +207,28 @@ func (whi tgWebhookInput) GetTime() time.Time {
 	return time.Time{}
 }
 
-func (whi tgWebhookInput) StringID() string {
-	return ""
+func (whi tgWebhookInput) MessageIntID() int {
+	switch {
+	case whi.update.CallbackQuery != nil:
+		return whi.update.CallbackQuery.Message.MessageID
+	case whi.update.Message != nil:
+		return whi.update.Message.MessageID
+	case whi.update.EditedMessage != nil:
+		return whi.update.EditedMessage.MessageID
+	case whi.update.ChannelPost != nil:
+		return whi.update.ChannelPost.MessageID
+	case whi.update.EditedChannelPost != nil:
+		return whi.update.EditedChannelPost.MessageID
+	}
+	return 0
+}
+
+func (whi tgWebhookInput) MessageStringID() string {
+	messageID := whi.MessageIntID()
+	if messageID == 0 {
+		return ""
+	}
+	return strconv.Itoa(messageID)
 }
 
 func (whi tgWebhookInput) TelegramChatID() int64 {

@@ -234,8 +234,14 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 			case *botkb.MessageKeyboard:
 				switch keyboard.KeyboardType() {
 				case botkb.KeyboardTypeInline:
-					kb := getTelegramInlineKeyboard(m.Keyboard)
-					sendable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, tgbotapi.NewInlineKeyboardMarkup(kb.InlineKeyboard...))
+					kb := getTelegramKeyboard(m.Keyboard)
+					inlineKbMarkup := kb.(*tgbotapi.InlineKeyboardMarkup)
+					sendable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, tgbotapi.NewInlineKeyboardMarkup(inlineKbMarkup.InlineKeyboard...))
+				case botkb.KeyboardTypeBottom:
+					kb := getTelegramKeyboard(m.Keyboard)
+					msg := tgbotapi.NewMessage(chatID, m.Text)
+					msg.ReplyMarkup = kb.(*tgbotapi.InlineKeyboardMarkup)
+					sendable = msg
 				default:
 					err = fmt.Errorf("unknown keyboard type %T(%v)", keyboard.KeyboardType(), keyboard)
 					return
@@ -246,7 +252,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 			editMessageTextConfig.ParseMode = parseMode()
 			editMessageTextConfig.DisableWebPagePreview = m.DisableWebPagePreview
 			if m.Keyboard != nil {
-				editMessageTextConfig.ReplyMarkup = getTelegramInlineKeyboard(m.Keyboard)
+				editMessageTextConfig.ReplyMarkup = getTelegramKeyboard(m.Keyboard).(*tgbotapi.InlineKeyboardMarkup)
 			}
 			sendable = editMessageTextConfig
 		} else {
@@ -262,7 +268,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 		messageConfig.DisableWebPagePreview = m.DisableWebPagePreview
 		messageConfig.DisableNotification = m.DisableNotification
 		if m.Keyboard != nil {
-			messageConfig.ReplyMarkup = getTelegramInlineKeyboard(m.Keyboard)
+			messageConfig.ReplyMarkup = getTelegramKeyboard(m.Keyboard)
 		}
 
 		messageConfig.ParseMode = parseMode()
@@ -313,7 +319,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 
 		var message tgbotapi.Message
 		message, err = r.sendOverHttps(ctx, sendable)
-		return botsfw.OnMessageSentResponse{TelegramMessage: message}, err
+		return botsfw.OnMessageSentResponse{Message: &message}, err
 	default:
 		panic(fmt.Sprintf("Unknown channel: %v", channel))
 	}
@@ -345,10 +351,11 @@ func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotap
 	return
 }
 
-func getTelegramInlineKeyboard(keyboard botkb.Keyboard) *tgbotapi.InlineKeyboardMarkup {
-	switch kb := keyboard.(type) {
-	case *tgbotapi.InlineKeyboardMarkup:
+func getTelegramKeyboard(keyboard botkb.Keyboard) tgbotapi.Keyboard {
+	if kb, ok := keyboard.(tgbotapi.Keyboard); ok {
 		return kb
+	}
+	switch kb := keyboard.(type) {
 	case *botkb.MessageKeyboard:
 		tgButtons := make([][]tgbotapi.InlineKeyboardButton, len(kb.Buttons))
 		for i, buttons := range kb.Buttons {

@@ -10,8 +10,8 @@ type tgWebhookMessage struct {
 	message *tgbotapi.Message // Can be either whi.update.Message or whi.update.CallbackQuery.Message
 }
 
-func (whm tgWebhookMessage) IntID() int64 {
-	return (int64)(whm.message.MessageID)
+func (whm tgWebhookMessage) IntID() int {
+	return whm.message.MessageID
 }
 
 func newTelegramWebhookMessage(input tgWebhookInput, message *tgbotapi.Message) tgWebhookMessage {

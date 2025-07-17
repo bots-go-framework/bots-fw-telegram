@@ -20,6 +20,6 @@ func GetMessageUID(whc botsfw.WebhookContext) (*ChatMessageUID, error) {
 	if tgChatID, err = strconv.ParseInt(chatID, 10, 64); err != nil {
 		return nil, err
 	}
-	messageID := whc.Input().(TgWebhookCallbackQuery).GetMessage().IntID()
-	return NewChatMessageUID(tgChatID, int(messageID)), nil
+	messageID := whc.Input().(TgWebhookCallbackQuery).GetMessage().MessageIntID()
+	return NewChatMessageUID(tgChatID, messageID), nil
 }

@@ -20,6 +20,10 @@ type TgWebhookCallbackQuery struct { // TODO: make non-exportable
 	//message       botsfw.WebhookMessage
 }
 
+func (whi TgWebhookCallbackQuery) MessageIntID() int {
+	return whi.update.CallbackQuery.Message.MessageID
+}
+
 func (whi TgWebhookCallbackQuery) GetChatInstanceID() string {
 	return whi.update.CallbackQuery.ChatInstance
 }
