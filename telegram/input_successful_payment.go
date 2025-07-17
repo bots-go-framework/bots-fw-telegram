@@ -12,7 +12,7 @@ var (
 )
 
 type tgWebhookSuccessfulPayment struct {
-	tgWebhookMessage
+	tgInputMessage
 }
 
 func (t tgWebhookSuccessfulPayment) GetSubscriptionExpirationDate() time.Time {
@@ -59,14 +59,14 @@ func (t tgWebhookSuccessfulPayment) GetPaymentProviderChargeID() string {
 	return t.update.Message.SuccessfulPayment.ProviderPaymentChargeID
 }
 
-func newTgWebhookSuccessfulPayment(input tgWebhookInput) tgWebhookSuccessfulPayment {
+func newTgWebhookSuccessfulPayment(input tgInput) tgWebhookSuccessfulPayment {
 	if input.update.Message.SuccessfulPayment == nil {
 		panic("update.Message.SuccessfulPayment == nil")
 	}
 	return tgWebhookSuccessfulPayment{
-		tgWebhookMessage: tgWebhookMessage{
-			tgWebhookInput: input,
-			message:        input.update.Message,
+		tgInputMessage: tgInputMessage{
+			tgInput: input,
+			message: input.update.Message,
 		},
 	}
 }

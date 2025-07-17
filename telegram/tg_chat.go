@@ -6,24 +6,24 @@ import (
 	"strconv"
 )
 
-// TgWebhookChat is wrapper for Telegram chat
-type TgWebhookChat struct {
+// TgChat is wrapper for Telegram chat
+type TgChat struct {
 	chat *tgbotapi.Chat
 }
 
-var _ botinput.Chat = (*TgWebhookChat)(nil)
+var _ botinput.Chat = (*TgChat)(nil)
 
 // GetID returns telegram chat ID
-func (wh TgWebhookChat) GetID() string {
+func (wh TgChat) GetID() string {
 	return strconv.FormatInt(wh.chat.ID, 10)
 }
 
 // GetType returns telegram chat type
-func (wh TgWebhookChat) GetType() string {
+func (wh TgChat) GetType() string {
 	return wh.chat.Type
 }
 
 // IsGroupChat indicates type of chat (group or private)
-func (wh TgWebhookChat) IsGroupChat() bool {
+func (wh TgChat) IsGroupChat() bool {
 	return !wh.chat.IsPrivate()
 }

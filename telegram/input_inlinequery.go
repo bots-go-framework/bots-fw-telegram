@@ -11,11 +11,11 @@ var (
 
 // TgWebhookInlineQuery is wrapper
 type TgWebhookInlineQuery struct {
-	tgWebhookInput
+	tgInput
 }
 
-func newTelegramWebhookInlineQuery(input tgWebhookInput) TgWebhookInlineQuery {
-	return TgWebhookInlineQuery{tgWebhookInput: input}
+func newTelegramWebhookInlineQuery(input tgInput) TgWebhookInlineQuery {
+	return TgWebhookInlineQuery{tgInput: input}
 }
 
 // GetInlineQueryID return inline query ID

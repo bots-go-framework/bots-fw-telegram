@@ -8,17 +8,17 @@ import (
 var _ botinput.PhotoMessage = (*tgWebhookPhotoMessage)(nil)
 
 type tgWebhookPhotoMessage struct {
-	tgWebhookMessage
-	TgMessageType TgMessageType
+	tgInputMessage
+	TgMessageType MessageType
 }
 
 func (tgWebhookPhotoMessage) InputType() botinput.Type {
 	return botinput.TypePhoto
 }
 
-func newTgWebhookPhotoMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookPhotoMessage {
+func newTgWebhookPhotoMessage(input tgInput, tgMessageType MessageType, tgMessage *tgbotapi.Message) tgWebhookPhotoMessage {
 	return tgWebhookPhotoMessage{
-		tgWebhookMessage: newTelegramWebhookMessage(input, tgMessage),
-		TgMessageType:    tgMessageType,
+		tgInputMessage: newTelegramWebhookMessage(input, tgMessage),
+		TgMessageType:  tgMessageType,
 	}
 }

@@ -43,7 +43,7 @@ func (r tgWebhookResponder) DeleteMessage(ctx context.Context, messageID string)
 			case tgWebhookTextMessage:
 				chat = tgInput.Chat()
 				message = tgInput.update.Message
-			case TgWebhookCallbackQuery:
+			case callbackQueryInput:
 				chat = tgInput.Chat()
 				message = tgInput.update.Message
 			}

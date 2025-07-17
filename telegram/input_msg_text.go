@@ -12,18 +12,18 @@ var (
 )
 
 type tgWebhookTextMessage struct {
-	tgWebhookMessage
-	TgMessageType TgMessageType
+	tgInputMessage
+	TgMessageType MessageType
 }
 
 func (tgWebhookTextMessage) InputType() botinput.Type {
 	return botinput.TypeText
 }
 
-func newTgWebhookTextMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookTextMessage {
+func newTgWebhookTextMessage(input tgInput, tgMessageType MessageType, tgMessage *tgbotapi.Message) tgWebhookTextMessage {
 	return tgWebhookTextMessage{
-		tgWebhookMessage: newTelegramWebhookMessage(input, tgMessage),
-		TgMessageType:    tgMessageType,
+		tgInputMessage: newTelegramWebhookMessage(input, tgMessage),
+		TgMessageType:  tgMessageType,
 	}
 }
 
@@ -32,5 +32,5 @@ func (whm tgWebhookTextMessage) Text() string {
 }
 
 func (whm tgWebhookTextMessage) IsEdited() bool {
-	return whm.TgMessageType == TgMessageTypeEdited || whm.TgMessageType == TgMessageTypeEditedChannelPost
+	return whm.TgMessageType == MessageTypeEdited || whm.TgMessageType == MessageTypeEditedChannelPost
 }

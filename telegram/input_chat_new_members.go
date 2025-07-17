@@ -11,11 +11,11 @@ var (
 )
 
 type tgWebhookNewChatMembersMessage struct {
-	tgWebhookMessage
+	tgInputMessage
 }
 
-func newTgWebhookNewChatMembersMessage(input tgWebhookInput) tgWebhookNewChatMembersMessage {
-	return tgWebhookNewChatMembersMessage{tgWebhookMessage: newTelegramWebhookMessage(input, input.update.Message)}
+func newTgWebhookNewChatMembersMessage(input tgInput) tgWebhookNewChatMembersMessage {
+	return tgWebhookNewChatMembersMessage{tgInputMessage: newTelegramWebhookMessage(input, input.update.Message)}
 }
 
 func (m tgWebhookNewChatMembersMessage) NewChatMembers() []botinput.Actor {

@@ -11,7 +11,7 @@ var (
 )
 
 type tgWebhookPreCheckoutQuery struct {
-	tgWebhookInput
+	tgInput
 }
 
 func (q tgWebhookPreCheckoutQuery) GetPreCheckoutQueryID() string {
@@ -42,11 +42,11 @@ func (q tgWebhookPreCheckoutQuery) GetOrderInfo() botinput.OrderInfo {
 	return (*tgOrderInfo)(q.update.PreCheckoutQuery.OrderInfo)
 }
 
-func newTgWebhookPreCheckoutQuery(input tgWebhookInput) tgWebhookPreCheckoutQuery {
+func newTgWebhookPreCheckoutQuery(input tgInput) tgWebhookPreCheckoutQuery {
 	if input.update.PreCheckoutQuery == nil {
 		panic("update.PreCheckoutQuery == nil")
 	}
 	return tgWebhookPreCheckoutQuery{
-		tgWebhookInput: input,
+		tgInput: input,
 	}
 }

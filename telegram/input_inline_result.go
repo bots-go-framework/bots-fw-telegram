@@ -5,7 +5,7 @@ import (
 )
 
 type tgWebhookChosenInlineResult struct {
-	tgWebhookInput
+	tgInput
 }
 
 var _ botinput.InputMessage = (*tgWebhookChosenInlineResult)(nil)
@@ -15,8 +15,8 @@ func (tgWebhookChosenInlineResult) InputType() botinput.Type {
 	return botinput.TypeChosenInlineResult
 }
 
-func newTelegramWebhookChosenInlineResult(input tgWebhookInput) tgWebhookChosenInlineResult {
-	return tgWebhookChosenInlineResult{tgWebhookInput: input}
+func newTelegramWebhookChosenInlineResult(input tgInput) tgWebhookChosenInlineResult {
+	return tgWebhookChosenInlineResult{tgInput: input}
 }
 
 func (q tgWebhookChosenInlineResult) GetResultID() string {

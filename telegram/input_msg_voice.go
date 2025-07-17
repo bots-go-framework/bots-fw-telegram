@@ -6,8 +6,8 @@ import (
 )
 
 type tgWebhookVoiceMessage struct {
-	tgWebhookMessage
-	TgMessageType TgMessageType
+	tgInputMessage
+	TgMessageType MessageType
 }
 
 var _ botinput.VoiceMessage = (*tgWebhookVoiceMessage)(nil)
@@ -16,9 +16,9 @@ func (tgWebhookVoiceMessage) InputType() botinput.Type {
 	return botinput.TypeVoice
 }
 
-func newTgWebhookVoiceMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookVoiceMessage {
+func newTgWebhookVoiceMessage(input tgInput, tgMessageType MessageType, tgMessage *tgbotapi.Message) tgWebhookVoiceMessage {
 	return tgWebhookVoiceMessage{
-		tgWebhookMessage: newTelegramWebhookMessage(input, tgMessage),
-		TgMessageType:    tgMessageType,
+		tgInputMessage: newTelegramWebhookMessage(input, tgMessage),
+		TgMessageType:  tgMessageType,
 	}
 }

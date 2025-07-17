@@ -11,7 +11,7 @@ var (
 )
 
 type tgWebhookRefundedPayment struct {
-	tgWebhookMessage
+	tgInputMessage
 }
 
 func (t tgWebhookRefundedPayment) GetCurrency() string {
@@ -34,14 +34,14 @@ func (t tgWebhookRefundedPayment) GetPaymentProviderChargeID() string {
 	return t.update.Message.RefundedPayment.ProviderPaymentChargeID
 }
 
-func newTgWebhookRefundedPayment(input tgWebhookInput) tgWebhookRefundedPayment {
+func newTgWebhookRefundedPayment(input tgInput) tgWebhookRefundedPayment {
 	if input.update.Message.RefundedPayment == nil {
 		panic("update.Message.RefundedPayment == nil")
 	}
 	return tgWebhookRefundedPayment{
-		tgWebhookMessage: tgWebhookMessage{
-			tgWebhookInput: input,
-			message:        input.update.Message,
+		tgInputMessage: tgInputMessage{
+			tgInput: input,
+			message: input.update.Message,
 		},
 	}
 }

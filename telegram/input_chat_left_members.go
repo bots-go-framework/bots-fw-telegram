@@ -5,7 +5,7 @@ import (
 )
 
 type tgWebhookLeftChatMembersMessage struct {
-	tgWebhookMessage
+	tgInputMessage
 }
 
 func (*tgWebhookLeftChatMembersMessage) InputType() botinput.Type {
@@ -14,8 +14,8 @@ func (*tgWebhookLeftChatMembersMessage) InputType() botinput.Type {
 
 var _ botinput.LeftChatMembersMessage = (*tgWebhookLeftChatMembersMessage)(nil)
 
-func newTgWebhookLeftChatMembersMessage(input tgWebhookInput) tgWebhookNewChatMembersMessage {
-	return tgWebhookNewChatMembersMessage{tgWebhookMessage: newTelegramWebhookMessage(input, input.update.Message)}
+func newTgWebhookLeftChatMembersMessage(input tgInput) tgWebhookNewChatMembersMessage {
+	return tgWebhookNewChatMembersMessage{tgInputMessage: newTelegramWebhookMessage(input, input.update.Message)}
 }
 
 func (m *tgWebhookLeftChatMembersMessage) LeftChatMembers() []botinput.Actor {

@@ -12,15 +12,15 @@ var (
 )
 
 type tgWebhookContactMessage struct {
-	tgWebhookMessage
+	tgInputMessage
 }
 
 func (m tgWebhookContactMessage) GetVCard() string {
 	return m.update.Message.Contact.VCard
 }
 
-func newTgWebhookContact(input tgWebhookInput) tgWebhookContactMessage {
-	return tgWebhookContactMessage{tgWebhookMessage: newTelegramWebhookMessage(input, input.update.Message)}
+func newTgWebhookContact(input tgInput) tgWebhookContactMessage {
+	return tgWebhookContactMessage{tgInputMessage: newTelegramWebhookMessage(input, input.update.Message)}
 }
 
 func (m tgWebhookContactMessage) GetFirstName() string {

@@ -14,8 +14,8 @@ var (
 )
 
 type tgWebhookUsersSharedMessage struct {
-	tgWebhookMessage
-	TgMessageType TgMessageType
+	tgInputMessage
+	TgMessageType MessageType
 }
 
 func (m tgWebhookUsersSharedMessage) GetRequestID() int {
@@ -40,10 +40,10 @@ func (tgWebhookUsersSharedMessage) InputType() botinput.Type {
 	return botinput.TypeSharedUsers
 }
 
-func newTgWebhookUsersSharedMessage(input tgWebhookInput, tgMessageType TgMessageType, tgMessage *tgbotapi.Message) tgWebhookUsersSharedMessage {
+func newTgWebhookUsersSharedMessage(input tgInput, tgMessageType MessageType, tgMessage *tgbotapi.Message) tgWebhookUsersSharedMessage {
 	return tgWebhookUsersSharedMessage{
-		tgWebhookMessage: newTelegramWebhookMessage(input, tgMessage),
-		TgMessageType:    tgMessageType,
+		tgInputMessage: newTelegramWebhookMessage(input, tgMessage),
+		TgMessageType:  tgMessageType,
 	}
 }
 

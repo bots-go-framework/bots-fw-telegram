@@ -18,7 +18,7 @@ func Test_tgWebhookUsersSharedMessage_GetSharedUsers(t *testing.T) {
 		{
 			name: "should_pass",
 			webhookMessage: tgWebhookUsersSharedMessage{
-				tgWebhookMessage: tgWebhookMessage{
+				tgInputMessage: tgInputMessage{
 					message: &tgbotapi.Message{
 						UsersShared: &tgbotapi.UsersShared{
 							Users: []tgbotapi.SharedUser{
@@ -63,7 +63,7 @@ func Test_tgWebhookUsersSharedMessage_GetSharedUsers(t *testing.T) {
 		{
 			name: "should_panic",
 			webhookMessage: tgWebhookUsersSharedMessage{
-				tgWebhookMessage: tgWebhookMessage{
+				tgInputMessage: tgInputMessage{
 					message: &tgbotapi.Message{
 						UsersShared: nil,
 					},
