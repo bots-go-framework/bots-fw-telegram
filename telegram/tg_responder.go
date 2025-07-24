@@ -76,12 +76,15 @@ func newTgWebhookResponder(w http.ResponseWriter, whc *tgWebhookContext) tgWebho
 
 func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFromBot, channel botmsg.BotAPISendMessageChannel) (resp botsfw.OnMessageSentResponse, err error) {
 	logus.Debugf(ctx, "tgWebhookResponder.SendMessage(channel=%v, isEdit=%v)\nm: %+v", channel, m.IsEdit, m)
-	channel = botsfw.BotAPISendMessageOverHTTPS
 	switch channel {
 	case botsfw.BotAPISendMessageOverHTTPS, botsfw.BotAPISendMessageOverResponse:
 	// Known channels
 	default:
 		panic(fmt.Sprintf("Unknown channel: [%v]. Expected either 'https' or 'response'.", channel))
+	}
+	if channel != botsfw.BotAPISendMessageOverHTTPS {
+		logus.Debugf(ctx, "Rewriting sending channel from %s to %s", channel, botsfw.BotAPISendMessageOverHTTPS)
+		channel = botsfw.BotAPISendMessageOverHTTPS
 	}
 	//ctx := tc.Context()
 
@@ -188,38 +191,25 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 			inlineMessageID = ""
 		}
 		if m.EditMessageUID != nil {
-			switch m.EditMessageUID.(type) { // TODO: How do we remove duplicates for value & pointer cases?
+			switch messageUID := m.EditMessageUID.(type) { // TODO: How do we remove duplicates for value & pointer cases?
 			case callbackCurrent:
 				// do nothing
-			case InlineMessageUID:
-				inlineMessageID = m.EditMessageUID.(InlineMessageUID).InlineMessageID
+			case InlineMessageUID, *InlineMessageUID:
+				inlineMessageID = messageUID.UID()
 				chatID = 0
 				messageID = 0
-			case *InlineMessageUID:
-				inlineMessageID = m.EditMessageUID.(*InlineMessageUID).InlineMessageID
-				chatID = 0
-				messageID = 0
-			case ChatMessageUID:
-				chatMessageUID := m.EditMessageUID.(ChatMessageUID)
-				inlineMessageID = ""
-				if chatMessageUID.ChatID != 0 {
-					chatID = chatMessageUID.ChatID
-				}
-				if chatMessageUID.MessageID != 0 {
-					messageID = chatMessageUID.MessageID
-				}
-			case *ChatMessageUID:
-				chatMessageUID := m.EditMessageUID.(*ChatMessageUID)
-				inlineMessageID = ""
-				if chatMessageUID.ChatID != 0 {
-					chatID = chatMessageUID.ChatID
-				}
-				if chatMessageUID.MessageID != 0 {
-					messageID = chatMessageUID.MessageID
-				}
 			default:
 				err = fmt.Errorf("unknown EditMessageUID type %T(%v)", m.EditMessageUID, m.EditMessageUID)
 				return
+			case ChatMessageUID, *ChatMessageUID:
+				inlineMessageID = ""
+				if uid, ok := messageUID.(interface {
+					GetChatID() int64
+					GetMessageID() int
+				}); ok {
+					chatID = uid.GetChatID()
+					messageID = uid.GetMessageID()
+				}
 			}
 		}
 		logus.Debugf(ctx, "Edit message => inlineMessageID: %v, chatID: %d, messageID: %d", inlineMessageID, chatID, messageID)
@@ -228,33 +218,46 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 			return
 		}
 		if m.Text == "" && m.Keyboard != nil {
-			switch keyboard := m.Keyboard.(type) {
+			keyboard := getTelegramKeyboard(m.Keyboard)
+			switch kb := keyboard.(type) {
 			case *tgbotapi.InlineKeyboardMarkup:
-				sendable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, keyboard)
-			case *botkb.MessageKeyboard:
-				switch keyboard.KeyboardType() {
-				case botkb.KeyboardTypeInline:
-					kb := getTelegramKeyboard(m.Keyboard)
-					inlineKbMarkup := kb.(*tgbotapi.InlineKeyboardMarkup)
-					sendable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, tgbotapi.NewInlineKeyboardMarkup(inlineKbMarkup.InlineKeyboard...))
-				case botkb.KeyboardTypeBottom:
-					kb := getTelegramKeyboard(m.Keyboard)
-					msg := tgbotapi.NewMessage(chatID, m.Text)
-					msg.ReplyMarkup = kb.(*tgbotapi.InlineKeyboardMarkup)
-					sendable = msg
+				sendable = tgbotapi.NewEditMessageReplyMarkup(chatID, messageID, inlineMessageID, kb)
+			case *tgbotapi.ReplyKeyboardMarkup, *tgbotapi.ReplyKeyboardHide:
+				msg := tgbotapi.NewMessage(chatID, "")
+				msg.ReplyMarkup = kb
+				sendable = msg
+			default:
+				err = fmt.Errorf("unknown keyboard type %T(%v)", keyboard.KeyboardType(), keyboard)
+				return
+			}
+		} else if m.Text != "" {
+			kb := getTelegramKeyboard(m.Keyboard)
+
+			createEditMessage := func() *tgbotapi.EditMessageTextConfig {
+				editMessageTextConfig := tgbotapi.NewEditMessageText(chatID, messageID, inlineMessageID, m.Text)
+				editMessageTextConfig.ParseMode = parseMode()
+				editMessageTextConfig.DisableWebPagePreview = m.DisableWebPagePreview
+				sendable = editMessageTextConfig
+				return editMessageTextConfig
+			}
+
+			if kb == nil {
+				createEditMessage()
+			} else {
+				switch kb := kb.(type) {
+				case *tgbotapi.InlineKeyboardMarkup:
+					editMessageTextConfig := createEditMessage()
+					editMessageTextConfig.ReplyMarkup = kb
+					sendable = editMessageTextConfig
+				case *tgbotapi.ReplyKeyboardMarkup, *tgbotapi.ReplyKeyboardHide:
+					messageConfig := tgbotapi.NewMessage(chatID, m.Text)
+					messageConfig.ReplyMarkup = kb
+					sendable = messageConfig
 				default:
-					err = fmt.Errorf("unknown keyboard type %T(%v)", keyboard.KeyboardType(), keyboard)
+					err = fmt.Errorf("unknown keyboard type %T(%v)", kb.KeyboardType(), kb)
 					return
 				}
 			}
-		} else if m.Text != "" {
-			editMessageTextConfig := tgbotapi.NewEditMessageText(chatID, messageID, inlineMessageID, m.Text)
-			editMessageTextConfig.ParseMode = parseMode()
-			editMessageTextConfig.DisableWebPagePreview = m.DisableWebPagePreview
-			if m.Keyboard != nil {
-				editMessageTextConfig.ReplyMarkup = getTelegramKeyboard(m.Keyboard).(*tgbotapi.InlineKeyboardMarkup)
-			}
-			sendable = editMessageTextConfig
 		} else {
 			err = fmt.Errorf("can't edit telegram message as got unknown output: %v", m)
 			panic(err)
@@ -357,36 +360,69 @@ func getTelegramKeyboard(keyboard botkb.Keyboard) tgbotapi.Keyboard {
 	}
 	switch kb := keyboard.(type) {
 	case *botkb.MessageKeyboard:
-		tgButtons := make([][]tgbotapi.InlineKeyboardButton, len(kb.Buttons))
-		for i, buttons := range kb.Buttons {
-			tgButtons[i] = make([]tgbotapi.InlineKeyboardButton, len(buttons))
-			for j, button := range buttons {
-				switch btn := button.(type) {
-				case botkb.DataButton:
-					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonData(btn.Text, btn.Data)
-				case *botkb.DataButton:
-					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonData(btn.Text, btn.Data)
-				case botkb.UrlButton:
-					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonURL(btn.Text, btn.URL)
-				case *botkb.UrlButton:
-					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonURL(btn.Text, btn.URL)
-				case botkb.SwitchInlineQueryButton:
-					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQuery(btn.Text, btn.Query)
-				case *botkb.SwitchInlineQueryButton:
-					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQuery(btn.Text, btn.Query)
-				case botkb.SwitchInlineQueryCurrentChatButton:
-					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
-				case *botkb.SwitchInlineQueryCurrentChatButton:
-					tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
-				default:
-					panic(fmt.Sprintf("Unknown button type at [%d][%d]: %T", i, j, btn))
-				}
+		switch keyboard.KeyboardType() {
+		case botkb.KeyboardTypeInline:
+			return getInlineKeyboard(kb)
+		case botkb.KeyboardTypeBottom:
+			return getReplyKeyboard(kb)
+		case botkb.KeyboardTypeHide:
+			return getHideKeyboard(kb)
+		default:
+			panic(fmt.Sprintf("keyboard.KeyboardType() returns unsupported type %v", kb.KeyboardType()))
+		}
+	default:
+		panic(fmt.Sprintf("keyboard is of unsupported type %v", keyboard))
+	}
+}
+
+func getHideKeyboard(_ *botkb.MessageKeyboard) *tgbotapi.ReplyKeyboardHide {
+	return &tgbotapi.ReplyKeyboardHide{HideKeyboard: true}
+}
+
+func getReplyKeyboard(kb *botkb.MessageKeyboard) *tgbotapi.ReplyKeyboardMarkup {
+	tgButtons := make([][]tgbotapi.KeyboardButton, len(kb.Buttons))
+	for i, buttons := range kb.Buttons {
+		tgButtons[i] = make([]tgbotapi.KeyboardButton, len(buttons))
+		for j, button := range buttons {
+			switch btn := button.(type) {
+			case botkb.TextButton:
+				tgButtons[i][j] = tgbotapi.KeyboardButton{Text: btn.Text}
+			default:
+				tgButtons[i][j] = tgbotapi.KeyboardButton{Text: btn.GetText()}
 			}
 		}
-		return tgbotapi.NewInlineKeyboardMarkup(tgButtons...)
-	default:
-		panic(fmt.Sprintf("m.Keyboard has unsupported type %v", kb.KeyboardType()))
 	}
+	return tgbotapi.NewReplyKeyboard(tgButtons...)
+}
+
+func getInlineKeyboard(kb *botkb.MessageKeyboard) *tgbotapi.InlineKeyboardMarkup {
+	tgButtons := make([][]tgbotapi.InlineKeyboardButton, len(kb.Buttons))
+	for i, buttons := range kb.Buttons {
+		tgButtons[i] = make([]tgbotapi.InlineKeyboardButton, len(buttons))
+		for j, button := range buttons {
+			switch btn := button.(type) {
+			case botkb.DataButton:
+				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonData(btn.Text, btn.Data)
+			case *botkb.DataButton:
+				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonData(btn.Text, btn.Data)
+			case botkb.UrlButton:
+				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonURL(btn.Text, btn.URL)
+			case *botkb.UrlButton:
+				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonURL(btn.Text, btn.URL)
+			case botkb.SwitchInlineQueryButton:
+				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQuery(btn.Text, btn.Query)
+			case *botkb.SwitchInlineQueryButton:
+				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQuery(btn.Text, btn.Query)
+			case botkb.SwitchInlineQueryCurrentChatButton:
+				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
+			case *botkb.SwitchInlineQueryCurrentChatButton:
+				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
+			default:
+				panic(fmt.Sprintf("Unknown button type at [%d][%d]: %T", i, j, btn))
+			}
+		}
+	}
+	return tgbotapi.NewInlineKeyboardMarkup(tgButtons...)
 }
 
 func GetTelegramBotAPIClient(ctx context.Context, botContext botsfw.BotContext) *tgbotapi.BotAPI {

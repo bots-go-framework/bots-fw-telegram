@@ -49,3 +49,11 @@ var _ botmsg.MessageUID = (*ChatMessageUID)(nil)
 func (m ChatMessageUID) UID() string {
 	return fmt.Sprintf("%d:%d", m.ChatID, m.MessageID)
 }
+
+func (m ChatMessageUID) GetChatID() int64 {
+	return m.ChatID
+}
+
+func (m ChatMessageUID) GetMessageID() int {
+	return m.MessageID
+}
