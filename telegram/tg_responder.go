@@ -384,15 +384,12 @@ func getReplyKeyboard(kb *botkb.MessageKeyboard) *tgbotapi.ReplyKeyboardMarkup {
 	for i, buttons := range kb.Buttons {
 		tgButtons[i] = make([]tgbotapi.KeyboardButton, len(buttons))
 		for j, button := range buttons {
-			switch btn := button.(type) {
-			case botkb.TextButton:
-				tgButtons[i][j] = tgbotapi.KeyboardButton{Text: btn.Text}
-			default:
-				tgButtons[i][j] = tgbotapi.KeyboardButton{Text: btn.GetText()}
-			}
+			tgButtons[i][j] = tgbotapi.KeyboardButton{Text: button.GetText()}
 		}
 	}
-	return tgbotapi.NewReplyKeyboard(tgButtons...)
+	replyKb := tgbotapi.NewReplyKeyboard(tgButtons...)
+	replyKb.OneTimeKeyboard = kb.IsOneTime()
+	return replyKb
 }
 
 func getInlineKeyboard(kb *botkb.MessageKeyboard) *tgbotapi.InlineKeyboardMarkup {
