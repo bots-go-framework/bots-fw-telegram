@@ -2,8 +2,8 @@ github.com/alexsergivan/transliterator v1.0.1 h1:vON2ilWCHjq+S5Y4obhLGhHK4Y1VIhs
 github.com/alexsergivan/transliterator v1.0.1/go.mod h1:0IrumukulURJ4PD0z6UcdJKP2job1DYDhnHAP5y+5pE=
 github.com/bots-go-framework/bots-api-telegram v0.14.2 h1:HO267e5vRgyiV4XYC8Ix1MDd8cfVXJ70LRRrgTZF7ag=
 github.com/bots-go-framework/bots-api-telegram v0.14.2/go.mod h1:OjdV9b8kc9med/a+pfgWQzdBCzs6FKfHyAL45lvU17w=
-github.com/bots-go-framework/bots-fw v0.71.1 h1:hEoKT69h1ugG+FScexVxpCwQxxW/2jiyWINRd9+knoI=
-github.com/bots-go-framework/bots-fw v0.71.1/go.mod h1:gpoNv16aC42kNlCggvU9CCMzWX+ymJKtdVQm6p1jpHA=
+github.com/bots-go-framework/bots-fw v0.71.4 h1:h8Lc5Oab/WQR7994MwCeTJfvcGRq65oyo2oSUhojzHw=
+github.com/bots-go-framework/bots-fw v0.71.4/go.mod h1:R65utal9+bsJG697Y3iTmltW96K+vFm/xDify2+Z87U=
 github.com/bots-go-framework/bots-fw-store v0.10.0 h1:e6bD274mjrHVp+X05/7uqqT3s5xZOqV9divKTaM2W+w=
 github.com/bots-go-framework/bots-fw-store v0.10.0/go.mod h1:7oU4B8j5HuJZM8AftosbyQD+AqckXsDv8eU1auGPzn8=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.26 h1:J6mdMcrouCB0yjzDMFhVJxnB2epnnltC+iyTtISL27c=
@@ -23,8 +23,8 @@ github.com/stretchr/testify v1.10.0 h1:Xv5erBjTwe/5IxqUQTdXv5kgmIvbHo3QQyRwhJsOf
 github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/strongo/analytics v0.2.2 h1:D2xxTemgCK+4Qk0iBVvXXKsZnm5iS350TPAaZnXFeT8=
 github.com/strongo/analytics v0.2.2/go.mod h1:1OdiZI9/fPDN8ep1Pbz+F3UZPNbttUD7T1St15r760c=
-github.com/strongo/i18n v0.8.2 h1:tJxeajC6OLENFus2GQ/jZGDjFmd6lPQuhand9jD0Moc=
-github.com/strongo/i18n v0.8.2/go.mod h1:4jBQ4PJ3Uiri2Y+LHJ5/o1nB1H2ToddRW/yZXSOTUjE=
+github.com/strongo/i18n v0.8.5 h1:w6jyIsCM9uvMOY4kx0e0twV8n0M2QRXmyVh0aPpgjqk=
+github.com/strongo/i18n v0.8.5/go.mod h1:4Ec+yC74HP4mgo4RpetvT7e0xphsv6QCq0aV/Bhstw0=
 github.com/strongo/logus v0.2.1 h1:ZzAtdSg6PPF1Y43WbNWl7MH1XYl7kvKMxyxv/lpbadI=
 github.com/strongo/logus v0.2.1/go.mod h1:sd8gjJklqGQAg+Q0mlP5MWgzguAuxR25YYFSkfVOPdc=
 github.com/strongo/random v0.0.1 h1:OZHJBb/3uEa7OX8L2Dv2pLnSeewRmXMyTACoeto6O8I=
