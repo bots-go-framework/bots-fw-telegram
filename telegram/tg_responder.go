@@ -389,6 +389,7 @@ func getReplyKeyboard(kb *botkb.MessageKeyboard) *tgbotapi.ReplyKeyboardMarkup {
 	}
 	replyKb := tgbotapi.NewReplyKeyboard(tgButtons...)
 	replyKb.OneTimeKeyboard = kb.IsOneTime()
+	replyKb.ResizeKeyboard = true
 	return replyKb
 }
 
