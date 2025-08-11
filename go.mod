@@ -12,7 +12,7 @@ require (
 	github.com/bots-go-framework/bots-api-telegram v0.14.3
 	github.com/bots-go-framework/bots-fw v0.71.8
 	github.com/bots-go-framework/bots-fw-store v0.10.0
-	github.com/bots-go-framework/bots-fw-telegram-models v0.3.26
+	github.com/bots-go-framework/bots-fw-telegram-models v0.3.27
 	github.com/bots-go-framework/bots-go-core v0.2.3
 	github.com/dal-go/dalgo v0.26.3
 	github.com/strongo/i18n v0.8.5
@@ -25,7 +25,7 @@ require (
 	github.com/strongo/analytics v0.2.2 // indirect
 	github.com/strongo/random v0.0.1 // indirect
 	github.com/strongo/slice v0.3.1 // indirect
-	github.com/strongo/strongoapp v0.31.7 // indirect
+	github.com/strongo/strongoapp v0.31.8 // indirect
 	github.com/strongo/validation v0.0.7 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 )
