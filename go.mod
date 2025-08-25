@@ -9,8 +9,8 @@ go 1.24.3
 //replace github.com/bots-go-framework/bots-fw-store => ../bots-fw-store
 
 require (
-	github.com/bots-go-framework/bots-api-telegram v0.14.3
-	github.com/bots-go-framework/bots-fw v0.71.10
+	github.com/bots-go-framework/bots-api-telegram v0.14.4
+	github.com/bots-go-framework/bots-fw v0.71.11
 	github.com/bots-go-framework/bots-fw-store v0.10.0
 	github.com/bots-go-framework/bots-fw-telegram-models v0.3.27
 	github.com/bots-go-framework/bots-go-core v0.2.3
