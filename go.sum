@@ -4,6 +4,8 @@ github.com/bots-go-framework/bots-api-telegram v0.14.2 h1:HO267e5vRgyiV4XYC8Ix1M
 github.com/bots-go-framework/bots-api-telegram v0.14.2/go.mod h1:OjdV9b8kc9med/a+pfgWQzdBCzs6FKfHyAL45lvU17w=
 github.com/bots-go-framework/bots-api-telegram v0.14.3 h1:EA0vBAbpvQhXfZTmUoRLO5TlL47K9qZYoIc3IMrUSKI=
 github.com/bots-go-framework/bots-api-telegram v0.14.3/go.mod h1:9Ky55o7K6A7TXXnMX0NGu8H6AcTv1hxkhtjClCgW6Z8=
+github.com/bots-go-framework/bots-api-telegram v0.14.5 h1:kq8TbPO1OOXPH8GbcZyihH5JRXYbV5e7YuxoAoZClvg=
+github.com/bots-go-framework/bots-api-telegram v0.14.5/go.mod h1:szSPhCeTO4pKrNkpfzFivMrdoETvw79061K1By8xGoI=
 github.com/bots-go-framework/bots-fw v0.71.4 h1:h8Lc5Oab/WQR7994MwCeTJfvcGRq65oyo2oSUhojzHw=
 github.com/bots-go-framework/bots-fw v0.71.4/go.mod h1:R65utal9+bsJG697Y3iTmltW96K+vFm/xDify2+Z87U=
 github.com/bots-go-framework/bots-fw v0.71.5 h1:pXaxYjYkd19gi+K7wm8BZqcAL52Z6eykM0/BrEzRQbY=
@@ -12,6 +14,8 @@ github.com/bots-go-framework/bots-fw v0.71.8 h1:hD+tyHo7GpNFt1E36El2x7wfoy+NhsSa
 github.com/bots-go-framework/bots-fw v0.71.8/go.mod h1:lw8SbJBzrOSiZbmlWyldZ9OcPoL3JAsYpF+6WOUt8b8=
 github.com/bots-go-framework/bots-fw v0.71.10 h1:12caKXGGXmjkyJCc4KcNzkKzZe+CzZtIjT16MOsAQNg=
 github.com/bots-go-framework/bots-fw v0.71.10/go.mod h1:bQRLvwUIPhGqkVnSHHWJP36I8lN+lzKfFuMlSPsUHaQ=
+github.com/bots-go-framework/bots-fw v0.71.13 h1:zu5leWxql8I/utp5hRMMEtZU9Eb2/Pw03VV/oCH2BmY=
+github.com/bots-go-framework/bots-fw v0.71.13/go.mod h1:23HdONZJnilFFAUNg98bbYJlSAX87wB5w30rXOwuY7U=
 github.com/bots-go-framework/bots-fw-store v0.10.0 h1:e6bD274mjrHVp+X05/7uqqT3s5xZOqV9divKTaM2W+w=
 github.com/bots-go-framework/bots-fw-store v0.10.0/go.mod h1:7oU4B8j5HuJZM8AftosbyQD+AqckXsDv8eU1auGPzn8=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.26 h1:J6mdMcrouCB0yjzDMFhVJxnB2epnnltC+iyTtISL27c=
@@ -24,6 +28,8 @@ github.com/dal-go/dalgo v0.24.0 h1:lwf2S7+zBhp5z1HQXSKpsLd5ZXkby0aDm3jcEQA2VQI=
 github.com/dal-go/dalgo v0.24.0/go.mod h1:BoMNGwDE9FdjynV7xCn5f/GdVJxvfePwjsMldn+BhqA=
 github.com/dal-go/dalgo v0.26.3 h1:xkBD2fe/soF73ccVdu74g4VEk+f3i/GuaucnVOE91P8=
 github.com/dal-go/dalgo v0.26.3/go.mod h1:JXjaUXi0nD1Q+HV/HVtWuxuDCIyKUQa/MmBih9k8aKU=
+github.com/dal-go/dalgo v0.26.4 h1:CBZrE+rijxTUSlGQ6494PIzhTKl+aw3pwdIx6QNVdaA=
+github.com/dal-go/dalgo v0.26.4/go.mod h1:vOjId8+TWO6fm/mNcMPvdQNGQsLeRuEw7z5itjIB0Hk=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
