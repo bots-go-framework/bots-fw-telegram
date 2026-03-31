@@ -19,5 +19,5 @@ func newTgWebhookLeftChatMembersMessage(input tgInput) tgWebhookNewChatMembersMe
 }
 
 func (m *tgWebhookLeftChatMembersMessage) LeftChatMembers() []botinput.Actor {
-	return []botinput.Actor{m.message.LeftChatMember}
+	return []botinput.Actor{&tgUserActor{User: *m.message.LeftChatMember}}
 }
