@@ -21,7 +21,7 @@ func newTgWebhookNewChatMembersMessage(input tgInput) tgWebhookNewChatMembersMes
 func (m tgWebhookNewChatMembersMessage) NewChatMembers() []botinput.Actor {
 	members := make([]botinput.Actor, len(m.message.NewChatMembers))
 	for i, m := range m.message.NewChatMembers {
-		members[i] = m
+		members[i] = tgUserActor{User: m}
 	}
 	return members
 }
