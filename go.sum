@@ -12,6 +12,8 @@ github.com/RoaringBitmap/roaring/v2 v2.16.2 h1:x4eAT8HMCQ6RzqsUpoKUF3j9f7qLm9vR+
 github.com/RoaringBitmap/roaring/v2 v2.16.2/go.mod h1:eq4wdNXxtJIS/oikeCzdX1rBzek7ANzbth041hrU8Q4=
 github.com/RoaringBitmap/roaring/v2 v2.18.0 h1:h7sS0VqCkfBMGgcHaudJFB4FE6Td71H6svRB2poRnGY=
 github.com/RoaringBitmap/roaring/v2 v2.18.0/go.mod h1:eq4wdNXxtJIS/oikeCzdX1rBzek7ANzbth041hrU8Q4=
+github.com/RoaringBitmap/roaring/v2 v2.18.1 h1:pnpEbe82inIrzSuHajiR6yBlAavwbjH0l7mr/oioea0=
+github.com/RoaringBitmap/roaring/v2 v2.18.1/go.mod h1:eq4wdNXxtJIS/oikeCzdX1rBzek7ANzbth041hrU8Q4=
 github.com/alexsergivan/transliterator v1.0.1 h1:vON2ilWCHjq+S5Y4obhLGhHK4Y1VIhsHEtQlij5d9pI=
 github.com/alexsergivan/transliterator v1.0.1/go.mod h1:0IrumukulURJ4PD0z6UcdJKP2job1DYDhnHAP5y+5pE=
 github.com/bits-and-blooms/bitset v1.12.0/go.mod h1:7hO7Gc7Pp1vODcmWvKMRA9BNmbv6a/7QIWpPxHddWR8=
@@ -71,6 +73,8 @@ github.com/bots-go-framework/bots-fw v0.71.50 h1:bznVvN2dvLM7VncfplnX1gRCVZrw3ya
 github.com/bots-go-framework/bots-fw v0.71.50/go.mod h1:s0DYCRbLQJ5Z/upTGkQp2Q2/d7mxjxv5oYGxbwz4s4g=
 github.com/bots-go-framework/bots-fw v0.71.52 h1:vJhzie0An1eY4KcIuDt1I1arLtwhMdxl144n6q6SbS8=
 github.com/bots-go-framework/bots-fw v0.71.52/go.mod h1:O2HikuTqFvH02L9iTee1tcVlyDZYo9wvGYFHKL9gVGU=
+github.com/bots-go-framework/bots-fw v0.71.53 h1:c7CbLoI6gT+mtfxKKVujxGEkyhi2jTfqlZOcuYIGQMk=
+github.com/bots-go-framework/bots-fw v0.71.53/go.mod h1:1zx7t/zyF+tWuUKH4rV8ZR3OWFop+eM5T3dMvw31a3w=
 github.com/bots-go-framework/bots-fw-store v0.10.0 h1:e6bD274mjrHVp+X05/7uqqT3s5xZOqV9divKTaM2W+w=
 github.com/bots-go-framework/bots-fw-store v0.10.0/go.mod h1:7oU4B8j5HuJZM8AftosbyQD+AqckXsDv8eU1auGPzn8=
 github.com/bots-go-framework/bots-fw-store v0.10.1 h1:z82JwkYNJwb9i+AvzEuc57rfj6aZQovtjrh6kKAIUBo=
@@ -159,6 +163,8 @@ github.com/dal-go/dalgo v0.41.15 h1:quY9KMe7PSs59Zt+Zx8AUR0NDVB8CeQMm4wRXzlZfJs=
 github.com/dal-go/dalgo v0.41.15/go.mod h1:mGR/cl9X6O2QCmu1FzrM8gVgFkkhdR33Ur3msnJJJXU=
 github.com/dal-go/dalgo v0.43.1 h1:MnsOzMurG8we9+U+uvj3CqsZU08SWh/8HzcCF3SkJmo=
 github.com/dal-go/dalgo v0.43.1/go.mod h1:5Y8SHjlwiUx+2as1XnhOjfFaZ33+T0HlZ+va2zwTSZo=
+github.com/dal-go/dalgo v0.43.2 h1:oO3VqVpfT0y+Wcvh8Gn8yoMyDZiRHTSGozxFNsxd6TE=
+github.com/dal-go/dalgo v0.43.2/go.mod h1:rg5SsKwl6YDcZGaOu9YElWvKZQrv9DPCCqRwNQ4FM9I=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
