@@ -79,6 +79,8 @@ github.com/bots-go-framework/bots-fw v0.71.53 h1:c7CbLoI6gT+mtfxKKVujxGEkyhi2jTf
 github.com/bots-go-framework/bots-fw v0.71.53/go.mod h1:1zx7t/zyF+tWuUKH4rV8ZR3OWFop+eM5T3dMvw31a3w=
 github.com/bots-go-framework/bots-fw v0.71.54 h1:cnVJzlJEj36L6M2eZk50fZ7GJSZYJ8cgvlL6/48trLE=
 github.com/bots-go-framework/bots-fw v0.71.54/go.mod h1:qVNDCMwWYIQqplAdFIPILUeTZn3GT+A0cDFR+2dctl4=
+github.com/bots-go-framework/bots-fw v0.71.56 h1:APr+UF5WO8Zwl0SR2nvhgUaC+pl/ZfDZfHaWOxnwhZ4=
+github.com/bots-go-framework/bots-fw v0.71.56/go.mod h1:JeICiscPTEwRGRljUp//r+nXrIUJSYBIFmbN5hepjCI=
 github.com/bots-go-framework/bots-fw-store v0.10.0 h1:e6bD274mjrHVp+X05/7uqqT3s5xZOqV9divKTaM2W+w=
 github.com/bots-go-framework/bots-fw-store v0.10.0/go.mod h1:7oU4B8j5HuJZM8AftosbyQD+AqckXsDv8eU1auGPzn8=
 github.com/bots-go-framework/bots-fw-store v0.10.1 h1:z82JwkYNJwb9i+AvzEuc57rfj6aZQovtjrh6kKAIUBo=
@@ -175,6 +177,8 @@ github.com/dal-go/dalgo v0.43.2 h1:oO3VqVpfT0y+Wcvh8Gn8yoMyDZiRHTSGozxFNsxd6TE=
 github.com/dal-go/dalgo v0.43.2/go.mod h1:rg5SsKwl6YDcZGaOu9YElWvKZQrv9DPCCqRwNQ4FM9I=
 github.com/dal-go/dalgo v0.43.3 h1:7hdXb3ysVCr6prOyEZKvnzjz0kjv+ramKjotw4vbwj4=
 github.com/dal-go/dalgo v0.43.3/go.mod h1:WdTy5jE3v9LjiOeHVkMgHEi8nn0GeImQmjfuuJpYISY=
+github.com/dal-go/dalgo v0.44.2 h1:+eJG5WTiGcy82jAgJrNzuDhlpyWISDfIAnMJ3l7G7wE=
+github.com/dal-go/dalgo v0.44.2/go.mod h1:HHMUuCMutAlYEblDTVws7jeZs56jvOCbOuxVs6I01tE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
