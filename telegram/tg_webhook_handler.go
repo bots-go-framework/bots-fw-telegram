@@ -3,6 +3,7 @@ package telegram
 import (
 	"bytes"
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
@@ -17,6 +18,13 @@ import (
 	"strings"
 	"time"
 )
+
+// TelegramWebhookSecretTokenHeader is the HTTP header Telegram sends the configured
+// `secret_token` back on with every webhook call, so a handler can verify the request
+// actually came from Telegram (and not from anyone who guessed/discovered the webhook
+// URL, which is not itself a secret - see SEC-4).
+// https://core.telegram.org/bots/api#setwebhook
+const TelegramWebhookSecretTokenHeader = "X-Telegram-Bot-Api-Secret-Token"
 
 var _ botsfw.WebhookHandler = (*tgWebhookHandler)(nil)
 
@@ -140,6 +148,13 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 		"refunded_payment",
 		"purchased_paid_media",
 	}
+	if webhookConfig.SecretToken = botContext.BotSettings.WebhookSecretToken; webhookConfig.SecretToken == "" {
+		// SEC-4: registering a webhook without a secret_token leaves it unauthenticated -
+		// verifyWebhookSecretToken will log a warning (or reject, if RequireWebhookSecret is
+		// set) on every incoming request until BotSettings.WebhookSecretToken is configured
+		// for this bot and the webhook is re-registered.
+		logus.Warningf(ctx, "SEC-4 WARNING: registering webhook for bot %q WITHOUT a secret_token - its webhook will be unauthenticated", botCode)
+	}
 	var response tgbotapi.APIResponse
 	if response, err = bot.SetWebhook(*webhookConfig); err != nil {
 		logus.Errorf(ctx, "%v", err)
@@ -159,10 +174,54 @@ Parametes:
 	}
 }
 
+// verifyWebhookSecretToken checks the X-Telegram-Bot-Api-Secret-Token header Telegram sends
+// on every webhook call against the secret configured for this bot (see SEC-4: without this
+// check, anyone who knows/guesses a bot's webhook URL can POST forged updates and be treated
+// as any Telegram user, since botID/`?id=` is a public, non-secret value - the bot's own
+// @username).
+//
+// Compat posture: if no secret is configured for the bot (settings.WebhookSecretToken == ""),
+// this does NOT block the request - existing deployments that haven't rolled out a secret yet
+// keep working - but it logs a high-visibility warning on every single request so the gap is
+// impossible to miss in logs, unless settings.RequireWebhookSecret is set, in which case an
+// unconfigured secret is treated as a hard misconfiguration and the request is rejected.
+// Once a secret IS configured, verification is always strictly enforced.
+func verifyWebhookSecretToken(ctx context.Context, r *http.Request, settings *botsfw.BotSettings) error {
+	if settings == nil { // defensive: should not happen for a bot resolved via BotContextProvider
+		logus.Warningf(ctx, "SEC-4 WARNING: BotSettings is nil, cannot verify %s header - treating as unauthenticated", TelegramWebhookSecretTokenHeader)
+		return nil
+	}
+	expected := settings.WebhookSecretToken
+	if expected == "" {
+		if settings.RequireWebhookSecret {
+			logus.Criticalf(ctx,
+				"SEC-4: rejecting Telegram webhook request for bot %q: RequireWebhookSecret is true but no WebhookSecretToken is configured",
+				settings.Code)
+			return botsfw.ErrAuthFailed(fmt.Sprintf("webhook secret required but not configured for bot %q", settings.Code))
+		}
+		logus.Warningf(ctx,
+			"SEC-4 WARNING: bot %q has NO webhook secret configured - its webhook is UNAUTHENTICATED and anyone who knows the webhook URL can forge Telegram updates and impersonate any user. Configure BotSettings.WebhookSecretToken (and re-register the webhook with a matching secret_token) to close this gap.",
+			settings.Code)
+		return nil
+	}
+
+	got := r.Header.Get(TelegramWebhookSecretTokenHeader)
+	if got == "" || subtle.ConstantTimeCompare([]byte(got), []byte(expected)) != 1 {
+		logus.Warningf(ctx, "SEC-4: rejecting Telegram webhook request for bot %q: missing/invalid %s header", settings.Code, TelegramWebhookSecretTokenHeader)
+		return botsfw.ErrAuthFailed(fmt.Sprintf("invalid or missing %s header", TelegramWebhookSecretTokenHeader))
+	}
+	return nil
+}
+
 func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Request) (botContext *botsfw.BotContext, entriesWithInputs []botinput.EntryInputs, err error) {
 	logus.Debugf(ctx, "tgWebhookHandler.GetBotContextAndInputs(): %s", r.URL.RequestURI())
 	botID := r.URL.Query().Get("id")
 	if botContext, err = h.botContextProvider.GetBotContext(ctx, PlatformID, botID); err != nil {
+		return
+	}
+
+	if err = verifyWebhookSecretToken(ctx, r, botContext.BotSettings); err != nil {
+		botContext = nil
 		return
 	}
 
