@@ -2,7 +2,11 @@ module github.com/bots-go-framework/bots-fw-telegram
 
 go 1.24.3
 
-//replace github.com/bots-go-framework/bots-fw => ../bots-fw
+// TODO(SEC-4): temporary replace while bots-fw's WebhookSecretToken/RequireWebhookSecret
+// fields (github.com/bots-go-framework/bots-fw PR fable/sec-4-webhook-secret-token) are
+// unreleased. Remove this replace and bump the `require` version above once bots-fw is
+// tagged with that change.
+replace github.com/bots-go-framework/bots-fw => ../bots-fw
 
 //replace github.com/bots-go-framework/bots-api-telegram => ../bots-api-telegram
 
