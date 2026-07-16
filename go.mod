@@ -8,18 +8,18 @@ go 1.24.3
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.14.8
-	github.com/bots-go-framework/bots-fw v0.71.86
-	github.com/bots-go-framework/bots-fw-store v0.10.5
+	github.com/bots-go-framework/bots-fw v0.72.2-0.20260716104613-9c3a6ede68e9
+	github.com/bots-go-framework/bots-fw-store v0.11.0
 	github.com/bots-go-framework/bots-fw-telegram-models v0.3.69
 	github.com/bots-go-framework/bots-go-core v0.2.4
-	github.com/dal-go/dalgo v0.62.12
+	github.com/dal-go/dalgo v0.62.13
 	github.com/strongo/i18n v0.8.14
 	github.com/strongo/logus v0.4.1
 	go.uber.org/mock v0.6.0
 )
 
 require (
-	github.com/RoaringBitmap/roaring/v2 v2.19.0 // indirect
+	github.com/RoaringBitmap/roaring/v2 v2.21.0 // indirect
 	github.com/alexsergivan/transliterator v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.24.4 // indirect
 	github.com/mschoch/smat v0.2.0 // indirect
