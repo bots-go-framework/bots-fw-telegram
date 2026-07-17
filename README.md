@@ -63,8 +63,8 @@ The bot with the given code should be registered in your app and the value is CA
 
 ## Registering webhooks in production
 
-The same handler exposes two routes (mounted by the consuming app under whatever `pathPrefix`
-it chooses — e.g. `sneat-go` uses `/bot`, see [`init_bots.go`](https://github.com/sneat-co/sneat-go/blob/main/pkg/bots/botinit/init_bots.go)):
+The same handler exposes two routes, mounted by the consuming app under whatever `pathPrefix`
+it chooses (e.g. `/bot`):
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -85,4 +85,9 @@ it chooses — e.g. `sneat-go` uses `/bot`, see [`init_bots.go`](https://github.
   without one leaves that bot's webhook unauthenticated — anyone who learns/guesses the webhook URL can
   POST forged updates. A warning is logged (not fatal) when this happens.
 - Bot tokens are resolved from `<PLATFORM>_BOT_TOKEN_<CODE>` env vars by default (e.g.
-  `TELEGRAM_BOT_TOKEN_SNEATBOT`), unless the consuming app wires a token explicitly.
+  `TELEGRAM_BOT_TOKEN_MYBOT` for a bot registered with code `MyBot`), unless the consuming app
+  wires a token explicitly.
+
+## Used by
+
+- sneat-go (private)
