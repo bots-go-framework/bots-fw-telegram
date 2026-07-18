@@ -10,6 +10,7 @@ import (
 	"github.com/strongo/i18n"
 	"go.uber.org/mock/gomock"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -107,4 +108,37 @@ func TestTelegramWebhookHandler_Handle(t *testing.T) {
 			t.Errorf("successfulPayment.GetPaymentProviderChargeID() = %v, want some_charge_id", "1234567890_12")
 		}
 	})
+}
+
+func TestPublicHost(t *testing.T) {
+	cases := []struct {
+		name          string
+		host          string
+		forwardedHost string
+		want          string
+	}{
+		{
+			name: "no forwarded host header falls back to r.Host",
+			host: "sneat-app-354fvnqbaa-ey.a.run.app",
+			want: "sneat-app-354fvnqbaa-ey.a.run.app",
+		},
+		{
+			name:          "forwarded host header takes precedence over r.Host",
+			host:          "sneat-app-354fvnqbaa-ey.a.run.app",
+			forwardedHost: "api.sneat.cloud",
+			want:          "api.sneat.cloud",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			r := httptest.NewRequest(http.MethodGet, "https://example.com/tg/set-webhook?code=Test", nil)
+			r.Host = tc.host
+			if tc.forwardedHost != "" {
+				r.Header.Set(ForwardedHostHeader, tc.forwardedHost)
+			}
+			if got := publicHost(r); got != tc.want {
+				t.Errorf("publicHost() = %q, want %q", got, tc.want)
+			}
+		})
+	}
 }

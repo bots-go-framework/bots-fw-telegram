@@ -26,12 +26,20 @@ import (
 // https://core.telegram.org/bots/api#setwebhook
 const TelegramWebhookSecretTokenHeader = "X-Telegram-Bot-Api-Secret-Token"
 
+// ForwardedHostHeader is the de-facto standard reverse-proxy header carrying the
+// original Host the client requested, before any Host-rewriting hop (e.g. a proxy
+// that swaps Host to match a backend's own routing requirements). SetWebhook prefers
+// this over r.Host so the webhook URL registered with Telegram reflects the public
+// host callers actually want, even when reached through such a proxy.
+const ForwardedHostHeader = "X-Forwarded-Host"
+
 var _ botsfw.WebhookHandler = (*tgWebhookHandler)(nil)
 
 type tgWebhookHandler struct {
 	botsfw.WebhookHandlerBase
 	botContextProvider botsfw.BotContextProvider
 	//botsBy botsfw.BotSettingsProvider
+	pathPrefix string
 }
 
 // NewTelegramWebhookHandler creates new Telegram webhooks handler
@@ -81,6 +89,7 @@ func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host
 	h.Register(driver, host)
 
 	pathPrefix = strings.TrimSuffix(pathPrefix, "/")
+	h.pathPrefix = pathPrefix
 	//router.POST(pathPrefix+"/telegram/webhook", h.HandleWebhookRequest) // TODO: Remove obsolete
 	router.Handle("POST", pathPrefix+"/tg/hook", h.HandleWebhookRequest)
 	router.Handle("GET", pathPrefix+"/tg/set-webhook", h.SetWebhook)
@@ -112,6 +121,17 @@ func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Re
 	h.HandleWebhook(w, r, h)
 }
 
+// publicHost resolves the host that should appear in URLs handed back to third
+// parties (e.g. the Telegram webhook URL), preferring ForwardedHostHeader - set by
+// a reverse proxy that rewrites the wire Host to something the origin needs - over
+// r.Host, which reflects that rewritten value rather than what the caller reached.
+func publicHost(r *http.Request) string {
+	if host := r.Header.Get(ForwardedHostHeader); host != "" {
+		return host
+	}
+	return r.Host
+}
+
 func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 	ctx := h.Context(r)
 	logus.Debugf(ctx, "tgWebhookHandler.SetWebhook()")
@@ -134,7 +154,7 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 	bot.EnableDebug(ctx)
 	//bot.Debug = true
 
-	webhookURL := fmt.Sprintf("https://%s/bot/tg/hook?id=%s", r.Host, botCode)
+	webhookURL := fmt.Sprintf("https://%s%s/tg/hook?id=%s", publicHost(r), h.pathPrefix, botCode)
 
 	webhookConfig := tgbotapi.NewWebhook(webhookURL)
 	webhookConfig.AllowedUpdates = []string{
