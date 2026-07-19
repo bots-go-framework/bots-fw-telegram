@@ -2,11 +2,23 @@ package telegram
 
 import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
+	"github.com/bots-go-framework/bots-fw/botmsg"
 	"github.com/bots-go-framework/bots-go-core/botkb"
 	"net/http/httptest"
 	"reflect"
 	"testing"
 )
+
+func TestConfigureTelegramTextMessage_PreservesHTMLParseMode(t *testing.T) {
+	messageConfig := tgbotapi.NewMessage(1, "<b>Formatted</b>")
+	configureTelegramTextMessage(messageConfig, botmsg.MessageFromBot{
+		TextMessageFromBot: botmsg.TextMessageFromBot{Format: botmsg.FormatHTML},
+	})
+
+	if messageConfig.ParseMode != "HTML" {
+		t.Errorf("ParseMode = %q, want HTML", messageConfig.ParseMode)
+	}
+}
 
 func TestGetInlineKeyboard(t *testing.T) {
 	t.Run("EmptyKeyboard", func(t *testing.T) {

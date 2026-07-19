@@ -22,6 +22,25 @@ type tgWebhookResponder struct {
 	whc *tgWebhookContext
 }
 
+func telegramParseMode(format botmsg.Format) string {
+	switch format {
+	case botmsg.FormatHTML:
+		return "HTML"
+	case botmsg.FormatMarkdown:
+		return "MarkdownV2"
+	case botmsg.FormatText:
+		return ""
+	default:
+		panic(fmt.Sprintf("Unknown message parse_mode value: %d", format))
+	}
+}
+
+func configureTelegramTextMessage(messageConfig *tgbotapi.MessageConfig, m botmsg.MessageFromBot) {
+	messageConfig.ParseMode = telegramParseMode(m.Format)
+	messageConfig.DisableWebPagePreview = m.DisableWebPagePreview
+	messageConfig.DisableNotification = m.DisableNotification
+}
+
 func (r tgWebhookResponder) DeleteMessage(ctx context.Context, messageID string) (err error) {
 	var msgID int
 	if msgID, err = strconv.Atoi(messageID); err != nil {
@@ -83,19 +102,6 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 		panic(fmt.Sprintf("Unknown channel: [%v]. Expected either 'https' or 'response'.", channel))
 	}
 	var sendable tgbotapi.Sendable
-
-	parseMode := func() string {
-		switch m.Format {
-		case botmsg.FormatHTML:
-			return "HTML"
-		case botmsg.FormatMarkdown:
-			return "MarkdownV2"
-		case botmsg.FormatText:
-			return ""
-		default:
-			panic(fmt.Sprintf("Unknown message parse_mode value: %d", m.Format))
-		}
-	}
 
 	tgUpdate := r.whc.Input().(tgWebhookUpdateProvider).TgUpdate()
 
@@ -166,7 +172,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 				photoConfig.ChatID = tgUpdate.Chat().ID
 			}
 			if photoConfig.Caption != "" {
-				photoConfig.ParseMode = parseMode()
+				photoConfig.ParseMode = telegramParseMode(m.Format)
 			}
 			sendable = (tgbotapi.PhotoConfig)(photoConfig)
 		default:
@@ -229,7 +235,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 
 			createEditMessage := func() *tgbotapi.EditMessageTextConfig {
 				editMessageTextConfig := tgbotapi.NewEditMessageText(chatID, messageID, inlineMessageID, m.Text)
-				editMessageTextConfig.ParseMode = parseMode()
+				editMessageTextConfig.ParseMode = telegramParseMode(m.Format)
 				editMessageTextConfig.DisableWebPagePreview = m.DisableWebPagePreview
 				sendable = editMessageTextConfig
 				return editMessageTextConfig
@@ -246,6 +252,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 				case *tgbotapi.ReplyKeyboardMarkup, *tgbotapi.ReplyKeyboardHide:
 					messageConfig := tgbotapi.NewMessage(chatID, m.Text)
 					messageConfig.ReplyMarkup = kb
+					configureTelegramTextMessage(messageConfig, m)
 					sendable = messageConfig
 				default:
 					err = fmt.Errorf("unknown keyboard type %T(%v)", kb.KeyboardType(), kb)
@@ -262,13 +269,10 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 		if m.ToChat != nil {
 			messageConfig.ChatID = int64(m.ToChat.(botmsg.ChatIntID))
 		}
-		messageConfig.DisableWebPagePreview = m.DisableWebPagePreview
-		messageConfig.DisableNotification = m.DisableNotification
+		configureTelegramTextMessage(messageConfig, m)
 		if m.Keyboard != nil {
 			messageConfig.ReplyMarkup = getTelegramKeyboard(m.Keyboard)
 		}
-
-		messageConfig.ParseMode = parseMode()
 
 		sendable = messageConfig
 	} else {
