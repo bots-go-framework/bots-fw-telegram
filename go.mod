@@ -8,12 +8,12 @@ go 1.25
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.14.8
-	github.com/bots-go-framework/bots-fw v0.72.2-0.20260716104613-9c3a6ede68e9
-	github.com/bots-go-framework/bots-fw-store v0.11.0
+	github.com/bots-go-framework/bots-fw v0.75.5
+	github.com/bots-go-framework/bots-fw-store v0.11.1
 	github.com/bots-go-framework/bots-fw-telegram-models v0.3.69
-	github.com/bots-go-framework/bots-go-core v0.2.4
-	github.com/dal-go/dalgo v0.62.13
-	github.com/strongo/i18n v0.8.14
+	github.com/bots-go-framework/bots-go-core v0.2.5
+	github.com/dal-go/dalgo v0.62.15
+	github.com/strongo/i18n v0.8.15
 	github.com/strongo/logus v0.4.1
 	go.uber.org/mock v0.6.0
 )
@@ -27,6 +27,6 @@ require (
 	github.com/strongo/random v0.0.1 // indirect
 	github.com/strongo/slice v0.3.5 // indirect
 	github.com/strongo/strongoapp v0.31.43 // indirect
-	github.com/strongo/validation v0.0.9 // indirect
+	github.com/strongo/validation v0.0.10 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 )
