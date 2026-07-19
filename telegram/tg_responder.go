@@ -82,12 +82,6 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 	default:
 		panic(fmt.Sprintf("Unknown channel: [%v]. Expected either 'https' or 'response'.", channel))
 	}
-	if channel != botsfw.BotAPISendMessageOverHTTPS {
-		logus.Debugf(ctx, "Rewriting sending channel from %s to %s", channel, botsfw.BotAPISendMessageOverHTTPS)
-		channel = botsfw.BotAPISendMessageOverHTTPS
-	}
-	//ctx := tc.Context()
-
 	var sendable tgbotapi.Sendable
 
 	parseMode := func() string {
