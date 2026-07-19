@@ -236,6 +236,12 @@ func TestGetReplyKeyboard(t *testing.T) {
 }
 
 func TestGetTelegramKeyboard(t *testing.T) {
+	t.Run("NilKeyboard", func(t *testing.T) {
+		if result := getTelegramKeyboard(nil); result != nil {
+			t.Errorf("Expected nil keyboard, got %T", result)
+		}
+	})
+
 	t.Run("DirectTelegramKeyboard", func(t *testing.T) {
 		// Test when a Telegram keyboard is passed directly
 		tgKeyboard := tgbotapi.NewInlineKeyboardMarkup(

@@ -353,6 +353,12 @@ func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotap
 }
 
 func getTelegramKeyboard(keyboard botkb.Keyboard) tgbotapi.Keyboard {
+	// A text-only edit has no reply markup. The responder intentionally calls
+	// this helper for both text-only and keyboard-bearing edits, so nil must be
+	// represented as a missing Telegram keyboard rather than a programmer error.
+	if keyboard == nil {
+		return nil
+	}
 	if kb, ok := keyboard.(tgbotapi.Keyboard); ok {
 		return kb
 	}
