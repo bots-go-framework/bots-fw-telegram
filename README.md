@@ -2,6 +2,16 @@
 
 Telegram module for Strongo bots framework
 
+## Persistence
+
+This module has no DALgo dependency. Construct the webhook handler with a
+`ChatInstanceStore`; DALgo users can inject the implementation from
+[`bots-fw-telegram-dalgo`](https://github.com/bots-go-framework/bots-fw-telegram-dalgo).
+It keeps the existing `botPlatforms/telegram/chatInstances` records unchanged.
+Core identity/chat persistence is supplied separately through each bot's
+`botsfwstore.StateStore`; see the framework
+[migration guide](https://github.com/bots-go-framework/bots-fw/blob/main/PERSISTENCE.md).
+
 <!-- dev-approach:v1 -->
 ## Our approach to development
 
@@ -10,7 +20,6 @@ We build with our own tooling:
 - **[SpecScore](https://specscore.md)** — specify requirements as `SpecScore.md` artifacts
 - **[SpecStudio](https://specscore.studio)** — author & manage specs across their lifecycle
 - **[inGitDB](https://ingitdb.com)** — store structured data in Git where applicable
-- **[DALgo](https://dalgo.io)** — data access layer for Go
 - **[cover100.dev](https://cover100.dev)** — drive toward 100% test coverage
 - **[DataTug](https://datatug.io)** — query & explore data
 <!-- /dev-approach -->

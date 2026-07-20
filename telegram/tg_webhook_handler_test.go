@@ -3,7 +3,7 @@ package telegram
 import (
 	"bytes"
 	"context"
-	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
+	"github.com/bots-go-framework/bots-fw-telegram-models/botsfwtgmodels"
 	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/bots-go-framework/bots-fw/mocks/mock_botsfw"
@@ -13,6 +13,15 @@ import (
 	"net/http/httptest"
 	"testing"
 )
+
+type testChatInstanceStore struct{}
+
+func (testChatInstanceStore) Get(context.Context, string, string) (botsfwtgmodels.TgChatInstanceData, bool, error) {
+	return nil, false, nil
+}
+func (testChatInstanceStore) Save(context.Context, string, string, botsfwtgmodels.TgChatInstanceData) error {
+	return nil
+}
 
 func TestNewTelegramWebhookHandler(t *testing.T) {
 	defer func() {
@@ -36,10 +45,7 @@ func TestTelegramWebhookHandler_Handle(t *testing.T) {
 		var translatorProvider botsfw.TranslatorProvider = func(c context.Context) i18n.Translator {
 			return nil
 		}
-		setAppUserFields := func(botsfwmodels.AppUserData, botinput.Sender) error {
-			return nil
-		}
-		handler := NewTelegramWebhookHandler(botContextProvider, translatorProvider, setAppUserFields)
+		handler := NewTelegramWebhookHandler(botContextProvider, translatorProvider, testChatInstanceStore{})
 		var r http.Request
 		r.Method = "POST"
 

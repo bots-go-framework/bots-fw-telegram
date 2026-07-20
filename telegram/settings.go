@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"github.com/bots-go-framework/bots-fw-store/botsfwstore"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/bots-go-framework/bots-fw/botsfwconst"
 	"github.com/strongo/i18n"
@@ -12,10 +13,9 @@ func NewTelegramBot(
 	profile botsfw.BotProfile,
 	code, token, paymentTestToken, paymentToken, gaToken string,
 	locale i18n.Locale,
-	getDatabase botsfw.DbGetter,
-	getAppUser botsfw.AppUserGetter,
+	store botsfwstore.StateStore,
 ) botsfw.BotSettings {
-	settings := botsfw.NewBotSettings(botsfwconst.PlatformTelegram, environment, profile, code, "", token, gaToken, locale, getDatabase, getAppUser)
+	settings := botsfw.NewBotSettings(botsfwconst.PlatformTelegram, environment, profile, code, "", token, gaToken, locale, store)
 	settings.PaymentTestToken = paymentTestToken
 	settings.PaymentToken = paymentToken
 	return settings
