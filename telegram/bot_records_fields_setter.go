@@ -7,27 +7,12 @@ import (
 	"github.com/bots-go-framework/bots-fw/botsfw"
 )
 
-func NewBotRecordsFieldsSetter(
-	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botinput.Sender) error,
-) botsfw.BotRecordsFieldsSetter {
-	if setAppUserFields == nil {
-		panic("setAppUserFields is nil")
-	}
-	return tgBotRecordsFieldsSetter{
-		setAppUserFields: setAppUserFields,
-	}
-}
+func NewBotRecordsFieldsSetter() botsfw.BotRecordsFieldsSetter { return tgBotRecordsFieldsSetter{} }
 
-type tgBotRecordsFieldsSetter struct {
-	setAppUserFields func(appUser botsfwmodels.AppUserData, sender botinput.Sender) error
-}
+type tgBotRecordsFieldsSetter struct{}
 
 func (b tgBotRecordsFieldsSetter) Platform() string {
 	return string(PlatformID)
-}
-
-func (b tgBotRecordsFieldsSetter) SetAppUserFields(appUser botsfwmodels.AppUserData, sender botinput.Sender) error {
-	return b.setAppUserFields(appUser, sender)
 }
 
 func (b tgBotRecordsFieldsSetter) SetBotUserFields(botUser botsfwmodels.PlatformUserData, sender botinput.Sender, botID, botUserID, appUserID string) error {

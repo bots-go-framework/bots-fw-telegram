@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
-	"github.com/bots-go-framework/bots-fw-store/botsfwmodels"
 	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botmsg"
 	"github.com/bots-go-framework/bots-fw/botsfw"
@@ -39,14 +38,15 @@ type tgWebhookHandler struct {
 	botsfw.WebhookHandlerBase
 	botContextProvider botsfw.BotContextProvider
 	//botsBy botsfw.BotSettingsProvider
-	pathPrefix string
+	pathPrefix    string
+	chatInstances ChatInstanceStore
 }
 
 // NewTelegramWebhookHandler creates new Telegram webhooks handler
 func NewTelegramWebhookHandler(
 	botContextProvider botsfw.BotContextProvider,
 	translatorProvider botsfw.TranslatorProvider,
-	setAppUserFields func(botsfwmodels.AppUserData, botinput.Sender) error, // TODO: Move to botsfwdal.AppUserDal ?
+	chatInstances ChatInstanceStore,
 ) botsfw.WebhookHandler {
 	if botContextProvider == nil {
 		panic("botContextProvider == nil")
@@ -54,17 +54,16 @@ func NewTelegramWebhookHandler(
 	if translatorProvider == nil {
 		panic("translatorProvider == nil")
 	}
-	if setAppUserFields == nil {
-		panic("setAppUserFields == nil")
+	if chatInstances == nil {
+		panic("chatInstances == nil")
 	}
 	return tgWebhookHandler{
 		botContextProvider: botContextProvider,
+		chatInstances:      chatInstances,
 		WebhookHandlerBase: botsfw.WebhookHandlerBase{
-			BotPlatform:        platform{},
-			TranslatorProvider: translatorProvider,
-			RecordsFieldsSetter: tgBotRecordsFieldsSetter{
-				setAppUserFields: setAppUserFields,
-			},
+			BotPlatform:         platform{},
+			TranslatorProvider:  translatorProvider,
+			RecordsFieldsSetter: tgBotRecordsFieldsSetter{},
 		},
 	}
 }
@@ -317,7 +316,7 @@ func (h tgWebhookHandler) unmarshalUpdate(_ context.Context, content []byte) (up
 func (h tgWebhookHandler) CreateWebhookContext(
 	args botsfw.CreateWebhookContextArgs,
 ) (botsfw.WebhookContext, error) {
-	return newTelegramWebhookContext(args, args.WebhookInput.(TgWebhookInput), h.RecordsFieldsSetter)
+	return newTelegramWebhookContext(args, args.WebhookInput.(TgWebhookInput), h.RecordsFieldsSetter, h.chatInstances)
 }
 
 func (h tgWebhookHandler) GetResponder(w http.ResponseWriter, whc botsfw.WebhookContext) botsfw.WebhookResponder {
