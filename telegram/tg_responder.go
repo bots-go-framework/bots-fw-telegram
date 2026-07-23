@@ -175,6 +175,8 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 				photoConfig.ParseMode = telegramParseMode(m.Format)
 			}
 			sendable = (tgbotapi.PhotoConfig)(photoConfig)
+		case botmsg.TypeChatAction:
+			sendable = chatActionSendable(m.BotMessage.(botmsg.ChatAction), tgUpdate.Chat().ID)
 		default:
 			//var ok bool
 			//sendable, ok = m.BotMessage.(tgbotapi.Sendable)
