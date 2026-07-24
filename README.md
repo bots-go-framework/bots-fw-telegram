@@ -89,10 +89,16 @@ it chooses (e.g. `/bot`):
   reflect the **origin's** hostname, not the public-facing one you called. Check what `Host` your origin
   actually receives before registering through a proxied domain, or call `set-webhook` directly on the
   origin's own hostname if you want predictability.
-- Each bot's `BotSettings.WebhookSecretToken` (if configured) is sent as Telegram's `secret_token`, and
-  incoming webhook requests are checked against it (`X-Telegram-Bot-Api-Secret-Token` header). Registering
-  without one leaves that bot's webhook unauthenticated — anyone who learns/guesses the webhook URL can
-  POST forged updates. A warning is logged (not fatal) when this happens.
+- **Webhook authentication (SEC-4).** The `secret_token` registered with Telegram and verified on every
+  incoming request (`X-Telegram-Bot-Api-Secret-Token` header) is resolved per bot as: the bot's own
+  `BotSettings.WebhookSecretToken` if set, otherwise the **fleet-wide `TELEGRAM_WEBHOOK_SECRET`** env var.
+  So a single provisioned `TELEGRAM_WEBHOOK_SECRET` authenticates **every** bot's webhook with no per-bot
+  configuration; a bot needing an isolated secret can still override it via `WebhookSecretToken`. Once a
+  secret resolves, verification is strict — a missing or wrong header is rejected. If neither is set, the
+  webhook is unauthenticated (anyone who learns the URL can POST forged updates); a warning is logged on
+  every request (not fatal, unless `BotSettings.RequireWebhookSecret` is set, which makes it a hard reject).
+  After provisioning the secret, re-register each bot's webhook (`set-webhook`) so Telegram starts sending
+  the header.
 - Bot tokens are resolved from `<PLATFORM>_BOT_TOKEN_<CODE>` env vars by default (e.g.
   `TELEGRAM_BOT_TOKEN_MYBOT` for a bot registered with code `MyBot`), unless the consuming app
   wires a token explicitly.
