@@ -39,8 +39,28 @@ type tgWebhookHandler struct {
 	botsfw.WebhookHandlerBase
 	botContextProvider botsfw.BotContextProvider
 	//botsBy botsfw.BotSettingsProvider
-	pathPrefix    string
-	chatInstances ChatInstanceStore
+	pathPrefix string
+	// adminPathPrefix, when non-empty, is the prefix the admin-only endpoints
+	// (set-webhook, test) mount under instead of pathPrefix — see WithAdminPathPrefix.
+	adminPathPrefix string
+	chatInstances   ChatInstanceStore
+}
+
+// TgWebhookHandlerOption configures a Telegram webhook handler at construction
+// time (functional-options pattern).
+type TgWebhookHandlerOption func(*tgWebhookHandler)
+
+// WithAdminPathPrefix mounts the admin-only endpoints (set-webhook and the test
+// route) under adminPrefix instead of the public webhook pathPrefix, so a host can
+// gate that prefix with admin auth. set-webhook (re-)points a bot's live webhook
+// using the bot's own token, so on a publicly reachable origin it must NOT be open.
+//
+// The public /tg/hook endpoint (which Telegram POSTs to) and the hook URL that
+// set-webhook registers with Telegram are unaffected — both keep using the public
+// pathPrefix. An empty adminPrefix (the default) preserves the legacy behaviour of
+// mounting every endpoint under the public pathPrefix.
+func WithAdminPathPrefix(adminPrefix string) TgWebhookHandlerOption {
+	return func(h *tgWebhookHandler) { h.adminPathPrefix = adminPrefix }
 }
 
 // NewTelegramWebhookHandler creates new Telegram webhooks handler
@@ -48,6 +68,7 @@ func NewTelegramWebhookHandler(
 	botContextProvider botsfw.BotContextProvider,
 	translatorProvider botsfw.TranslatorProvider,
 	chatInstances ChatInstanceStore,
+	opts ...TgWebhookHandlerOption,
 ) botsfw.WebhookHandler {
 	if botContextProvider == nil {
 		panic("botContextProvider == nil")
@@ -58,7 +79,7 @@ func NewTelegramWebhookHandler(
 	if chatInstances == nil {
 		panic("chatInstances == nil")
 	}
-	return tgWebhookHandler{
+	h := tgWebhookHandler{
 		botContextProvider: botContextProvider,
 		chatInstances:      chatInstances,
 		WebhookHandlerBase: botsfw.WebhookHandlerBase{
@@ -67,6 +88,10 @@ func NewTelegramWebhookHandler(
 			RecordsFieldsSetter: tgBotRecordsFieldsSetter{},
 		},
 	}
+	for _, opt := range opts {
+		opt(&h)
+	}
+	return h
 }
 
 func (h tgWebhookHandler) HandleUnmatched(whc botsfw.WebhookContext) (m botmsg.MessageFromBot) {
@@ -90,10 +115,20 @@ func (h tgWebhookHandler) RegisterHttpHandlers(driver botsfw.WebhookDriver, host
 
 	pathPrefix = strings.TrimSuffix(pathPrefix, "/")
 	h.pathPrefix = pathPrefix
+
+	// Admin-only endpoints (set-webhook, test) mount under adminPathPrefix when set,
+	// so a host can gate that prefix with admin auth; otherwise they fall back to the
+	// public pathPrefix (legacy behaviour). The public /tg/hook endpoint and the hook
+	// URL that set-webhook registers always use the public pathPrefix.
+	adminPrefix := strings.TrimSuffix(h.adminPathPrefix, "/")
+	if adminPrefix == "" {
+		adminPrefix = pathPrefix
+	}
+
 	//router.POST(pathPrefix+"/telegram/webhook", h.HandleWebhookRequest) // TODO: Remove obsolete
 	router.Handle("POST", pathPrefix+"/tg/hook", h.HandleWebhookRequest)
-	router.Handle("GET", pathPrefix+"/tg/set-webhook", h.SetWebhook)
-	router.Handle("GET", pathPrefix+"/tg/test/time-now", httpHandlerTestTimeNow)
+	router.Handle("GET", adminPrefix+"/tg/set-webhook", h.SetWebhook)
+	router.Handle("GET", adminPrefix+"/tg/test/time-now", httpHandlerTestTimeNow)
 }
 
 func httpHandlerTestTimeNow(w http.ResponseWriter, r *http.Request) {
