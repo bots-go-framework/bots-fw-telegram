@@ -49,6 +49,7 @@ func TestVerifyWebhookSecretToken_MissingHeaderRejectedWhenSecretConfigured(t *t
 }
 
 func TestVerifyWebhookSecretToken_NoSecretConfigured_CompatAllowsByDefault(t *testing.T) {
+	withFleetWebhookSecret(t, "") // no fleet-wide secret either, so nothing resolves
 	settings := &botsfw.BotSettings{Code: "somebot"} // WebhookSecretToken left empty on purpose
 	req := newWebhookRequest(t, "")
 	if err := verifyWebhookSecretToken(context.Background(), req, settings); err != nil {
@@ -57,6 +58,7 @@ func TestVerifyWebhookSecretToken_NoSecretConfigured_CompatAllowsByDefault(t *te
 }
 
 func TestVerifyWebhookSecretToken_NoSecretConfigured_RequireWebhookSecretRejects(t *testing.T) {
+	withFleetWebhookSecret(t, "") // no fleet-wide secret, so the require-but-unconfigured path is exercised
 	settings := &botsfw.BotSettings{Code: "somebot", RequireWebhookSecret: true} // no secret set, but required
 	req := newWebhookRequest(t, "")
 	err := verifyWebhookSecretToken(context.Background(), req, settings)

@@ -13,6 +13,7 @@ import (
 	"github.com/strongo/logus"
 	"io"
 	"net/http"
+	"os"
 	"runtime/debug"
 	"strings"
 	"time"
@@ -167,11 +168,12 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 		"refunded_payment",
 		"purchased_paid_media",
 	}
-	if webhookConfig.SecretToken = botContext.BotSettings.WebhookSecretToken; webhookConfig.SecretToken == "" {
-		// SEC-4: registering a webhook without a secret_token leaves it unauthenticated -
-		// verifyWebhookSecretToken will log a warning (or reject, if RequireWebhookSecret is
-		// set) on every incoming request until BotSettings.WebhookSecretToken is configured
-		// for this bot and the webhook is re-registered.
+	if webhookConfig.SecretToken = effectiveWebhookSecret(botContext.BotSettings); webhookConfig.SecretToken == "" {
+		// SEC-4: neither a per-bot BotSettings.WebhookSecretToken nor the fleet-wide
+		// TELEGRAM_WEBHOOK_SECRET (see effectiveWebhookSecret) is set, so this webhook is
+		// registered without a secret_token and stays unauthenticated - verifyWebhookSecretToken
+		// will log a warning (or reject, if RequireWebhookSecret is set) on every incoming
+		// request until a secret is configured and the webhook is re-registered.
 		logus.Warningf(ctx, "SEC-4 WARNING: registering webhook for bot %q WITHOUT a secret_token - its webhook will be unauthenticated", botCode)
 	}
 	var response tgbotapi.APIResponse
@@ -193,24 +195,50 @@ Parametes:
 	}
 }
 
+// EnvTelegramWebhookSecret is the environment variable holding the single, fleet-wide
+// Telegram webhook secret_token. It is applied to EVERY bot that does not set its own
+// BotSettings.WebhookSecretToken, so one provisioned secret authenticates the whole
+// fleet's webhooks with no per-bot configuration (SEC-4). A bot that needs an isolated
+// secret can still override it via BotSettings.WebhookSecretToken.
+const EnvTelegramWebhookSecret = "TELEGRAM_WEBHOOK_SECRET"
+
+// resolveFleetWebhookSecret reads the fleet-wide webhook secret. Indirected through a
+// package var so tests can substitute a value without mutating the process environment.
+var resolveFleetWebhookSecret = func() string { return os.Getenv(EnvTelegramWebhookSecret) }
+
+// effectiveWebhookSecret returns the secret_token to register (SetWebhook) and to verify
+// for a bot: the bot's own BotSettings.WebhookSecretToken when set, otherwise the
+// fleet-wide TELEGRAM_WEBHOOK_SECRET. It returns "" only when neither is configured, in
+// which case the webhook stays in the unauthenticated compat posture (see
+// verifyWebhookSecretToken). This is the single, framework-owned standard: hosts provision
+// one secret and every bot is authenticated uniformly.
+func effectiveWebhookSecret(settings *botsfw.BotSettings) string {
+	if settings != nil && settings.WebhookSecretToken != "" {
+		return settings.WebhookSecretToken
+	}
+	return resolveFleetWebhookSecret()
+}
+
 // verifyWebhookSecretToken checks the X-Telegram-Bot-Api-Secret-Token header Telegram sends
-// on every webhook call against the secret configured for this bot (see SEC-4: without this
+// on every webhook call against the secret resolved for this bot (see SEC-4: without this
 // check, anyone who knows/guesses a bot's webhook URL can POST forged updates and be treated
 // as any Telegram user, since botID/`?id=` is a public, non-secret value - the bot's own
-// @username).
+// @username). The expected secret is effectiveWebhookSecret(settings): the per-bot
+// WebhookSecretToken if set, else the fleet-wide TELEGRAM_WEBHOOK_SECRET.
 //
-// Compat posture: if no secret is configured for the bot (settings.WebhookSecretToken == ""),
-// this does NOT block the request - existing deployments that haven't rolled out a secret yet
-// keep working - but it logs a high-visibility warning on every single request so the gap is
-// impossible to miss in logs, unless settings.RequireWebhookSecret is set, in which case an
-// unconfigured secret is treated as a hard misconfiguration and the request is rejected.
-// Once a secret IS configured, verification is always strictly enforced.
+// Compat posture: if no secret resolves for the bot - neither a per-bot WebhookSecretToken
+// nor the fleet-wide TELEGRAM_WEBHOOK_SECRET - this does NOT block the request (existing
+// deployments that haven't rolled out a secret yet keep working) but logs a high-visibility
+// warning on every single request so the gap is impossible to miss, unless
+// settings.RequireWebhookSecret is set, in which case an unconfigured secret is a hard
+// misconfiguration and the request is rejected. Once a secret IS configured (per-bot or
+// fleet-wide), verification is always strictly enforced.
 func verifyWebhookSecretToken(ctx context.Context, r *http.Request, settings *botsfw.BotSettings) error {
 	if settings == nil { // defensive: should not happen for a bot resolved via BotContextProvider
 		logus.Warningf(ctx, "SEC-4 WARNING: BotSettings is nil, cannot verify %s header - treating as unauthenticated", TelegramWebhookSecretTokenHeader)
 		return nil
 	}
-	expected := settings.WebhookSecretToken
+	expected := effectiveWebhookSecret(settings)
 	if expected == "" {
 		if settings.RequireWebhookSecret {
 			logus.Criticalf(ctx,
