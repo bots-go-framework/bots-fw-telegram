@@ -241,6 +241,24 @@ const EnvTelegramWebhookSecret = "TELEGRAM_WEBHOOK_SECRET"
 // package var so tests can substitute a value without mutating the process environment.
 var resolveFleetWebhookSecret = func() string { return os.Getenv(EnvTelegramWebhookSecret) }
 
+// EnvTelegramRequireWebhookSecret, when truthy ("true"/"1"/"yes"/"on"), makes a missing
+// webhook secret a HARD FAILURE fleet-wide: if no secret resolves for a bot (neither a
+// per-bot WebhookSecretToken nor the fleet-wide TELEGRAM_WEBHOOK_SECRET), the webhook is
+// rejected rather than allowed with a warning. It is the fleet-wide equivalent of the
+// per-bot BotSettings.RequireWebhookSecret — set it in production so an accidentally-unset
+// secret fails CLOSED (bots reject) instead of silently serving unauthenticated webhooks.
+const EnvTelegramRequireWebhookSecret = "TELEGRAM_WEBHOOK_REQUIRE_SECRET"
+
+// resolveRequireWebhookSecret reports whether a webhook secret is required fleet-wide.
+// Indirected through a package var so tests can override without touching the environment.
+var resolveRequireWebhookSecret = func() bool {
+	switch strings.ToLower(strings.TrimSpace(os.Getenv(EnvTelegramRequireWebhookSecret))) {
+	case "true", "1", "yes", "on":
+		return true
+	}
+	return false
+}
+
 // effectiveWebhookSecret returns the secret_token to register (SetWebhook) and to verify
 // for a bot: the bot's own BotSettings.WebhookSecretToken when set, otherwise the
 // fleet-wide TELEGRAM_WEBHOOK_SECRET. It returns "" only when neither is configured, in
@@ -264,10 +282,11 @@ func effectiveWebhookSecret(settings *botsfw.BotSettings) string {
 // Compat posture: if no secret resolves for the bot - neither a per-bot WebhookSecretToken
 // nor the fleet-wide TELEGRAM_WEBHOOK_SECRET - this does NOT block the request (existing
 // deployments that haven't rolled out a secret yet keep working) but logs a high-visibility
-// warning on every single request so the gap is impossible to miss, unless
-// settings.RequireWebhookSecret is set, in which case an unconfigured secret is a hard
-// misconfiguration and the request is rejected. Once a secret IS configured (per-bot or
-// fleet-wide), verification is always strictly enforced.
+// warning on every single request so the gap is impossible to miss, unless a secret is
+// required (per-bot settings.RequireWebhookSecret or fleet-wide TELEGRAM_WEBHOOK_REQUIRE_SECRET),
+// in which case an unconfigured secret is a hard misconfiguration and the request is
+// rejected (fail closed). Once a secret IS configured (per-bot or fleet-wide), verification
+// is always strictly enforced.
 func verifyWebhookSecretToken(ctx context.Context, r *http.Request, settings *botsfw.BotSettings) error {
 	if settings == nil { // defensive: should not happen for a bot resolved via BotContextProvider
 		logus.Warningf(ctx, "SEC-4 WARNING: BotSettings is nil, cannot verify %s header - treating as unauthenticated", TelegramWebhookSecretTokenHeader)
@@ -275,10 +294,10 @@ func verifyWebhookSecretToken(ctx context.Context, r *http.Request, settings *bo
 	}
 	expected := effectiveWebhookSecret(settings)
 	if expected == "" {
-		if settings.RequireWebhookSecret {
+		if settings.RequireWebhookSecret || resolveRequireWebhookSecret() {
 			logus.Criticalf(ctx,
-				"SEC-4: rejecting Telegram webhook request for bot %q: RequireWebhookSecret is true but no WebhookSecretToken is configured",
-				settings.Code)
+				"SEC-4: rejecting Telegram webhook request for bot %q: a webhook secret is required (per-bot RequireWebhookSecret or fleet-wide %s) but none is configured (no per-bot WebhookSecretToken, no %s)",
+				settings.Code, EnvTelegramRequireWebhookSecret, EnvTelegramWebhookSecret)
 			return botsfw.ErrAuthFailed(fmt.Sprintf("webhook secret required but not configured for bot %q", settings.Code))
 		}
 		logus.Warningf(ctx,
