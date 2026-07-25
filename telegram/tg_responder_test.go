@@ -1,11 +1,13 @@
 package telegram
 
 import (
+	"context"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw/botmsg"
 	"github.com/bots-go-framework/bots-go-core/botkb"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -17,6 +19,17 @@ func TestConfigureTelegramTextMessage_PreservesHTMLParseMode(t *testing.T) {
 
 	if messageConfig.ParseMode != "HTML" {
 		t.Errorf("ParseMode = %q, want HTML", messageConfig.ParseMode)
+	}
+}
+
+func TestDeleteMessage_InvalidIDDoesNotExposeValue(t *testing.T) {
+	const privateMessageID = "PRIVATE-MESSAGE-ID"
+	err := (tgWebhookResponder{}).DeleteMessage(context.Background(), privateMessageID)
+	if err == nil {
+		t.Fatal("DeleteMessage() error = nil, want invalid ID error")
+	}
+	if strings.Contains(err.Error(), privateMessageID) {
+		t.Fatalf("DeleteMessage() error exposes message ID: %v", err)
 	}
 }
 

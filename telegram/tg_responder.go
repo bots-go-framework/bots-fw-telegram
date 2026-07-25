@@ -1,9 +1,7 @@
 package telegram
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
@@ -44,7 +42,7 @@ func configureTelegramTextMessage(messageConfig *tgbotapi.MessageConfig, m botms
 func (r tgWebhookResponder) DeleteMessage(ctx context.Context, messageID string) (err error) {
 	var msgID int
 	if msgID, err = strconv.Atoi(messageID); err != nil {
-		err = fmt.Errorf("failed to parse messageID='%s' as int: %w", messageID, err)
+		err = errors.New("failed to parse Telegram message ID as integer")
 		return
 	}
 	chatID := r.whc.chatID
@@ -80,7 +78,6 @@ func (r tgWebhookResponder) DeleteMessage(ctx context.Context, messageID string)
 	botContext := r.whc.BotContext()
 	httpClient := botContext.BotHost.GetHTTPClient(ctx)
 	botAPI := tgbotapi.NewBotAPIWithClient(botContext.BotSettings.Token, httpClient)
-	botAPI.EnableDebug(ctx)
 	_, err = botAPI.DeleteMessage(chatID, msgID)
 	return
 }
@@ -94,7 +91,15 @@ func newTgWebhookResponder(w http.ResponseWriter, whc *tgWebhookContext) tgWebho
 }
 
 func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFromBot, channel botmsg.BotAPISendMessageChannel) (resp botsfw.OnMessageSentResponse, err error) {
-	logus.Debugf(ctx, "tgWebhookResponder.SendMessage(channel=%v, isEdit=%v)\nm: %+v", channel, m.IsEdit, m)
+	logus.Debugf(
+		ctx,
+		"Telegram response prepared: channel=%q, is_edit=%t, text_bytes=%d, has_keyboard=%t, bot_message_type=%T",
+		channel,
+		m.IsEdit,
+		len(m.Text),
+		m.Keyboard != nil,
+		m.BotMessage,
+	)
 	switch channel {
 	case botsfw.BotAPISendMessageOverHTTPS, botsfw.BotAPISendMessageOverResponse:
 	// Known channels
@@ -201,7 +206,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 				chatID = 0
 				messageID = 0
 			default:
-				err = fmt.Errorf("unknown EditMessageUID type %T(%v)", m.EditMessageUID, m.EditMessageUID)
+				err = fmt.Errorf("unknown EditMessageUID type %T", m.EditMessageUID)
 				return
 			case ChatMessageUID, *ChatMessageUID:
 				inlineMessageID = ""
@@ -214,7 +219,13 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 				}
 			}
 		}
-		logus.Debugf(ctx, "Edit message => inlineMessageID: %v, chatID: %d, messageID: %d", inlineMessageID, chatID, messageID)
+		logus.Debugf(
+			ctx,
+			"Telegram edit target resolved: has_inline_id=%t, has_chat_id=%t, has_message_id=%t",
+			inlineMessageID != "",
+			chatID != 0,
+			messageID != 0,
+		)
 		if inlineMessageID == "" && chatID == 0 && messageID == 0 {
 			err = errors.New("can't edit Telegram message as inlineMessageID is empty && chatID == 0 && messageID == 0")
 			return
@@ -229,7 +240,7 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 				msg.ReplyMarkup = kb
 				sendable = msg
 			default:
-				err = fmt.Errorf("unknown keyboard type %T(%v)", keyboard.KeyboardType(), keyboard)
+				err = fmt.Errorf("unknown Telegram keyboard type %T", keyboard)
 				return
 			}
 		} else if m.Text != "" {
@@ -257,12 +268,12 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 					configureTelegramTextMessage(messageConfig, m)
 					sendable = messageConfig
 				default:
-					err = fmt.Errorf("unknown keyboard type %T(%v)", kb.KeyboardType(), kb)
+					err = fmt.Errorf("unknown Telegram keyboard type %T", kb)
 					return
 				}
 			}
 		} else {
-			err = fmt.Errorf("can't edit telegram message as got unknown output: %v", m)
+			err = errors.New("can't edit Telegram message without text or keyboard")
 			panic(err)
 			// return
 		}
@@ -283,36 +294,30 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 			logus.Debugf(ctx, "No response to WebhookInputInlineQuery")
 		case botinput.TypeChosenInlineResult: // pass
 		default:
-			var mJson string
-			if mJson, err = encodeToJsonString(m); err != nil {
-				logus.Errorf(ctx, "Failed to marshal MessageFromBot to JSON: %v", err)
-			} else {
-				inputTypeName := inputType.String()
-				logus.Debugf(ctx, "Not inline answer, Not inline, Not edit inline, Text is empty. r.whc.InputType(): %v\nMessageFromBot:\n%v", inputTypeName, mJson)
-			}
+			logus.Debugf(
+				ctx,
+				"Telegram response omitted: input_type=%v, is_edit=%t, has_keyboard=%t, bot_message_type=%T",
+				inputType,
+				m.IsEdit,
+				m.Keyboard != nil,
+				m.BotMessage,
+			)
 		}
 		return
 	}
 
-	var sendableStr string
-
-	if sendableStr, err = encodeToJsonString(sendable); err != nil {
-		logus.Errorf(ctx, "Failed to marshal message config to json: %v\n\tsendable: %v", err, sendable)
-		return resp, err
-	}
-	logus.Debugf(ctx, "Sending to Telegram, Text: %v\n------------------------\nAs JSON: %v", m.Text, sendableStr)
-
-	//if values, err := sendable.Values(); err != nil {
-	//	logus.Errorf(ctx, "Failed to marshal message config to url.Values: %v", err)
-	//	return resp, err
-	//} else {
-	//	logus.Debugf(ctx, "Message for sending to Telegram as URL values: %v", values)
-	//}
+	logus.Debugf(
+		ctx,
+		"Sending Telegram response: channel=%q, sendable_type=%T, text_bytes=%d",
+		channel,
+		sendable,
+		len(m.Text),
+	)
 
 	switch channel {
 	case botsfw.BotAPISendMessageOverResponse:
 		if _, err = tgbotapi.ReplyToResponse(sendable, r.w); err != nil {
-			logus.Errorf(ctx, "Failed to send message to Telegram via HTTP response: %v", err)
+			logus.Errorf(ctx, "Failed to send message to Telegram via HTTP response: error_type=%T", err)
 		}
 		return resp, err
 	case botsfw.BotAPISendMessageOverHTTPS:
@@ -334,22 +339,13 @@ func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotap
 		botContext.BotSettings.Token,
 		botContext.BotHost.GetHTTPClient(ctx),
 	)
-	botAPI.EnableDebug(ctx)
 
 	if message, err = botAPI.Send(chattable); err != nil {
 		return
 	} else if message.MessageID != 0 {
-		logus.Debugf(ctx, "Telegram API: MessageID=%v", message.MessageID)
+		logus.Debugf(ctx, "Telegram API response received: has_message_id=true")
 	} else {
-		var buf bytes.Buffer
-		encoder := json.NewEncoder(&buf)
-		encoder.SetIndent("", "\t")
-		encoder.SetEscapeHTML(false)
-		if err = encoder.Encode(chattable); err != nil {
-			logus.Warningf(ctx, "Telegram API response as raw: %v", message)
-		} else {
-			logus.Debugf(ctx, "Telegram API response as JSON: %v", string(buf.String()))
-		}
+		logus.Debugf(ctx, "Telegram API response received without message ID: sendable_type=%T", chattable)
 	}
 	return
 }
@@ -377,7 +373,7 @@ func getTelegramKeyboard(keyboard botkb.Keyboard) tgbotapi.Keyboard {
 			panic(fmt.Sprintf("keyboard.KeyboardType() returns unsupported type %v", kb.KeyboardType()))
 		}
 	default:
-		panic(fmt.Sprintf("keyboard is of unsupported type %v", keyboard))
+		panic(fmt.Sprintf("keyboard is of unsupported type %T", keyboard))
 	}
 }
 

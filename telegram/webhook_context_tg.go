@@ -49,7 +49,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 		logus.Debugf(ctx, "CreateOrUpdateTgChatInstance() => no chatInstanceID")
 	} else {
 		chatID := tgUpdate.CallbackQuery.Message.Chat.ID
-		logus.Debugf(ctx, "CreateOrUpdateTgChatInstance() => chatID: %v, chatInstanceID: %v", chatID, chatInstanceID)
+		logus.Debugf(ctx, "CreateOrUpdateTgChatInstance() => callback has chat and chat-instance identifiers")
 		if chatID == 0 {
 			return
 		}
@@ -76,7 +76,7 @@ func (twhc *tgWebhookContext) CreateOrUpdateTgChatInstance() (err error) {
 		} else { // Update if needed
 			logus.Debugf(ctx, "CreateOrUpdateTgChatInstance() => existing tg chat instance")
 			if tgChatInstanceId := chatInstanceData.GetTgChatID(); tgChatInstanceId != chatID {
-				err = fmt.Errorf("chatInstanceData.GetTgChatID():%d != chatID:%d", tgChatInstanceId, chatID)
+				err = fmt.Errorf("stored Telegram chat instance does not match callback chat")
 			} else if prefLang := chatInstanceData.GetPreferredLanguage(); prefLang != preferredLanguage {
 				chatInstanceData.SetPreferredLanguage(preferredLanguage)
 				changed = true
@@ -230,14 +230,14 @@ func (twhc *tgWebhookContext) NewTgMessage(text string) *tgbotapi.MessageConfig 
 	//logus.Infof(ctx, "NewTgMessage(): tc.update.Message.TgChat.ID: %v", chatID)
 	botChatID, err := twhc.BotChatID()
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("failed to resolve Telegram BotChatID: %T", err))
 	}
 	if botChatID == "" {
-		panic(fmt.Sprintf("Not able to send message as BotChatID() returned empty string. text: %v", text))
+		panic("not able to send Telegram message because BotChatID() returned an empty string")
 	}
 	botChatIntID, err := strconv.ParseInt(botChatID, 10, 64)
 	if err != nil {
-		panic(fmt.Sprintf("Not able to parse BotChatID(%v) as int: %v", botChatID, err))
+		panic(fmt.Sprintf("not able to parse Telegram BotChatID as integer: %T", err))
 	}
 	//tgbotapi.NewEditMessageText()
 	return tgbotapi.NewMessage(botChatIntID, text)
