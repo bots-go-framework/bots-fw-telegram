@@ -44,6 +44,7 @@ type tgWebhookHandler struct {
 	adminPathPrefix    string
 	chatInstances      ChatInstanceStore
 	responderTransform WebhookResponderTransform
+	routerResponderTransform WebhookResponderTransform
 }
 
 // TgWebhookHandlerOption configures a Telegram webhook handler at construction
@@ -64,6 +65,17 @@ func WithResponderTransform(transform WebhookResponderTransform) TgWebhookHandle
 		panic("transform == nil")
 	}
 	return func(h *tgWebhookHandler) { h.responderTransform = transform }
+}
+
+// WithRouterResponderTransform installs a transform used only for messages
+// returned through router dispatch. WebhookContext.Responder remains governed
+// by WithResponderTransform, so feature direct sends cannot obtain router-only
+// command authority.
+func WithRouterResponderTransform(transform WebhookResponderTransform) TgWebhookHandlerOption {
+	if transform == nil {
+		panic("transform == nil")
+	}
+	return func(h *tgWebhookHandler) { h.routerResponderTransform = transform }
 }
 
 // WithAdminPathPrefix mounts the admin-only endpoints (set-webhook and the test
@@ -419,9 +431,23 @@ func (h tgWebhookHandler) CreateWebhookContext(
 
 func (h tgWebhookHandler) GetResponder(w http.ResponseWriter, whc botsfw.WebhookContext) botsfw.WebhookResponder {
 	if twhc, ok := whc.(*tgWebhookContext); ok {
-		return h.installResponder(twhc, newTgWebhookResponder(w, twhc))
+		raw := botsfw.WebhookResponder(newTgWebhookResponder(w, twhc))
+		if h.routerResponderTransform != nil {
+			twhc.routerResponder = h.routerResponderTransform(twhc, raw)
+			if twhc.routerResponder == nil {
+				panic("Router WebhookResponderTransform returned nil")
+			}
+		}
+		return h.installResponder(twhc, raw)
 	}
 	panic(fmt.Sprintf("Expected tgWebhookContext, got: %T", whc))
+}
+
+func (h tgWebhookHandler) GetRouterResponder(whc botsfw.WebhookContext, responder botsfw.WebhookResponder) botsfw.WebhookResponder {
+	if twhc, ok := whc.(*tgWebhookContext); ok && twhc.routerResponder != nil {
+		return twhc.routerResponder
+	}
+	return responder
 }
 
 func (h tgWebhookHandler) installResponder(whc *tgWebhookContext, responder botsfw.WebhookResponder) botsfw.WebhookResponder {
