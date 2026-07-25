@@ -21,6 +21,7 @@ type tgWebhookContext struct {
 	//update         tgbotapi.Update // TODO: Consider removing?
 	//responseWriter http.ResponseWriter
 	responder botsfw.WebhookResponder
+	routerResponder botsfw.WebhookResponder
 	//whi          tgInput
 
 	// This 3 props are cache for getLocalAndChatIDByChatInstance()
