@@ -160,19 +160,10 @@ func NewTelegramWebhookInput(update *tgbotapi.Update, logRequest func()) (botinp
 		switch {
 
 		case update.ChannelPost != nil:
-			channelPost, err := encodeToJsonString(update.ChannelPost)
-			if err != nil {
-				panic(err)
-			}
-			return nil, fmt.Errorf("the ChannelPost is not supported at the moment: [%s]: %w", channelPost, botsfw.ErrNotImplemented)
+			return nil, fmt.Errorf("telegram ChannelPost is not supported: %w", botsfw.ErrNotImplemented)
 
 		case update.EditedChannelPost != nil:
-
-			editedChannelPost, err := encodeToJsonString(update.EditedChannelPost)
-			if err != nil {
-				panic(err)
-			}
-			return nil, fmt.Errorf("the EditedChannelPost is not supported at the moment: [%s]: %w", editedChannelPost, botsfw.ErrNotImplemented)
+			return nil, fmt.Errorf("telegram EditedChannelPost is not supported: %w", botsfw.ErrNotImplemented)
 		}
 	default:
 		return nil, fmt.Errorf("%w: %v", botsfw.ErrNotImplemented, inputType)

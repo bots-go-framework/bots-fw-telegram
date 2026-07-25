@@ -3,6 +3,8 @@ package telegram
 import (
 	"bytes"
 	"context"
+	"errors"
+	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw-telegram-models/botsfwtgmodels"
 	"github.com/bots-go-framework/bots-fw/botinput"
 	"github.com/bots-go-framework/bots-fw/botsfw"
@@ -11,6 +13,7 @@ import (
 	"go.uber.org/mock/gomock"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -114,6 +117,40 @@ func TestTelegramWebhookHandler_Handle(t *testing.T) {
 			t.Errorf("successfulPayment.GetPaymentProviderChargeID() = %v, want some_charge_id", "1234567890_12")
 		}
 	})
+}
+
+func TestNewTelegramWebhookInput_UnsupportedUpdateDoesNotExposePayload(t *testing.T) {
+	const privateText = "private message content that must not reach logs"
+	tests := []struct {
+		name   string
+		update *tgbotapi.Update
+	}{
+		{
+			name: "channel post",
+			update: &tgbotapi.Update{
+				UpdateID:    1,
+				ChannelPost: &tgbotapi.Message{Text: privateText},
+			},
+		},
+		{
+			name: "edited channel post",
+			update: &tgbotapi.Update{
+				UpdateID:          2,
+				EditedChannelPost: &tgbotapi.Message{Text: privateText},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := NewTelegramWebhookInput(tt.update, nil)
+			if !errors.Is(err, botsfw.ErrNotImplemented) {
+				t.Fatalf("NewTelegramWebhookInput() error = %v, want ErrNotImplemented", err)
+			}
+			if strings.Contains(err.Error(), privateText) {
+				t.Fatalf("NewTelegramWebhookInput() error exposes private payload: %v", err)
+			}
+		})
+	}
 }
 
 func TestPublicHost(t *testing.T) {

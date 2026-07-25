@@ -1,7 +1,6 @@
 package telegram
 
 import (
-	"bytes"
 	"context"
 	"crypto/subtle"
 	"encoding/json"
@@ -147,9 +146,9 @@ func (h tgWebhookHandler) HandleWebhookRequest(w http.ResponseWriter, r *http.Re
 	}
 
 	defer func() {
-		if err := recover(); err != nil {
+		if recovered := recover(); recovered != nil {
 			stack := string(debug.Stack())
-			logus.Criticalf(h.Context(r), "Unhandled panic in Telegram handler: %v\nStack trace: %s", err, stack)
+			logus.Criticalf(h.Context(r), "Unhandled panic in Telegram handler: panic_type=%T\nStack trace: %s", recovered, stack)
 		}
 	}()
 
@@ -180,14 +179,12 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 	botContext, err := h.botContextProvider.GetBotContext(ctx, PlatformID, botCode)
 	if err != nil {
-		err = fmt.Errorf("failed to get bot context: %w", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		logus.Errorf(ctx, "Failed to get bot context for Telegram webhook setup: error_type=%T", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	bot := tgbotapi.NewBotAPIWithClient(botContext.BotSettings.Token, client)
-	bot.EnableDebug(ctx)
-	//bot.Debug = true
 
 	webhookURL := fmt.Sprintf("https://%s%s/tg/hook?id=%s", publicHost(r), h.pathPrefix, botCode)
 
@@ -213,11 +210,8 @@ func (h tgWebhookHandler) SetWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 	var response tgbotapi.APIResponse
 	if response, err = bot.SetWebhook(*webhookConfig); err != nil {
-		logus.Errorf(ctx, "%v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		if _, err := w.Write([]byte(err.Error())); err != nil {
-			logus.Errorf(ctx, "Failed to write error to response: %v", err)
-		}
+		logus.Errorf(ctx, "Failed to set Telegram webhook: error_type=%T", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	} else if _, err = fmt.Fprintf(w, `Webhook set
 ErrorCode: %d
 Description: %v
@@ -315,7 +309,7 @@ func verifyWebhookSecretToken(ctx context.Context, r *http.Request, settings *bo
 }
 
 func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Request) (botContext *botsfw.BotContext, entriesWithInputs []botinput.EntryInputs, err error) {
-	logus.Debugf(ctx, "tgWebhookHandler.GetBotContextAndInputs(): %s", r.URL.RequestURI())
+	logus.Debugf(ctx, "tgWebhookHandler.GetBotContextAndInputs(): path=%q", r.URL.EscapedPath())
 	botID := r.URL.Query().Get("id")
 	if botContext, err = h.botContextProvider.GetBotContext(ctx, PlatformID, botID); err != nil {
 		return
@@ -339,37 +333,47 @@ func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Re
 		return
 	}
 
-	var requestLogged bool
-	logRequestBody := func() {
+	var (
+		requestLogged bool
+		update        *tgbotapi.Update
+		input         botinput.InputMessage
+		logOutcome    = "decode_error"
+	)
+	logRequestMetadata := func() {
 		if !requestLogged {
 			requestLogged = true
-			if len(bodyBytes) < 1024*10 {
-				var bodyToLog bytes.Buffer
-				var bodyStr string
-				if indentErr := json.Indent(&bodyToLog, bodyBytes, "", "\t"); indentErr == nil {
-					bodyStr = bodyToLog.String()
-				} else {
-					bodyStr = string(bodyBytes)
-				}
-				logus.Debugf(ctx, "Request body (%s): %s", r.URL.String(), bodyStr)
-			} else {
-				logus.Debugf(ctx, "Request len(body): %v", len(bodyBytes))
+			inputType := botinput.TypeUnknown
+			if input != nil {
+				inputType = input.InputType()
 			}
+			logus.Debugf(
+				ctx,
+				"Telegram webhook received: bot=%q, body_bytes=%d, input_type=%v, outcome=%s",
+				botID,
+				len(bodyBytes),
+				inputType,
+				logOutcome,
+			)
 		}
 	}
 
-	var update *tgbotapi.Update
 	if update, err = h.unmarshalUpdate(ctx, bodyBytes); err != nil {
-		logRequestBody()
+		logRequestMetadata()
 		return
 	}
 
-	var input botinput.InputMessage
-	if input, err = NewTelegramWebhookInput(update, logRequestBody); err != nil {
-		logRequestBody()
+	logOutcome = "unsupported"
+	if input, err = NewTelegramWebhookInput(update, logRequestMetadata); err != nil {
+		logRequestMetadata()
 		return
 	}
-	logRequestBody()
+	if input == nil {
+		logRequestMetadata()
+		err = fmt.Errorf("telegram input is <nil>: %w", botsfw.ErrNotImplemented)
+		return
+	}
+	logOutcome = "decoded"
+	logRequestMetadata()
 
 	entriesWithInputs = []botinput.EntryInputs{
 		{
@@ -378,11 +382,6 @@ func (h tgWebhookHandler) GetBotContextAndInputs(ctx context.Context, r *http.Re
 		},
 	}
 
-	if input == nil {
-		logRequestBody()
-		err = fmt.Errorf("telegram input is <nil>: %w", botsfw.ErrNotImplemented)
-		return
-	}
 	logus.Debugf(ctx, "Telegram input type: %T", input)
 	return
 }
