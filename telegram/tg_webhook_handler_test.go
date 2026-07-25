@@ -45,7 +45,7 @@ func bottomKeyboardMessage(kind botkb.KeyboardType) botmsg.MessageFromBot {
 
 func TestResponderTransformGatesRouterAndDirectPaths(t *testing.T) {
 	raw := &recordingResponder{}
-	handler := tgWebhookHandler{responderTransform: func(next botsfw.WebhookResponder) botsfw.WebhookResponder {
+	handler := tgWebhookHandler{responderTransform: func(_ botsfw.WebhookContext, next botsfw.WebhookResponder) botsfw.WebhookResponder {
 		return botsfw.NewPolicyResponder(next, botsfw.PresentationPolicy{PersistentBottomKeyboard: botsfw.PersistentBottomKeyboardHostOnly})
 	}}
 	whc := &tgWebhookContext{}
@@ -64,7 +64,7 @@ func TestResponderTransformGatesRouterAndDirectPaths(t *testing.T) {
 
 func TestResponderTransformAllowsHostHomeHideAndInlineMessages(t *testing.T) {
 	raw := &recordingResponder{}
-	handler := tgWebhookHandler{responderTransform: func(next botsfw.WebhookResponder) botsfw.WebhookResponder {
+	handler := tgWebhookHandler{responderTransform: func(_ botsfw.WebhookContext, next botsfw.WebhookResponder) botsfw.WebhookResponder {
 		return botsfw.NewHostPolicyResponder(next, botsfw.PresentationPolicy{PersistentBottomKeyboard: botsfw.PersistentBottomKeyboardHostOnly})
 	}}
 	whc := &tgWebhookContext{}

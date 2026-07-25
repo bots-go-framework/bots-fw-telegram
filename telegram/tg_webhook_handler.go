@@ -54,7 +54,7 @@ type TgWebhookHandlerOption func(*tgWebhookHandler)
 // The transformed responder is installed into WebhookContext as well as passed
 // to router dispatch, so direct responder sends and router-returned messages
 // share one host-enforced delivery boundary.
-type WebhookResponderTransform func(botsfw.WebhookResponder) botsfw.WebhookResponder
+type WebhookResponderTransform func(botsfw.WebhookContext, botsfw.WebhookResponder) botsfw.WebhookResponder
 
 // WithResponderTransform installs a host-owned responder transform. The
 // transform is applied once per webhook after the Telegram responder has been
@@ -426,7 +426,7 @@ func (h tgWebhookHandler) GetResponder(w http.ResponseWriter, whc botsfw.Webhook
 
 func (h tgWebhookHandler) installResponder(whc *tgWebhookContext, responder botsfw.WebhookResponder) botsfw.WebhookResponder {
 	if h.responderTransform != nil {
-		responder = h.responderTransform(responder)
+		responder = h.responderTransform(whc, responder)
 		if responder == nil {
 			panic("WebhookResponderTransform returned nil")
 		}
