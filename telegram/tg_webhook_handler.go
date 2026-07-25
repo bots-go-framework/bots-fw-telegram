@@ -41,13 +41,30 @@ type tgWebhookHandler struct {
 	pathPrefix string
 	// adminPathPrefix, when non-empty, is the prefix the admin-only endpoints
 	// (set-webhook, test) mount under instead of pathPrefix — see WithAdminPathPrefix.
-	adminPathPrefix string
-	chatInstances   ChatInstanceStore
+	adminPathPrefix    string
+	chatInstances      ChatInstanceStore
+	responderTransform WebhookResponderTransform
 }
 
 // TgWebhookHandlerOption configures a Telegram webhook handler at construction
 // time (functional-options pattern).
 type TgWebhookHandlerOption func(*tgWebhookHandler)
+
+// WebhookResponderTransform wraps the responder used for a single webhook.
+// The transformed responder is installed into WebhookContext as well as passed
+// to router dispatch, so direct responder sends and router-returned messages
+// share one host-enforced delivery boundary.
+type WebhookResponderTransform func(botsfw.WebhookResponder) botsfw.WebhookResponder
+
+// WithResponderTransform installs a host-owned responder transform. The
+// transform is applied once per webhook after the Telegram responder has been
+// created and before any router action can run.
+func WithResponderTransform(transform WebhookResponderTransform) TgWebhookHandlerOption {
+	if transform == nil {
+		panic("transform == nil")
+	}
+	return func(h *tgWebhookHandler) { h.responderTransform = transform }
+}
 
 // WithAdminPathPrefix mounts the admin-only endpoints (set-webhook and the test
 // route) under adminPrefix instead of the public webhook pathPrefix, so a host can
@@ -402,9 +419,20 @@ func (h tgWebhookHandler) CreateWebhookContext(
 
 func (h tgWebhookHandler) GetResponder(w http.ResponseWriter, whc botsfw.WebhookContext) botsfw.WebhookResponder {
 	if twhc, ok := whc.(*tgWebhookContext); ok {
-		return newTgWebhookResponder(w, twhc)
+		return h.installResponder(twhc, newTgWebhookResponder(w, twhc))
 	}
 	panic(fmt.Sprintf("Expected tgWebhookContext, got: %T", whc))
+}
+
+func (h tgWebhookHandler) installResponder(whc *tgWebhookContext, responder botsfw.WebhookResponder) botsfw.WebhookResponder {
+	if h.responderTransform != nil {
+		responder = h.responderTransform(responder)
+		if responder == nil {
+			panic("WebhookResponderTransform returned nil")
+		}
+	}
+	whc.responder = responder
+	return responder
 }
 
 //func (h tgWebhookHandler) CreateBotCoreStores(appContext botsfw.BotAppContext, r *http.Request) botsfwdal.DataAccess {

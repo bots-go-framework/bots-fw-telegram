@@ -7,8 +7,10 @@ import (
 	"github.com/bots-go-framework/bots-api-telegram/tgbotapi"
 	"github.com/bots-go-framework/bots-fw-telegram-models/botsfwtgmodels"
 	"github.com/bots-go-framework/bots-fw/botinput"
+	"github.com/bots-go-framework/bots-fw/botmsg"
 	"github.com/bots-go-framework/bots-fw/botsfw"
 	"github.com/bots-go-framework/bots-fw/mocks/mock_botsfw"
+	"github.com/bots-go-framework/bots-go-core/botkb"
 	"github.com/strongo/i18n"
 	"go.uber.org/mock/gomock"
 	"net/http"
@@ -24,6 +26,60 @@ func (testChatInstanceStore) Get(context.Context, string, string) (botsfwtgmodel
 }
 func (testChatInstanceStore) Save(context.Context, string, string, botsfwtgmodels.TgChatInstanceData) error {
 	return nil
+}
+
+type recordingResponder struct{ sends int }
+
+func (r *recordingResponder) SendMessage(_ context.Context, _ botmsg.MessageFromBot, _ botmsg.BotAPISendMessageChannel) (botsfw.OnMessageSentResponse, error) {
+	r.sends++
+	return botsfw.OnMessageSentResponse{}, nil
+}
+
+func (*recordingResponder) DeleteMessage(context.Context, string) error { return nil }
+
+func bottomKeyboardMessage(kind botkb.KeyboardType) botmsg.MessageFromBot {
+	message := botmsg.MessageFromBot{}
+	message.Keyboard = botkb.NewMessageKeyboard(kind)
+	return message
+}
+
+func TestResponderTransformGatesRouterAndDirectPaths(t *testing.T) {
+	raw := &recordingResponder{}
+	handler := tgWebhookHandler{responderTransform: func(next botsfw.WebhookResponder) botsfw.WebhookResponder {
+		return botsfw.NewPolicyResponder(next, botsfw.PresentationPolicy{PersistentBottomKeyboard: botsfw.PersistentBottomKeyboardHostOnly})
+	}}
+	whc := &tgWebhookContext{}
+	routerResponder := handler.installResponder(whc, raw)
+	message := bottomKeyboardMessage(botkb.KeyboardTypeBottom)
+	if _, err := routerResponder.SendMessage(context.Background(), message, botsfw.BotAPISendMessageOverHTTPS); err == nil || !strings.Contains(err.Error(), "reserved for the host") {
+		t.Fatalf("router-return message error = %v", err)
+	}
+	if _, err := whc.Responder().SendMessage(context.Background(), message, botsfw.BotAPISendMessageOverHTTPS); err == nil || !strings.Contains(err.Error(), "reserved for the host") {
+		t.Fatalf("direct message error = %v", err)
+	}
+	if raw.sends != 0 {
+		t.Fatalf("gated sends reached raw responder %d times", raw.sends)
+	}
+}
+
+func TestResponderTransformAllowsHostHomeHideAndInlineMessages(t *testing.T) {
+	raw := &recordingResponder{}
+	handler := tgWebhookHandler{responderTransform: func(next botsfw.WebhookResponder) botsfw.WebhookResponder {
+		return botsfw.NewHostPolicyResponder(next, botsfw.PresentationPolicy{PersistentBottomKeyboard: botsfw.PersistentBottomKeyboardHostOnly})
+	}}
+	whc := &tgWebhookContext{}
+	responder := handler.installResponder(whc, raw)
+	for _, kind := range []botkb.KeyboardType{botkb.KeyboardTypeBottom, botkb.KeyboardTypeHide, botkb.KeyboardTypeInline} {
+		if _, err := responder.SendMessage(context.Background(), bottomKeyboardMessage(kind), botsfw.BotAPISendMessageOverHTTPS); err != nil {
+			t.Fatalf("host %v message: %v", kind, err)
+		}
+	}
+	if whc.Responder() != responder {
+		t.Fatal("transformed responder was not installed in webhook context")
+	}
+	if raw.sends != 3 {
+		t.Fatalf("host sends = %d, want 3", raw.sends)
+	}
 }
 
 func TestNewTelegramWebhookHandler(t *testing.T) {
