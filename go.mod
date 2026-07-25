@@ -6,8 +6,8 @@ go 1.25
 
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.15.4-0.20260725163828-d6c8f595ea6f
-	github.com/bots-go-framework/bots-fw v0.77.1-0.20260725160245-13f2735fe248
-	github.com/bots-go-framework/bots-fw-store v0.12.0
+	github.com/bots-go-framework/bots-fw v0.77.1-0.20260725171008-352b9e38f418
+	github.com/bots-go-framework/bots-fw-store v0.14.1-0.20260725165959-023758cc8659
 	github.com/bots-go-framework/bots-fw-telegram-models v0.3.71
 	github.com/bots-go-framework/bots-go-core v0.2.5
 	github.com/strongo/i18n v0.8.15
