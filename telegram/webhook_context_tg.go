@@ -11,9 +11,11 @@ import (
 	"github.com/strongo/logus"
 	"net/http"
 	"strconv"
+	"sync/atomic"
 )
 
 var _ botsfw.WebhookContext = (*tgWebhookContext)(nil)
+var _ botsfw.CallbackQueryAcknowledger = (*tgWebhookContext)(nil)
 
 type tgWebhookContext struct {
 	*botsfw.WebhookContextBase
@@ -29,6 +31,8 @@ type tgWebhookContext struct {
 	locale        string
 	chatID        string
 	chatInstances ChatInstanceStore
+
+	callbackQueryAcknowledged atomic.Bool
 }
 
 func (twhc *tgWebhookContext) NewEditMessage(text string, format botmsg.Format) (m botmsg.MessageFromBot, err error) {
@@ -175,6 +179,42 @@ func (twhc *tgWebhookContext) Close(context.Context) error {
 
 func (twhc *tgWebhookContext) Responder() botsfw.WebhookResponder {
 	return twhc.responder
+}
+
+// AcknowledgeCallbackQuery immediately dismisses Telegram's loading indicator.
+// It is safe to call more than once; only the first successful call is sent.
+func (twhc *tgWebhookContext) AcknowledgeCallbackQuery(text string, showAlert bool) error {
+	if !twhc.callbackQueryAcknowledged.CompareAndSwap(false, true) {
+		return nil
+	}
+	if twhc.tgInput == nil || twhc.tgInput.TgUpdate() == nil || twhc.tgInput.TgUpdate().CallbackQuery == nil {
+		twhc.callbackQueryAcknowledged.Store(false)
+		return fmt.Errorf("current Telegram update is not a callback query")
+	}
+	if twhc.responder == nil {
+		twhc.callbackQueryAcknowledged.Store(false)
+		return fmt.Errorf("Telegram webhook responder is not initialized")
+	}
+	ctx := context.Background()
+	if twhc.WebhookContextBase != nil {
+		ctx = twhc.Context()
+	}
+	answer := botmsg.MessageFromBot{
+		BotMessage: botmsg.AnswerCallbackQuery{
+			CallbackQueryID: twhc.tgInput.TgUpdate().CallbackQuery.ID,
+			Text:            text,
+			ShowAlert:       showAlert,
+		},
+	}
+	if _, err := twhc.responder.SendMessage(ctx, answer, botsfw.BotAPISendMessageOverHTTPS); err != nil {
+		twhc.callbackQueryAcknowledged.Store(false)
+		return fmt.Errorf("failed to acknowledge Telegram callback query: %w", err)
+	}
+	return nil
+}
+
+func (twhc *tgWebhookContext) WasCallbackQueryAcknowledged() bool {
+	return twhc.callbackQueryAcknowledged.Load()
 }
 
 //type tgBotAPIUser struct {
