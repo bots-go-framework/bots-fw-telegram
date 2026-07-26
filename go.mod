@@ -5,7 +5,7 @@ go 1.25
 //replace github.com/bots-go-framework/bots-api-telegram => ../bots-api-telegram
 
 require (
-	github.com/bots-go-framework/bots-api-telegram v0.15.5
+	github.com/bots-go-framework/bots-api-telegram v0.15.6
 	github.com/bots-go-framework/bots-fw v0.77.4
 	github.com/bots-go-framework/bots-fw-store v0.14.1
 	github.com/bots-go-framework/bots-fw-telegram-models v0.3.71
