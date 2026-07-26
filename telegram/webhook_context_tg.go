@@ -193,7 +193,7 @@ func (twhc *tgWebhookContext) AcknowledgeCallbackQuery(text string, showAlert bo
 	}
 	if twhc.responder == nil {
 		twhc.callbackQueryAcknowledged.Store(false)
-		return fmt.Errorf("Telegram webhook responder is not initialized")
+		return fmt.Errorf("telegram webhook responder is not initialized")
 	}
 	ctx := context.Background()
 	if twhc.WebhookContextBase != nil {
