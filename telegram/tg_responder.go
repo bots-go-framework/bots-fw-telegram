@@ -39,6 +39,20 @@ func configureTelegramTextMessage(messageConfig *tgbotapi.MessageConfig, m botms
 	messageConfig.DisableNotification = m.DisableNotification
 }
 
+func telegramTargetChatID(m botmsg.MessageFromBot, update *tgbotapi.Update) (int64, error) {
+	if m.ToChat != nil {
+		chatID, err := strconv.ParseInt(m.ToChat.ChatUID(), 10, 64)
+		if err != nil {
+			return 0, fmt.Errorf("invalid Telegram target chat ID %q: %w", m.ToChat.ChatUID(), err)
+		}
+		return chatID, nil
+	}
+	if chat := update.Chat(); chat != nil && chat.ID != 0 {
+		return chat.ID, nil
+	}
+	return 0, errors.New("can not determine Telegram target chat ID")
+}
+
 func (r tgWebhookResponder) DeleteMessage(ctx context.Context, messageID string) (err error) {
 	var msgID int
 	if msgID, err = strconv.Atoi(messageID); err != nil {
@@ -117,78 +131,129 @@ func (r tgWebhookResponder) SendMessage(ctx context.Context, m botmsg.MessageFro
 		return
 	} else if botMessage = m.BotMessage; botMessage != nil {
 		logus.Debugf(ctx, "m.BotMessage != nil")
-		switch m.BotMessage.BotMessageType() {
-		case botmsg.BotMessageTypeInlineResults:
-			sendable = tgbotapi.InlineConfig(m.BotMessage.(InlineBotMessage))
-		case botmsg.TypeCallbackAnswer:
-			var callbackAnswer tgbotapi.AnswerCallbackQueryConfig
-			switch botMsg := botMessage.(type) {
-			case CallbackAnswer:
-				callbackAnswer = tgbotapi.AnswerCallbackQueryConfig(botMsg)
-			case botmsg.AnswerCallbackQuery:
-				callbackAnswer = tgbotapi.AnswerCallbackQueryConfig{
-					CallbackQueryID: botMsg.CallbackQueryID,
-					Text:            botMsg.Text,
-					ShowAlert:       botMsg.ShowAlert,
-					URL:             botMsg.URL,
-					CacheTime:       botMsg.CacheTime,
+		if telegramRequest, ok := m.BotMessage.(TelegramRequest); ok {
+			sendable = telegramRequest
+		} else {
+			switch m.BotMessage.BotMessageType() {
+			case botmsg.BotMessageTypeInlineResults:
+				sendable = tgbotapi.InlineConfig(m.BotMessage.(InlineBotMessage))
+			case botmsg.TypeCallbackAnswer:
+				var callbackAnswer tgbotapi.AnswerCallbackQueryConfig
+				switch botMsg := botMessage.(type) {
+				case CallbackAnswer:
+					callbackAnswer = tgbotapi.AnswerCallbackQueryConfig(botMsg)
+				case botmsg.AnswerCallbackQuery:
+					callbackAnswer = tgbotapi.AnswerCallbackQueryConfig{
+						CallbackQueryID: botMsg.CallbackQueryID,
+						Text:            botMsg.Text,
+						ShowAlert:       botMsg.ShowAlert,
+						URL:             botMsg.URL,
+						CacheTime:       botMsg.CacheTime,
+					}
 				}
+				if callbackAnswer.CallbackQueryID == "" && tgUpdate.CallbackQuery != nil {
+					callbackAnswer.CallbackQueryID = tgUpdate.CallbackQuery.ID
+				}
+				sendable = callbackAnswer
+			case botmsg.TypeLeaveChat:
+				leaveChat := tgbotapi.LeaveChatConfig(m.BotMessage.(LeaveChat))
+				if leaveChat.ChatID == "" {
+					leaveChat.ChatID = strconv.FormatInt(tgUpdate.Chat().ID, 10)
+				}
+				sendable = leaveChat
+			case botmsg.TypeExportChatInviteLink:
+				exportChatInviteLink := tgbotapi.ExportChatInviteLink(m.BotMessage.(ExportChatInviteLink))
+				if exportChatInviteLink.ChatID == "" {
+					exportChatInviteLink.ChatID = strconv.FormatInt(tgUpdate.Chat().ID, 10)
+				}
+				sendable = exportChatInviteLink
+			case botmsg.TypeUndefined:
+				err = fmt.Errorf("bot message type %v==undefined", m.BotMessage.BotMessageType())
+				return
+			case botmsg.TypeSendInvoice:
+				invoiceConfig := tgbotapi.InvoiceConfig(m.BotMessage.(Invoice))
+				if invoiceConfig.ChatID == 0 {
+					invoiceConfig.ChatID = tgUpdate.Chat().ID
+				}
+				sendable = &invoiceConfig
+			case botmsg.TypeSetDescription:
+				setBotDescription := m.BotMessage.(SetBotDescription)
+				sendable = (tgbotapi.SetMyDescription)(setBotDescription)
+			case botmsg.TypeSetShortDescription:
+				setBotDescription := m.BotMessage.(SetBotShortDescription)
+				sendable = (tgbotapi.SetMyShortDescription)(setBotDescription)
+			case botmsg.TypeSetCommands:
+				setBotDescription := m.BotMessage.(SetBotCommands)
+				sendable = (tgbotapi.SetMyCommandsConfig)(setBotDescription)
+			case botmsg.TypeAnswerPreCheckoutQuery:
+				answerPreCheckoutQuery := m.BotMessage.(PreCheckoutQueryAnswer)
+				sendable = (tgbotapi.AnswerPreCheckoutQueryConfig)(answerPreCheckoutQuery)
+			case botmsg.TypeSendPhoto:
+				photoConfig := m.BotMessage.(SendPhoto)
+				if photoConfig.ChatID == 0 {
+					photoConfig.ChatID = tgUpdate.Chat().ID
+				}
+				if photoConfig.Caption != "" {
+					photoConfig.ParseMode = telegramParseMode(m.Format)
+				}
+				sendable = (tgbotapi.PhotoConfig)(photoConfig)
+			case botmsg.TypeChatAction:
+				sendable = chatActionSendable(m.BotMessage.(botmsg.ChatAction), tgUpdate.Chat().ID)
+			case botmsg.TypeSendRichMessage:
+				richMessage := tgbotapi.RichMessageConfig(m.BotMessage.(SendRichMessage))
+				if richMessage.ChatID == 0 {
+					if richMessage.ChatID, err = telegramTargetChatID(m, tgUpdate); err != nil {
+						return
+					}
+				}
+				if m.Keyboard != nil {
+					richMessage.ReplyMarkup = getTelegramKeyboard(m.Keyboard)
+				}
+				sendable = richMessage
+			case botmsg.TypeSendRichMessageDraft:
+				richMessageDraft := tgbotapi.RichMessageDraftConfig(m.BotMessage.(SendRichMessageDraft))
+				if richMessageDraft.ChatID == 0 {
+					if richMessageDraft.ChatID, err = telegramTargetChatID(m, tgUpdate); err != nil {
+						return
+					}
+				}
+				sendable = richMessageDraft
+			case botmsg.TypeEditRichMessage:
+				editRichMessage := tgbotapi.EditMessageTextConfig(m.BotMessage.(EditRichMessage))
+				if editRichMessage.InlineMessageID == "" && editRichMessage.ChatID == 0 && editRichMessage.MessageID == 0 {
+					inlineMessageID, chatID, messageID := getTgMessageIDs(tgUpdate)
+					if m.EditMessageIntID != 0 {
+						messageID = m.EditMessageIntID
+						inlineMessageID = ""
+					}
+					editRichMessage.InlineMessageID = inlineMessageID
+					if inlineMessageID == "" {
+						if chatID == 0 {
+							if chatID, err = telegramTargetChatID(m, tgUpdate); err != nil {
+								return
+							}
+						}
+						editRichMessage.BaseEdit = tgbotapi.NewChatMessageEdit(chatID, messageID)
+					}
+				}
+				if editRichMessage.InlineMessageID == "" && (editRichMessage.ChatID == 0 || editRichMessage.MessageID == 0) {
+					err = errors.New("rich-message edit requires inline_message_id or both chat_id and message_id")
+					return
+				}
+				if m.Keyboard != nil {
+					if editRichMessage.ReplyMarkup, err = getTelegramInlineKeyboardForEdit(m.Keyboard); err != nil {
+						return
+					}
+				}
+				sendable = editRichMessage
+			default:
+				//var ok bool
+				//sendable, ok = m.BotMessage.(tgbotapi.Sendable)
+				//if !ok {
+				err = fmt.Errorf("unknown bot message type %v==%T", m.BotMessage.BotMessageType(), botMessage)
+				return
+				//}
 			}
-			if callbackAnswer.CallbackQueryID == "" && tgUpdate.CallbackQuery != nil {
-				callbackAnswer.CallbackQueryID = tgUpdate.CallbackQuery.ID
-			}
-			sendable = callbackAnswer
-		case botmsg.TypeLeaveChat:
-			leaveChat := tgbotapi.LeaveChatConfig(m.BotMessage.(LeaveChat))
-			if leaveChat.ChatID == "" {
-				leaveChat.ChatID = strconv.FormatInt(tgUpdate.Chat().ID, 10)
-			}
-			sendable = leaveChat
-		case botmsg.TypeExportChatInviteLink:
-			exportChatInviteLink := tgbotapi.ExportChatInviteLink(m.BotMessage.(ExportChatInviteLink))
-			if exportChatInviteLink.ChatID == "" {
-				exportChatInviteLink.ChatID = strconv.FormatInt(tgUpdate.Chat().ID, 10)
-			}
-			sendable = exportChatInviteLink
-		case botmsg.TypeUndefined:
-			err = fmt.Errorf("bot message type %v==undefined", m.BotMessage.BotMessageType())
-			return
-		case botmsg.TypeSendInvoice:
-			invoiceConfig := tgbotapi.InvoiceConfig(m.BotMessage.(Invoice))
-			if invoiceConfig.ChatID == 0 {
-				invoiceConfig.ChatID = tgUpdate.Chat().ID
-			}
-			sendable = &invoiceConfig
-		case botmsg.TypeSetDescription:
-			setBotDescription := m.BotMessage.(SetBotDescription)
-			sendable = (tgbotapi.SetMyDescription)(setBotDescription)
-		case botmsg.TypeSetShortDescription:
-			setBotDescription := m.BotMessage.(SetBotShortDescription)
-			sendable = (tgbotapi.SetMyShortDescription)(setBotDescription)
-		case botmsg.TypeSetCommands:
-			setBotDescription := m.BotMessage.(SetBotCommands)
-			sendable = (tgbotapi.SetMyCommandsConfig)(setBotDescription)
-		case botmsg.TypeAnswerPreCheckoutQuery:
-			answerPreCheckoutQuery := m.BotMessage.(PreCheckoutQueryAnswer)
-			sendable = (tgbotapi.AnswerPreCheckoutQueryConfig)(answerPreCheckoutQuery)
-		case botmsg.TypeSendPhoto:
-			photoConfig := m.BotMessage.(SendPhoto)
-			if photoConfig.ChatID == 0 {
-				photoConfig.ChatID = tgUpdate.Chat().ID
-			}
-			if photoConfig.Caption != "" {
-				photoConfig.ParseMode = telegramParseMode(m.Format)
-			}
-			sendable = (tgbotapi.PhotoConfig)(photoConfig)
-		case botmsg.TypeChatAction:
-			sendable = chatActionSendable(m.BotMessage.(botmsg.ChatAction), tgUpdate.Chat().ID)
-		default:
-			//var ok bool
-			//sendable, ok = m.BotMessage.(tgbotapi.Sendable)
-			//if !ok {
-			err = fmt.Errorf("unknown bot message type %v==%T", m.BotMessage.BotMessageType(), botMessage)
-			return
-			//}
 		}
 	} else if m.IsEdit || m.EditMessageIntID != 0 || (tgUpdate.CallbackQuery != nil && tgUpdate.CallbackQuery.InlineMessageID != "" && m.ToChat == nil) {
 		// Edit message
@@ -340,6 +405,25 @@ func (r tgWebhookResponder) sendOverHttps(ctx context.Context, chattable tgbotap
 		botContext.BotHost.GetHTTPClient(ctx),
 	)
 
+	// Streaming rich-message drafts return True rather than Message.
+	// Use the generic response decoder so HTTPS handlers don't try to decode
+	// the boolean result into a Telegram Message.
+	if draft, ok := chattable.(tgbotapi.RichMessageDraftConfig); ok {
+		var sent bool
+		err = botAPI.SendCustomMessage(ctx, draft, &sent)
+		return message, err
+	}
+	if edit, ok := chattable.(tgbotapi.EditMessageTextConfig); ok && edit.InlineMessageID != "" {
+		var sent bool
+		err = botAPI.SendCustomMessage(ctx, edit, &sent)
+		return message, err
+	}
+	if request, ok := chattable.(TelegramRequest); ok && !request.ReturnsMessage {
+		var sent bool
+		err = botAPI.SendCustomMessage(ctx, request, &sent)
+		return message, err
+	}
+
 	if message, err = botAPI.Send(chattable); err != nil {
 		return
 	} else if message.MessageID != 0 {
@@ -362,7 +446,10 @@ func getTelegramKeyboard(keyboard botkb.Keyboard) tgbotapi.Keyboard {
 	}
 	switch kb := keyboard.(type) {
 	case *botkb.MessageKeyboard:
-		switch keyboard.KeyboardType() {
+		if kb == nil {
+			return nil
+		}
+		switch kb.KeyboardType() {
 		case botkb.KeyboardTypeInline:
 			return getInlineKeyboard(kb)
 		case botkb.KeyboardTypeBottom:
@@ -377,6 +464,21 @@ func getTelegramKeyboard(keyboard botkb.Keyboard) tgbotapi.Keyboard {
 	}
 }
 
+func getTelegramInlineKeyboardForEdit(keyboard botkb.Keyboard) (*tgbotapi.InlineKeyboardMarkup, error) {
+	tgKeyboard := getTelegramKeyboard(keyboard)
+	if tgKeyboard == nil {
+		// An explicitly assigned typed-nil keyboard means "clear the existing
+		// inline controls". Telegram represents that as an empty inline
+		// keyboard, not an omitted reply_markup.
+		return &tgbotapi.InlineKeyboardMarkup{}, nil
+	}
+	inlineKeyboard, ok := tgKeyboard.(*tgbotapi.InlineKeyboardMarkup)
+	if !ok {
+		return nil, fmt.Errorf("rich-message edits require an inline keyboard, got %T", tgKeyboard)
+	}
+	return inlineKeyboard, nil
+}
+
 func getHideKeyboard(_ *botkb.MessageKeyboard) *tgbotapi.ReplyKeyboardHide {
 	return &tgbotapi.ReplyKeyboardHide{HideKeyboard: true}
 }
@@ -387,6 +489,11 @@ func getReplyKeyboard(kb *botkb.MessageKeyboard) *tgbotapi.ReplyKeyboardMarkup {
 		tgButtons[i] = make([]tgbotapi.KeyboardButton, len(buttons))
 		for j, button := range buttons {
 			tgButtons[i][j] = tgbotapi.KeyboardButton{Text: button.GetText()}
+			if provider, ok := button.(botkb.InlineButtonAppearanceProvider); ok {
+				appearance := provider.GetInlineButtonAppearance()
+				tgButtons[i][j].Style = string(appearance.Style)
+				tgButtons[i][j].IconCustomEmojiID = appearance.IconCustomEmojiID
+			}
 		}
 	}
 	replyKb := tgbotapi.NewReplyKeyboard(tgButtons...)
@@ -417,8 +524,23 @@ func getInlineKeyboard(kb *botkb.MessageKeyboard) *tgbotapi.InlineKeyboardMarkup
 				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
 			case *botkb.SwitchInlineQueryCurrentChatButton:
 				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
+			case botkb.CopyTextButton:
+				tgButtons[i][j] = tgbotapi.InlineKeyboardButton{
+					Text:     btn.Text,
+					CopyText: &tgbotapi.CopyTextButton{Text: btn.CopyText},
+				}
+			case *botkb.CopyTextButton:
+				tgButtons[i][j] = tgbotapi.InlineKeyboardButton{
+					Text:     btn.Text,
+					CopyText: &tgbotapi.CopyTextButton{Text: btn.CopyText},
+				}
 			default:
 				panic(fmt.Sprintf("Unknown button type at [%d][%d]: %T", i, j, btn))
+			}
+			if provider, ok := button.(botkb.InlineButtonAppearanceProvider); ok {
+				appearance := provider.GetInlineButtonAppearance()
+				tgButtons[i][j].Style = string(appearance.Style)
+				tgButtons[i][j].IconCustomEmojiID = appearance.IconCustomEmojiID
 			}
 		}
 	}

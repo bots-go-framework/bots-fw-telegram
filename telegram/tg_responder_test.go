@@ -143,6 +143,58 @@ func TestGetInlineKeyboard(t *testing.T) {
 		}
 	})
 
+	t.Run("CopyTextButton", func(t *testing.T) {
+		kb := botkb.NewMessageKeyboard(
+			botkb.KeyboardTypeInline,
+			[]botkb.Button{botkb.NewCopyTextButton("Copy invite", "https://t.me/SneatBot?start=pref_123")},
+		)
+
+		button := getInlineKeyboard(kb).InlineKeyboard[0][0]
+		if button.Text != "Copy invite" {
+			t.Errorf("Text = %q, want %q", button.Text, "Copy invite")
+		}
+		if button.CopyText == nil {
+			t.Fatal("CopyText is nil")
+		}
+		if button.CopyText.Text != "https://t.me/SneatBot?start=pref_123" {
+			t.Errorf("CopyText.Text = %q", button.CopyText.Text)
+		}
+		if err := button.Validate(); err != nil {
+			t.Errorf("converted button is invalid: %v", err)
+		}
+	})
+
+	t.Run("InlineButtonAppearance", func(t *testing.T) {
+		start := botkb.NewDataButton("Start", "start")
+		start.Style = botkb.ButtonStyleSuccess
+		start.IconCustomEmojiID = "emoji-start"
+		cancel := botkb.NewDataButton("Cancel", "cancel")
+		cancel.Style = botkb.ButtonStyleDanger
+		plain := botkb.NewUrlButton("Rules", "https://example.com/rules")
+
+		kb := botkb.NewMessageKeyboard(
+			botkb.KeyboardTypeInline,
+			[]botkb.Button{start, cancel, plain},
+		)
+
+		buttons := getInlineKeyboard(kb).InlineKeyboard[0]
+		if got, want := buttons[0].Style, "success"; got != want {
+			t.Errorf("success Style = %q, want %q", got, want)
+		}
+		if got, want := buttons[0].IconCustomEmojiID, "emoji-start"; got != want {
+			t.Errorf("IconCustomEmojiID = %q, want %q", got, want)
+		}
+		if got, want := buttons[1].Style, "danger"; got != want {
+			t.Errorf("danger Style = %q, want %q", got, want)
+		}
+		if got := buttons[2].Style; got != "" {
+			t.Errorf("unstyled Style = %q, want empty", got)
+		}
+		if got := buttons[2].IconCustomEmojiID; got != "" {
+			t.Errorf("unstyled IconCustomEmojiID = %q, want empty", got)
+		}
+	})
+
 	t.Run("MultipleButtonsAndRows", func(t *testing.T) {
 		kb := botkb.NewMessageKeyboard(
 			botkb.KeyboardTypeInline,
@@ -191,9 +243,12 @@ func TestGetReplyKeyboard(t *testing.T) {
 	})
 
 	t.Run("SingleTextButton", func(t *testing.T) {
+		play := botkb.NewTextButton("Test Button")
+		play.Style = botkb.ButtonStylePrimary
+		play.IconCustomEmojiID = "emoji-play"
 		kb := botkb.NewMessageKeyboard(
 			botkb.KeyboardTypeBottom,
-			[]botkb.Button{&botkb.DataButton{Text: "Test Button"}},
+			[]botkb.Button{play},
 		)
 		replyKb := getReplyKeyboard(kb)
 
@@ -208,6 +263,12 @@ func TestGetReplyKeyboard(t *testing.T) {
 		button := replyKb.Keyboard[0][0]
 		if button.Text != "Test Button" {
 			t.Errorf("Expected button text 'Test Button', got '%v'", button.Text)
+		}
+		if button.Style != "primary" {
+			t.Errorf("Expected primary button style, got %q", button.Style)
+		}
+		if button.IconCustomEmojiID != "emoji-play" {
+			t.Errorf("Expected custom emoji ID, got %q", button.IconCustomEmojiID)
 		}
 	})
 
@@ -251,6 +312,13 @@ func TestGetReplyKeyboard(t *testing.T) {
 func TestGetTelegramKeyboard(t *testing.T) {
 	t.Run("NilKeyboard", func(t *testing.T) {
 		if result := getTelegramKeyboard(nil); result != nil {
+			t.Errorf("Expected nil keyboard, got %T", result)
+		}
+	})
+
+	t.Run("TypedNilKeyboard", func(t *testing.T) {
+		var keyboard *botkb.MessageKeyboard
+		if result := getTelegramKeyboard(keyboard); result != nil {
 			t.Errorf("Expected nil keyboard, got %T", result)
 		}
 	})
@@ -346,6 +414,17 @@ func TestGetTelegramKeyboard(t *testing.T) {
 		mockKeyboard := &mockKeyboard{}
 		getTelegramKeyboard(mockKeyboard)
 	})
+}
+
+func TestGetTelegramInlineKeyboardForEditClearsTypedNil(t *testing.T) {
+	var keyboard *botkb.MessageKeyboard
+	result, err := getTelegramInlineKeyboardForEdit(keyboard)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result == nil || len(result.InlineKeyboard) != 0 {
+		t.Fatalf("clear keyboard = %#v, want empty inline keyboard", result)
+	}
 }
 
 func TestGetHideKeyboard(t *testing.T) {
