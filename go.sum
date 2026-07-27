@@ -8,8 +8,8 @@ github.com/bots-go-framework/bots-fw-store v0.14.1 h1:uo+jEI16A/7oiZzxPdom0q1fXX
 github.com/bots-go-framework/bots-fw-store v0.14.1/go.mod h1:0yS6Pg516jHIrIInv+kvWRWxXNGGqR4tlvRua8GfT20=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.71 h1:zTqJwBMncK6a769xpdbCvq4vXfCH4GSN7h+qqxJG9mM=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.71/go.mod h1:mnevT6Jjk9NunTwgFoDYEEP/YnEKLlDZE0MUEztPwa0=
-github.com/bots-go-framework/bots-go-core v0.2.6 h1:OnDcCNXWLhZAiK9kvwfHOi1wnI6P13r9Qp5q295T4So=
-github.com/bots-go-framework/bots-go-core v0.2.6/go.mod h1:O/J3Q4HhTpbsbCL87Zhlf1BPtvfVp9UcfBWsc8D8ghw=
+github.com/bots-go-framework/bots-go-core v0.2.7 h1:LHOK6cYCs/d3Z9z8NVf+nJyNMS7lba+98p2Y26Gv57Y=
+github.com/bots-go-framework/bots-go-core v0.2.7/go.mod h1:O/J3Q4HhTpbsbCL87Zhlf1BPtvfVp9UcfBWsc8D8ghw=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
