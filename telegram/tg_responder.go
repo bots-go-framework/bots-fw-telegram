@@ -524,6 +524,10 @@ func getInlineKeyboard(kb *botkb.MessageKeyboard) *tgbotapi.InlineKeyboardMarkup
 				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
 			case *botkb.SwitchInlineQueryCurrentChatButton:
 				tgButtons[i][j] = tgbotapi.NewInlineKeyboardButtonSwitchInlineQueryCurrentChat(btn.Text, btn.Query)
+			case botkb.SwitchInlineQueryChosenChatButton:
+				tgButtons[i][j] = chosenChatInlineButton(btn)
+			case *botkb.SwitchInlineQueryChosenChatButton:
+				tgButtons[i][j] = chosenChatInlineButton(*btn)
 			case botkb.CopyTextButton:
 				tgButtons[i][j] = tgbotapi.InlineKeyboardButton{
 					Text:     btn.Text,
@@ -545,6 +549,19 @@ func getInlineKeyboard(kb *botkb.MessageKeyboard) *tgbotapi.InlineKeyboardMarkup
 		}
 	}
 	return tgbotapi.NewInlineKeyboardMarkup(tgButtons...)
+}
+
+func chosenChatInlineButton(button botkb.SwitchInlineQueryChosenChatButton) tgbotapi.InlineKeyboardButton {
+	return tgbotapi.InlineKeyboardButton{
+		Text: button.Text,
+		SwitchInlineQueryChosenChat: &tgbotapi.SwitchInlineQueryChosenChat{
+			Query:             button.Query,
+			AllowUserChats:    button.AllowUserChats,
+			AllowBotChats:     button.AllowBotChats,
+			AllowGroupChats:   button.AllowGroupChats,
+			AllowChannelChats: button.AllowChannelChats,
+		},
+	}
 }
 
 func GetTelegramBotAPIClient(ctx context.Context, botContext botsfw.BotContext) *tgbotapi.BotAPI {

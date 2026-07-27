@@ -143,6 +143,31 @@ func TestGetInlineKeyboard(t *testing.T) {
 		}
 	})
 
+	t.Run("SwitchInlineQueryChosenChatButton", func(t *testing.T) {
+		chosen := botkb.NewSwitchInlineQueryChosenChatButton("Choose friend", "pref?i=invite")
+		chosen.AllowUserChats = true
+		kb := botkb.NewMessageKeyboard(
+			botkb.KeyboardTypeInline,
+			[]botkb.Button{chosen},
+		)
+
+		button := getInlineKeyboard(kb).InlineKeyboard[0][0]
+		if button.Text != "Choose friend" {
+			t.Fatalf("Text = %q", button.Text)
+		}
+		if button.SwitchInlineQueryChosenChat == nil {
+			t.Fatal("SwitchInlineQueryChosenChat is nil")
+		}
+		chosenChat := button.SwitchInlineQueryChosenChat
+		if chosenChat.Query != "pref?i=invite" || !chosenChat.AllowUserChats ||
+			chosenChat.AllowBotChats || chosenChat.AllowGroupChats || chosenChat.AllowChannelChats {
+			t.Fatalf("chosen-chat config = %+v", chosenChat)
+		}
+		if err := button.Validate(); err != nil {
+			t.Fatalf("converted button is invalid: %v", err)
+		}
+	})
+
 	t.Run("CopyTextButton", func(t *testing.T) {
 		kb := botkb.NewMessageKeyboard(
 			botkb.KeyboardTypeInline,
