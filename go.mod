@@ -9,11 +9,11 @@ toolchain go1.27.1
 require (
 	github.com/bots-go-framework/bots-api-telegram v0.15.23
 	github.com/bots-go-framework/bots-fw v0.77.9
-	github.com/bots-go-framework/bots-fw-store v0.14.1
+	github.com/bots-go-framework/bots-fw-store v0.14.2
 	github.com/bots-go-framework/bots-fw-telegram-models v0.3.87
-	github.com/bots-go-framework/bots-go-core v0.3.3
-	github.com/strongo/i18n v0.8.21
-	github.com/strongo/logus v0.4.4
+	github.com/bots-go-framework/bots-go-core v0.3.5
+	github.com/strongo/i18n v0.8.23
+	github.com/strongo/logus v0.4.6
 	go.uber.org/mock v0.6.0
 )
 
