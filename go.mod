@@ -7,10 +7,10 @@ toolchain go1.27.1
 //replace github.com/bots-go-framework/bots-api-telegram => ../bots-api-telegram
 
 require (
-	github.com/bots-go-framework/bots-api-telegram v0.15.23
+	github.com/bots-go-framework/bots-api-telegram v0.15.24
 	github.com/bots-go-framework/bots-fw v0.77.9
 	github.com/bots-go-framework/bots-fw-store v0.14.2
-	github.com/bots-go-framework/bots-fw-telegram-models v0.3.87
+	github.com/bots-go-framework/bots-fw-telegram-models v0.3.88
 	github.com/bots-go-framework/bots-go-core v0.3.5
 	github.com/strongo/i18n v0.8.23
 	github.com/strongo/logus v0.4.6
@@ -22,7 +22,7 @@ require (
 	github.com/strongo/analytics v0.2.5 // indirect
 	github.com/strongo/random v0.0.2 // indirect
 	github.com/strongo/slice v0.3.10 // indirect
-	github.com/strongo/strongoapp v0.31.59 // indirect
+	github.com/strongo/strongoapp v0.31.64 // indirect
 	github.com/strongo/validation v0.0.13 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 )
