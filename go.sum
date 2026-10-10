@@ -50,6 +50,8 @@ github.com/bots-go-framework/bots-fw-telegram-models v0.3.89 h1:KVEZEzPVyV/KFLPg
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.89/go.mod h1:s9busGo+a2kCO9Bl5jMeOtn9kx234syo1GmSnwzZLds=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.90 h1:iz4iaIZaR981OFcArRIHXQFvxFfLe9WGXHHw0U/x3nA=
 github.com/bots-go-framework/bots-fw-telegram-models v0.3.90/go.mod h1:ehsBTzmRuaxO+0QkhMfpUAbgIaQU/254MSIG1Y/TwTg=
+github.com/bots-go-framework/bots-fw-telegram-models v0.3.91 h1:dKzzd4yKL5UaoRaO1s4BES3tVs0Wpe29vd8yymRosd4=
+github.com/bots-go-framework/bots-fw-telegram-models v0.3.91/go.mod h1:ESnVHdUwfz7BxED1iPdnVmkdHhkAzBohufyOBzViV9U=
 github.com/bots-go-framework/bots-go-core v0.2.7 h1:LHOK6cYCs/d3Z9z8NVf+nJyNMS7lba+98p2Y26Gv57Y=
 github.com/bots-go-framework/bots-go-core v0.2.7/go.mod h1:O/J3Q4HhTpbsbCL87Zhlf1BPtvfVp9UcfBWsc8D8ghw=
 github.com/bots-go-framework/bots-go-core v0.3.0 h1:Jqk8P2ZjfBLihfvKdFybDYIPh9mt/EWULOKObowY910=
@@ -60,6 +62,8 @@ github.com/bots-go-framework/bots-go-core v0.3.3 h1:OUvC8NcqEFH1RpMTAAWmtkkuiL+t
 github.com/bots-go-framework/bots-go-core v0.3.3/go.mod h1:kBdKbG7avpQa6MX4zgO0mFhzzngyGWzCbEOnZv96LKE=
 github.com/bots-go-framework/bots-go-core v0.3.5 h1:2P5qvWGvA7nnfLFh5n+VBOnAlr6+bhAQCTUHS9WSNKA=
 github.com/bots-go-framework/bots-go-core v0.3.5/go.mod h1:kBdKbG7avpQa6MX4zgO0mFhzzngyGWzCbEOnZv96LKE=
+github.com/bots-go-framework/bots-go-core v0.3.6 h1:n0jFxZ+OvYNMAu0w5MPy4N1jchoXkdMSa4JQjHWWMQ4=
+github.com/bots-go-framework/bots-go-core v0.3.6/go.mod h1:vmE6KwwE2fjGPXD3R4S+xMf/LUWqaBcCE65wnkMI+Ew=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -93,6 +97,8 @@ github.com/strongo/logus v0.4.4 h1:zv0t1tSCE1pHEOpmZnlwKRDb8pfxaCeP/Hk2PCj6swg=
 github.com/strongo/logus v0.4.4/go.mod h1:mVugDWLg/FXFiNAunrt+gvuEJtsSeCgwosU22FV1myY=
 github.com/strongo/logus v0.4.6 h1:SL0rsN9joNauT9uyQB7bjbWZtdGSDFKmFBDBqjjfSAE=
 github.com/strongo/logus v0.4.6/go.mod h1:mVugDWLg/FXFiNAunrt+gvuEJtsSeCgwosU22FV1myY=
+github.com/strongo/logus v0.4.7 h1:d36JbfN59k4NassuKebrooTJSm/Cvw4xzWPu2WCwlFc=
+github.com/strongo/logus v0.4.7/go.mod h1:9NEL4hzCy5DLmOjd/T5hHcNYDtU69A0JB6XQP9HrdEM=
 github.com/strongo/random v0.0.1 h1:OZHJBb/3uEa7OX8L2Dv2pLnSeewRmXMyTACoeto6O8I=
 github.com/strongo/random v0.0.1/go.mod h1:/pSI+SjBNLBkjljNtVdYr6ERddA+LqSa87o0/s+9iuU=
 github.com/strongo/random v0.0.2 h1:lnISBL6GM6xkWCJDRZRoOXaOUoytg76IyWkx6CLUHKg=
