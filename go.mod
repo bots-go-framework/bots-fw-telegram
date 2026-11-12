@@ -2,7 +2,7 @@ module github.com/bots-go-framework/bots-fw-telegram
 
 go 1.26.0
 
-toolchain go1.27.3
+toolchain go1.27.4
 
 //replace github.com/bots-go-framework/bots-api-telegram => ../bots-api-telegram
 
@@ -10,10 +10,10 @@ require (
 	github.com/bots-go-framework/bots-api-telegram v0.15.26
 	github.com/bots-go-framework/bots-fw v0.77.9
 	github.com/bots-go-framework/bots-fw-store v0.14.2
-	github.com/bots-go-framework/bots-fw-telegram-models v0.3.96
-	github.com/bots-go-framework/bots-go-core v0.3.7
+	github.com/bots-go-framework/bots-fw-telegram-models v0.3.97
+	github.com/bots-go-framework/bots-go-core v0.3.8
 	github.com/strongo/i18n v0.8.25
-	github.com/strongo/logus v0.4.8
+	github.com/strongo/logus v0.4.9
 	go.uber.org/mock v0.6.0
 )
 
