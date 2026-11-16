@@ -12,7 +12,7 @@ require (
 	github.com/bots-go-framework/bots-fw-store v0.14.2
 	github.com/bots-go-framework/bots-fw-telegram-models v0.3.98
 	github.com/bots-go-framework/bots-go-core v0.3.8
-	github.com/strongo/i18n v0.8.25
+	github.com/strongo/i18n v0.8.26
 	github.com/strongo/logus v0.4.9
 	go.uber.org/mock v0.6.0
 )
